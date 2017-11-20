@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#Loading libraries\nlibrary(igraph)\nlibrary(libSBML)\nlibrary(rsbml)\nlibrary(shiny)\nlibrary(intergraph)\nlibrary(GGally)\nlibrary(ggplot2)\n\nshinyServer(function(input, output) {\n  path_to_file = reactive({\n    input$file$datapath\n  })\n  observeEvent(input$update, {\n    output$graph = renderPlot({\n      #reading SBML files\n      sbml_model = rsbml_read(path_to_file())\n      toycon_graph = igraph.from.graphNEL(rsbml_graph(rsbml_read(path_to_file())))\n      net = asNetwork(toycon_graph)\n      names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]\n      #Setting colors according to node class\n      colors = rep(isolate(input$color_metabolites), length(names))\n      colors[grep(\"R\", names)] = isolate(input$color_reactions)\n      edges_names = names\n      #Setting names\n      for (i in seq(1, length(names))) {\n        if (any(names(sbml_model@model@species) == as.character(names[i]))) {\n          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name\n          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment\n          metabolite = paste(metabolite_name, compartment, sep = \"_\")\n          edges_names[i] = metabolite\n        }\n        else{\n          if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {\n            reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name\n            edges_names[i] = reaction_name\n          }\n          else{\n            edges_names[i] = \"NoName\"\n          }\n        }\n      }\n      \n      if (isolate(input$weighting) == \"none\") {\n        edgesize = 0.25\n      }\n      #Weighting edges\n      else{\n        weights_edges = c()\n        for (i in seq(1, length(net$mel))) {\n          weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])\n        }\n        if (isolate(input$weighting) == \"w\") {\n          edgesize = weights_edges\n        }\n        else{\n          edgesize = log10(weights_edges) + 0.25\n        }\n      }\n      #Plotting graph\n      ggnet2(\n        net,\n        label = edges_names,\n        arrow.gap = 0.035,\n        arrow.size = 8,\n        layout.exp = 0.01,\n        color = colors,\n        edge.size = edgesize\n      )\n      \n    })\n    \n  })\n})\n",
+    "created" : 1504795258068.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2346566917",
+    "id" : "2070F2CC",
+    "lastKnownWriteTime" : 1505765680,
+    "last_content_update" : 1505765680,
+    "path" : "~/Uczelnia/UVA/shinyapp/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

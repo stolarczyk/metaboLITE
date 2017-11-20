@@ -1,0 +1,11 @@
+library(signal)
+setwd("~/")
+history=read.csv("history-kw.csv",row.names = 1)
+colnames(history)=as.character(seq(0.5,24,0.5))
+history=as.matrix(history)
+history = history[1:10,]
+matplot(history,type = "l")
+lines(seq(0.5,24,0.5),colMeans(history),type = "l",lwd=2,col="red")
+sg <- sgolayfilt(history[1,])
+lines(seq(0.5,24,0.5),history[1,],type = "l",lwd = 2,ylim = c(0,max(history)))
+lines()
