@@ -16,12 +16,15 @@ shinyServer(function(input, output) {
     output$graph = renderPlot({
       #reading SBML files
       sbml_model = rsbml_read(path_to_file())
-      toycon_graph = igraph.from.graphNEL(rsbml_graph(rsbml_read(path_to_file())))
+      data = rsbml_graph(rsbml_read(path_to_file()))
+
+      toycon_graph = igraph.from.graphNEL(data)
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       #Setting colors according to node class
-      colors = rep(isolate(input$color_metabolites), length(names))
-      colors[grep("R", names)] = isolate(input$color_reactions)
+      color_reactions = isolate(input$color_reactions)
+      color_metabolites = isolate(input$color_metabolites)
+      net %v% "type" = ifelse(grepl("R",names), "Reaction", "Metabolite")
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
@@ -47,23 +50,37 @@ shinyServer(function(input, output) {
       }
       #Weighting edges
       else{
-        weights_edges = rep(0,length(unlist(net$val)[which(names(unlist(net$val))=="vertex.names")]))
+        #test=unlist(net$val)[which(names(unlist(net$val))=="vertex.names")]
+        test=unlist(net$val)
+        #weights_edges = rep(0,length(test))
+        weights_edges=c()
         if (isolate(input$weighting) == "w") {
           for (i in seq(1, length(net$mel))) {
             weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
           }
           edgesize = weights_edges
           edgesize = log10(weights_edges) + 0.25
+          edgesize[which(!is.finite(edgesize))] = 0.25
         }
         if (isolate(input$weighting) == "gimme"){
           system("bash gimme_wrapper.sh")
-          fluxes = read.csv("gimme_fluxes.csv",header = F, stringsAsFactors = F)         
-          reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val))=="vertex.names")][which(grepl("^R",unlist(net$val)[which(names(unlist(net$val))=="vertex.names")]))])
-          for (i in seq(1,dim(fluxes)[1],1)){
-            weights_edges[which(as.vector(unlist(net$val)) == reactions_names[i])] = fluxes[which(fluxes[,1] == reactions_names[i]),2]
+          fluxes = read.csv("gimme_fluxes.csv",header = F, stringsAsFactors = F)
+          fluxes = fluxes[-which(grepl("\\+",fluxes[,1]) | grepl("\\-",fluxes[,1])),]
+          ndata = names(data@edgeData)
+          for (i in seq(1,dim(fluxes)[1])){
+            hits = which(grepl(fluxes[i,1],ndata))
+            for (j in hits){
+              data@edgeData@data[[j]]$weight = fluxes[i,2]
+            }
           }
-          edgesize = weights_edges #produces some NAs. Look into!
-          #edgesize = log10(weights_edges) + 0.25
+          toycon_graph = igraph.from.graphNEL(data)
+          net = asNetwork(toycon_graph)
+          net %v% "type" = ifelse(grepl("R",names), "Reaction", "Metabolite")
+          reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val))=="vertex.names")][which(grepl("^R",unlist(net$val)[which(names(unlist(net$val))=="vertex.names")]))])
+          for (i in seq(1, length(net$mel))) {
+            weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+          }
+          edgesize = log10(weights_edges+abs(min(weights_edges))+1)+0.1
         }
       }
       #Plotting graph
@@ -73,8 +90,12 @@ shinyServer(function(input, output) {
         arrow.gap = 0.035,
         arrow.size = 8,
         layout.exp = 0.1,
-        color = colors,
-        edge.size = edgesize
+        #color = colors,
+        edge.size = edgesize,
+        shape = "type",
+        shape.palette = c("Reaction" = 15, "Metabolite" = 19),
+        color = "type",
+        color.palette = c("Reaction" = color_reactions, "Metabolite" = color_metabolites) 
       )
       
     })
