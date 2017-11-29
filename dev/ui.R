@@ -1,6 +1,7 @@
 
 
 
+
 # This is the user-interface definition of a Shiny web application.
 # You can find out more about building applications with Shiny here:
 #
@@ -9,6 +10,7 @@
 
 library(shiny)
 library(rsconnect)
+library(visNetwork)
 shinyUI(fluidPage(
   # Application title
   titlePanel("Toycon model"),
@@ -44,10 +46,21 @@ shinyUI(fluidPage(
         width = NULL,
         size = NULL
       ),
-      radioButtons(inputId = "weighting",label = HTML("Apply weights to edges:"), choices = c("None" = "none", "log10(stoichiometry)" = "stoichiometry", "log10(GIMME)" = "gimme")),
+      radioButtons(
+        inputId = "weighting",
+        label = HTML("Apply weights to edges:"),
+        choices = c(
+          "None" = "none",
+          "log10(stoichiometry)" = "stoichiometry",
+          "log10(GIMME)" = "gimme"
+        )
+      ),
       actionButton("update", "Update"),
-      textOutput("fluxes")
+      tableOutput(outputId = 'fluxes'),
+      width = 4
     ),
-    mainPanel(visNetworkOutput("graph"))
+    mainPanel(visNetworkOutput(
+      "graph", width = "100%", height = "20%"
+    ), width = 8)
   )
 ))
