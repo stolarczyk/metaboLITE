@@ -6,64 +6,78 @@ library(shiny)
 library(intergraph)
 library(GGally)
 library(ggplot2)
-library(sna)
 library(rsconnect)
 library(visNetwork)
 library(xtable)
 library(dplyr)
 
-
 shinyServer(function(input, output) {
   path_to_file = reactive({
     input$file$datapath
   })
+  
   observeEvent(input$update, {
-    output$graph = renderVisNetwork({
-      #reading SBML files
-      sbml_model = rsbml_read(path_to_file())
-      data = rsbml_graph((sbml_model))
-      toycon_graph = igraph.from.graphNEL(data)
-      visdata <- toVisNetworkData(toycon_graph)
-      visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
-      visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$edges$width = 2
-      visdata$edges$length = 150
-      #visdata$edges$arrows = c("from", "to")
-      net = asNetwork(toycon_graph)
-      names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
-      #Setting colors according to node class
-      color_reaction = isolate(input$color_reactions)
-      color_metabolite = isolate(input$color_metabolites)
-      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-      edges_names = names
-      #Setting names
-      for (i in seq(1, length(names))) {
-        if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-          metabolite = paste(metabolite_name, compartment, sep = "_")
-          edges_names[i] = metabolite
+    ptf = path_to_file()
+    sbml_model = rsbml_read(path_to_file())
+    data = rsbml_graph((sbml_model))
+    toycon_graph = igraph.from.graphNEL(data)
+    visdata <- toVisNetworkData(toycon_graph)
+    visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
+    visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+    visdata$edges$width = 2
+    visdata$edges$length = 150
+    #visdata$edges$arrows = c("from", "to")
+    net = asNetwork(toycon_graph)
+    names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
+    #Setting colors according to node class
+    color_reaction = "lightblue"
+    color_metabolite = "red"
+    net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+    edges_names = names
+    #Setting names
+    for (i in seq(1, length(names))) {
+      if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+        metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+        compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
+        metabolite = paste(metabolite_name, compartment, sep = "_")
+        edges_names[i] = metabolite
+      }
+      else{
+        if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+          reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+          edges_names[i] = reaction_name
         }
         else{
-          if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
-            reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
-            edges_names[i] = reaction_name
-          }
-          else{
-            edges_names[i] = "NoName"
-          }
+          edges_names[i] = "NoName"
         }
       }
-      names_dict = rbind(edges_names, names) #Names and IDs dictionary
-      visdata$nodes$label = as.vector(edges_names)
+    }
+    names_dict = rbind(edges_names, names) #Names and IDs dictionary
+    visdata$nodes$label = as.vector(edges_names)
+    output$graph = renderVisNetwork({
+      #reading SBML files
       if (isolate(input$weighting) == "none") {
         edgesize = 1
         output$fluxes = renderTable({
           
         })
+        command = paste("bash check_flux_wrapper.sh", path_to_file())
+        system(command = command)
+        fluxes = read.table("data/flux.txt")
+        flux = as.character(read.table("data/flux.txt"))
+        output$text_flux = renderText({
+          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
+        })
       }
       #Weighting edges
       else{
+        command = paste("bash check_flux_wrapper.sh", path_to_file())
+        system(command = command)
+        fluxes = read.table("data/flux.txt")
+        flux = as.character(read.table("data/flux.txt"))
+        output$text_flux = renderText({
+          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
+        })
         test = unlist(net$val)
         weights_edges = c()
         if (isolate(input$weighting) == "stoichiometry") {
@@ -74,17 +88,27 @@ shinyServer(function(input, output) {
           edgesize = log(weights_edges) + 0.25
           edgesize[which(!is.finite(edgesize))] = 0.25
           visdata$edges$width = edgesize
-          output$fluxes = renderTable({})
+          output$fluxes = renderTable({
+            
+          })
         }
         if (isolate(input$weighting) == "gimme") {
-          system("bash gimme_wrapper.sh")
+          command = paste("bash check_flux_wrapper.sh", path_to_file())
+          system(command = command)
+          fluxes = read.table("data/flux.txt")
+          flux = as.character(read.table("data/flux.txt"))
+          output$text_flux = renderText({
+            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+          })
+          command = paste("bash gimme_wrapper.sh", path_to_file())
+          system(command = command)
           fluxes = read.csv(
             "data/gimme_fluxes.csv",
             header = F,
             stringsAsFactors = F
           )
           fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
-                                   grepl("\\-", fluxes[, 1])),]
+                                   grepl("\\-", fluxes[, 1])), ]
           fluxes_output = fluxes
           colnames(fluxes_output) = c("Reaction", "Flux")
           for (i in seq(1, dim(names_dict)[2], by = 1)) {
@@ -117,16 +141,25 @@ shinyServer(function(input, output) {
           edgesize = log(abs(weights_edges)) + 1
           visdata$edges$width = edgesize
         }
-        if(isolate(input$weighting) == "gimmestoichiometry"){
+        if (isolate(input$weighting) == "gimmestoichiometry") {
+          command = paste("bash check_flux_wrapper.sh", path_to_file())
+          system(command = command)
+          fluxes = read.table("data/flux.txt")
+          flux = as.character(read.table("data/flux.txt"))
+          output$text_flux = renderText({
+            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+          })
           weights_edges = c()
-          system("bash ../gimme_wrapper.sh")
+          command = paste("bash gimme_wrapper.sh", path_to_file())
+          system(command = command)
           fluxes = read.csv(
             "data/gimme_fluxes.csv",
             header = F,
             stringsAsFactors = F
           )
-          to_del = which(grepl("\\+", fluxes[, 1]) | grepl("\\-", fluxes[, 1]))
-          fluxes = fluxes[-to_del,]
+          to_del = which(grepl("\\+", fluxes[, 1]) |
+                           grepl("\\-", fluxes[, 1]))
+          fluxes = fluxes[-to_del, ]
           fluxes_output = fluxes
           colnames(fluxes_output) = c("Reaction", "Flux")
           for (i in seq(1, dim(names_dict)[2], by = 1)) {
@@ -144,24 +177,30 @@ shinyServer(function(input, output) {
               data@edgeData@data[[j]]$flux = fluxes[i, 2]
             }
           }
-          edges_df = dplyr::mutate(visdata$edges, name = paste(from,to,sep = "|"))
-          for (i in seq(1,length(data@edgeData@data))){
-            hit = which(edges_df[,6] == ndata[i])
-            data@edgeData@data[[i]]$stoi = edges_df[hit,3]
+          edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
+          for (i in seq(1, length(data@edgeData@data))) {
+            hit = which(edges_df[, 6] == ndata[i])
+            data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
           }
-          for(i in seq(1,length(data@edgeData@data))){
+          for (i in seq(1, length(data@edgeData@data))) {
             data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$flux * data@edgeData@data[[i]]$stoi
           }
           new_df = data.frame()
-          for(i in seq(1,length(data@edgeData@data))){
+          for (i in seq(1, length(data@edgeData@data))) {
             df1 = as.data.frame(data@edgeData@data[[i]])
             df1$reaction = ndata[i]
-            new_df = merge(new_df,df1,all = T)
+            new_df = merge(new_df, df1, all = T)
           }
-          new_df = new_df[which(grepl("^R",new_df$reaction)),]
-          new_df$reaction = sapply(new_df$reaction, function(x) strsplit(x, split = "\\|")[[1]][1])
-          new_df$reaction = sapply(new_df$reaction, function(x) names_dict[1,which(names_dict[2,]==x)])
-          new_df = new_df[,c(4,3,2,1)]
+          new_df = new_df[which(grepl("^R", new_df$reaction)), ]
+          new_df$metabolite = sapply(new_df$reaction, function(x)
+            strsplit(x, split = "\\|")[[1]][2])
+          new_df$reaction = sapply(new_df$reaction, function(x)
+            strsplit(x, split = "\\|")[[1]][1])
+          new_df$reaction = sapply(new_df$reaction, function(x)
+            names_dict[1, which(names_dict[2, ] == x)])
+          new_df$metabolite = sapply(new_df$metabolite, function(x)
+            names_dict[1, which(names_dict[2, ] == x)])
+          new_df = new_df[, c(4, 5, 3, 2, 1)]
           
           output$fluxes = renderTable({
             new_df
@@ -181,6 +220,7 @@ shinyServer(function(input, output) {
           visdata$edges$width = log(abs(weights_edges))
         }
       }
+      
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(stepX = 75,
@@ -194,6 +234,37 @@ shinyServer(function(input, output) {
         visGroups(groupname = "Reaction",
                   color = color_reaction,
                   shape = "box")
+    })
+    output$Box2 = renderUI(actionButton(
+      inputId = "media",
+      label = "Change media"
+    ))
+    #Prepare select input dropdown menu of reactions to constrain in media types
+    observeEvent(input$media, {
+        choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
+        names(choices_list) = sapply(choices_list, function(x)
+          names_dict[1, which(names_dict[2, ] == x)])
+        output$Box1 = renderUI(selectInput(
+          inputId = "change_media",
+          label = "Pick reaction:",
+          choices = choices_list
+        ))
+        output$Box3 = renderUI(textInput(inputId = "bounds", label = "Type the bounds in", value = "", width = NULL, placeholder = "(lower, upper)"))
+      observeEvent(input$change_media, {
+        reaction = isolate(input$change_media)
+        input$bounds
+        cat(reaction)
+        reaction_ID = strsplit(reaction,split = "_")[[1]][2]# change bounds here
+        cat(reaction_ID)
+        command = paste("bash change_bounds_wrapper.sh", "/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/data/toycon.xml" , reaction_ID)
+        cat(command)
+        system(command = command)
+        fluxes = read.table("data/flux_bounds.txt")
+        flux = as.character(read.table("data/flux_bounds.txt"))
+        output$text_flux = renderText({
+          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+        })
+      })
     })
   })
 })

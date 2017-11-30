@@ -21,27 +21,9 @@ shinyUI(fluidPage(
         buttonLabel = "Browse...",
         placeholder = "No file selected"
       ),
-      selectInput(
-        inputId = "color_metabolites",
-        label = "Select metabolites color",
-        choices = c("lightblue", "lightgreen", "red"),
-        selected = "green",
-        multiple = FALSE,
-        selectize = TRUE,
-        
-        width = NULL,
-        size = NULL
-      ),
-      selectInput(
-        inputId = "color_reactions",
-        label = "Select reactions color",
-        choices = c("lightblue", "lightgreen", "red"),
-        selected = "red",
-        multiple = FALSE,
-        selectize = TRUE,
-        width = NULL,
-        size = NULL
-      ),
+      uiOutput("Box2"),
+      uiOutput("Box3"),
+      uiOutput("Box1"),
       radioButtons(
         inputId = "weighting",
         label = HTML("Apply weights to edges:"),
@@ -53,11 +35,13 @@ shinyUI(fluidPage(
         )
       ),
       actionButton("update", "Update"),
+      htmlOutput("text_flux"),
       tableOutput(outputId = 'fluxes'),
-      width = 4
+      width = 5
     ),
-    mainPanel(visNetworkOutput(
+    mainPanel(
+      visNetworkOutput(
       "graph", width = "100%", height = "20%"
-    ), width = 8)
+    ), width = 7)
   )
 ))
