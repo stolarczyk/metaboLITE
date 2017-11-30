@@ -3,10 +3,6 @@
 
 
 # This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
 
 library(shiny)
 library(rsconnect)
@@ -51,8 +47,9 @@ shinyUI(fluidPage(
         label = HTML("Apply weights to edges:"),
         choices = c(
           "None" = "none",
-          "log10(stoichiometry)" = "stoichiometry",
-          "log10(GIMME)" = "gimme"
+          "log(stoichiometry)" = "stoichiometry",
+          "log(GIMME)" = "gimme",
+          "GIMME&stoichiometry" = "gimmestoichiometry"
         )
       ),
       actionButton("update", "Update"),
