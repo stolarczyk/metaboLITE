@@ -1,14 +1,12 @@
 
 
 
+
 # This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
-#
-# http://shiny.rstudio.com
-#
 
 library(shiny)
-
+library(rsconnect)
+library(visNetwork)
 shinyUI(fluidPage(
   # Application title
   titlePanel("Toycon model"),
@@ -21,32 +19,35 @@ shinyUI(fluidPage(
         label = "Select model to visualize:",
         accept = ".xml",
         buttonLabel = "Browse...",
-        placeholder = "No file selected"
+        placeholder = "No file selected",
+        width = "400px"
       ),
-      selectInput(
-        inputId = "color_metabolites",
-        label = "Select metabolites color",
-        choices = c("lightgreen", "firebrick1", "lightblue"),
-        selected = "lightblue",
-        multiple = FALSE,
-        selectize = TRUE,
-        
-        width = NULL,
-        size = NULL
+      uiOutput("change_media"),
+      uiOutput("ko_rxn"),
+      uiOutput("lbound"),
+      uiOutput("ubound"),
+      uiOutput("pick_rxn"),
+      uiOutput("button_apply_media"),
+      uiOutput("pick_rxn_ko"),
+      uiOutput("button_apply_ko"),
+      radioButtons(
+        inputId = "weighting",
+        label = HTML("Apply weights to edges:"),
+        choices = c(
+          "None" = "none",
+          "log(stoichiometry)" = "stoichiometry",
+          "log(GIMME)" = "gimme",
+          "GIMME&stoichiometry" = "gimmestoichiometry"
+        )
       ),
-      selectInput(
-        inputId = "color_reactions",
-        label = "Select reactions color",
-        choices = c("lightgreen", "firebrick1", "lightblue"),
-        selected = "firebrick1",
-        multiple = FALSE,
-        selectize = TRUE,
-        width = NULL,
-        size = NULL
-      ),
-      radioButtons(inputId = "weighting",label = HTML("Apply weights to edges:"), choices = c("None" = "none", "log10(stoichiometry)" = "w", "GIMME" = "gimme")),
-      actionButton("update", "Update")
+      actionButton("update", "Update"),
+      htmlOutput("text_flux"),
+      tableOutput(outputId = 'fluxes'),
+      width = 5
     ),
-    mainPanel(plotOutput("graph"))
+    mainPanel(
+      visNetworkOutput(
+      "graph", width = "100%", height = "20%"
+    ), width = 7)
   )
 ))
