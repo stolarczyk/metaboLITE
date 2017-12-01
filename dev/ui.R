@@ -7,23 +7,22 @@
 library(shiny)
 library(rsconnect)
 library(visNetwork)
-shinyUI(fluidPage(
-  # Application title
-  titlePanel("Toycon model"),
-  
-  # Sidebar with a slider input for number of bins
-  sidebarLayout(
+library(shinythemes)
+shinyUI(navbarPage("Toycon model",theme = shinytheme("cosmo"),id = "tabs",
+  tabPanel("Visualize",
     sidebarPanel(
       fileInput(
         inputId = "file",
-        label = "Select model to visualize:",
+        label = "Select a model to visualize:",
         accept = ".xml",
         buttonLabel = "Browse...",
-        placeholder = "No file selected"
+        placeholder = "No file selected",
+        width = "500px"
       ),
-      uiOutput("Box2"),
-      uiOutput("Box3"),
-      uiOutput("Box1"),
+      
+      div(style="vertical-align:top;horizontal-align:left; width: 150px; height: 50px",uiOutput("change_media")),
+      div(style="vertical-align:top;horizontal-align:right; width: 150px;height: 60px",uiOutput("ko_rxn")),
+
       radioButtons(
         inputId = "weighting",
         label = HTML("Apply weights to edges:"),
@@ -36,12 +35,24 @@ shinyUI(fluidPage(
       ),
       actionButton("update", "Update"),
       htmlOutput("text_flux"),
-      tableOutput(outputId = 'fluxes'),
-      width = 5
+      tableOutput(outputId = 'fluxes')
     ),
     mainPanel(
       visNetworkOutput(
-      "graph", width = "100%", height = "20%"
-    ), width = 7)
-  )
+      "graph",width = "100%", height = "100%"))),
+  tabPanel("Change media",
+           sidebarPanel(
+           uiOutput("lbound"),
+           uiOutput("ubound"),
+           uiOutput("pick_rxn"),
+           uiOutput("button_apply_media"),
+           htmlOutput("text_flux_media"))),
+  tabPanel("KO reactions",   
+           sidebarPanel(
+           uiOutput("pick_ko_rxn"),
+           uiOutput("button_apply_ko"),
+           htmlOutput("text_flux_ko")),
+           mainPanel(
+             visNetworkOutput(
+               "graph_ko",width = "100%", height = "100%")))
 ))
