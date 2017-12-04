@@ -44,7 +44,7 @@ shinyUI(
         tableOutput(outputId = 'fluxes')
       ),
       mainPanel(visNetworkOutput(
-        "graph", width = "600", height = "600"
+        "graph", width = "800", height = "600"
       ))
     ),
     tabPanel(
@@ -65,7 +65,7 @@ shinyUI(
         htmlOutput("text_flux_ko")
       ),
       mainPanel(visNetworkOutput(
-        "graph_ko", width = "100%", height = "100%"
+        "graph_ko", width = "800", height = "600"
       ))
     )
   )

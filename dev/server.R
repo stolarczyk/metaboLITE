@@ -14,6 +14,7 @@ library(dplyr)
 
 
 shinyServer(function(input, output,session) {
+  setwd("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/")
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
   
@@ -311,7 +312,7 @@ shinyServer(function(input, output,session) {
           system(command = command)
           flux = as.character(read.table("data/flux_bounds.txt"))
           output$text_flux_media = renderText({
-            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
           })
         }else{
           showNotification(HTML("Wrong bounds values"),duration = 2,type = "error")
@@ -360,7 +361,6 @@ shinyServer(function(input, output,session) {
               "<b>Flux: ",
               as.character(flux[1]),
               "</b>",
-              "<br/>",
               "<br/>")
       })
       sbml_model_ko = rsbml_read(path_ko)
