@@ -12,11 +12,13 @@ library(visNetwork)
 library(xtable)
 library(dplyr)
 
-shinyServer(function(input, output) {
+
+shinyServer(function(input, output,session) {
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
+  
   path_to_file = reactive({
-    input$file$datapath
+    req(input$file$datapath)
   })
   observeEvent(input$update, {
     ptf = path_to_file()
@@ -59,7 +61,7 @@ shinyServer(function(input, output) {
     output$graph = renderVisNetwork({
       #reading SBML files
       if (isolate(input$weighting) == "none") {
-        edgesize = 1
+        edgesize = 0.75
         output$fluxes = renderTable({
           
         })
@@ -75,7 +77,6 @@ shinyServer(function(input, output) {
       else{
         command = paste("bash check_flux_wrapper.sh", path_to_file())
         system(command = command)
-        fluxes = read.table("data/flux.txt")
         flux = as.character(read.table("data/flux.txt"))
         output$text_flux = renderText({
           paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
@@ -97,7 +98,6 @@ shinyServer(function(input, output) {
         if (isolate(input$weighting) == "gimme") {
           command = paste("bash check_flux_wrapper.sh", path_to_file())
           system(command = command)
-          fluxes = read.table("data/flux.txt")
           flux = as.character(read.table("data/flux.txt"))
           output$text_flux = renderText({
             paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
@@ -105,12 +105,12 @@ shinyServer(function(input, output) {
           command = paste("bash gimme_wrapper.sh", path_to_file())
           system(command = command)
           fluxes = read.csv(
-            "data/gimme_fluxes.csv",
+            "data/fluxes_gimme.csv",
             header = F,
             stringsAsFactors = F
           )
           fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
-                                   grepl("\\-", fluxes[, 1])), ]
+                                   grepl("\\-", fluxes[, 1])),]
           fluxes_output = fluxes
           colnames(fluxes_output) = c("Reaction", "Flux")
           for (i in seq(1, dim(names_dict)[2], by = 1)) {
@@ -146,7 +146,6 @@ shinyServer(function(input, output) {
         if (isolate(input$weighting) == "gimmestoichiometry") {
           command = paste("bash check_flux_wrapper.sh", path_to_file())
           system(command = command)
-          fluxes = read.table("data/flux.txt")
           flux = as.character(read.table("data/flux.txt"))
           output$text_flux = renderText({
             paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
@@ -155,13 +154,13 @@ shinyServer(function(input, output) {
           command = paste("bash gimme_wrapper.sh", path_to_file())
           system(command = command)
           fluxes = read.csv(
-            "data/gimme_fluxes.csv",
+            "data/fluxes_gimme.csv",
             header = F,
             stringsAsFactors = F
           )
           to_del = which(grepl("\\+", fluxes[, 1]) |
                            grepl("\\-", fluxes[, 1]))
-          fluxes = fluxes[-to_del, ]
+          fluxes = fluxes[-to_del,]
           fluxes_output = fluxes
           colnames(fluxes_output) = c("Reaction", "Flux")
           for (i in seq(1, dim(names_dict)[2], by = 1)) {
@@ -191,15 +190,15 @@ shinyServer(function(input, output) {
             df1$reaction = ndata[i]
             new_df = merge(new_df, df1, all = T)
           }
-          new_df = new_df[which(grepl("^R", new_df$reaction)), ]
+          new_df = new_df[which(grepl("^R", new_df$reaction)),]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][1])
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
+            names_dict[1, which(names_dict[2,] == x)])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
+            names_dict[1, which(names_dict[2,] == x)])
           new_df = new_df[, c(4, 5, 3, 2, 1)]
           
           output$fluxes = renderTable({
@@ -227,76 +226,142 @@ shinyServer(function(input, output) {
                   stepY = 100,
                   width = 0.1) %>%
         visOptions(highlightNearest = TRUE) %>%
-        visEdges(color = "black",arrows = "from") %>%
+        visEdges(color = "black", arrows = "from") %>%
         visGroups(groupname = "Metabolite",
                   color = color_metabolite,
                   shape = "circle") %>%
         visGroups(groupname = "Reaction",
                   color = color_reaction,
-                  shape = "box") %>% 
-        visLayout(randomSeed = 123) 
+                  shape = "box") %>%
+        visLayout(randomSeed = 123)
     })
-    output$change_media = renderUI(actionButton(
-      inputId = "change_media",
-      label = "Change media",style='padding:10px;'
-    ))
+    output$change_media = renderUI(
+      actionButton(
+        inputId = "change_media",
+        label = "Change media",
+        style = 'padding:10px;'
+      )
+    )
     output$ko_rxn = renderUI(actionButton(
       inputId = "ko_rxn",
-      label = "KO reaction",style='padding:10px;'
+      label = "KO reaction",
+      style = 'padding:10px;'
     ))
     
     #Prepare select input dropdown menu of reactions to constrain in media types
     observeEvent(input$change_media, {
       showTab(inputId = "tabs", target = "Change media")
-        choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
-        names(choices_list) = sapply(choices_list, function(x)
-          names_dict[1, which(names_dict[2, ] == x)])
-        output$pick_rxn = renderUI(selectInput(
+      choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
+      names(choices_list) = sapply(choices_list, function(x)
+        names_dict[1, which(names_dict[2,] == x)])
+      output$pick_rxn = renderUI(
+        selectInput(
           inputId = "pick_rxn",
           label = "Pick reaction:",
-          choices = choices_list,width = "200px"
-        ))
-        output$lbound = renderUI(textInput(inputId = "lbound", label = "Select the lower bound:", placeholder = "Integer number", width = "200px"))
-        output$ubound = renderUI(textInput(inputId = "ubound", label = "Select the upper bound:", placeholder = "Integer number", width = "200px"))
-        output$button_apply_media = renderUI(actionButton(inputId = "apply_media", label = "Apply",style='padding:10px;'))
+          choices = choices_list,
+          width = "200px"
+        )
+      )
+      output$lbound = renderUI(
+        sliderInput(
+          inputId = "lbound",
+          min = -1000,
+          max = 1000,
+          label = "Select the lower bound:",
+          value = 0,
+          step = 10,
+          round = TRUE,
+          ticks = TRUE,
+          width = "300px"
+        )
+      )
+      output$ubound = renderUI(
+        sliderInput(
+          inputId = "ubound",
+          min = -1000,
+          max = 1000,
+          label = "Select the upper bound:",
+          value = 0,
+          step = 10,
+          round = TRUE,
+          ticks = TRUE,
+          width = "300px"
+        )
+      )
+      output$button_apply_media = renderUI(actionButton(
+        inputId = "apply_media",
+        label = "Apply",
+        style = 'padding:10px;'
+      ))
     })
-    observeEvent(input$apply_media,{
+
+    observeEvent(input$apply_media, {
+        lb = input$lbound
+        ub = input$ubound
         reaction = (input$pick_rxn)
-        reaction_ID = strsplit(reaction,split = "_")[[1]][2]
-        command = paste("bash change_bounds_wrapper.sh", "/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/data/toycon.xml" , reaction_ID, input$lbound, input$ubound)
-        system(command = command)
-        flux = as.character(read.table("data/flux_bounds.txt"))
-        output$text_flux_media = renderText({
-          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+        reaction_ID = strsplit(reaction, split = "_")[[1]][2]
+        if (lb < ub){
+          command = paste(
+            "bash change_bounds_wrapper.sh",
+            "/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/data/toycon.xml" ,
+            reaction_ID,
+            lb,
+            ub
+          )
+          system(command = command)
+          flux = as.character(read.table("data/flux_bounds.txt"))
+          output$text_flux_media = renderText({
+            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+          })
+        }else{
+          showNotification(HTML("Wrong bounds values"),duration = 2,type = "error")
+          showNotification(HTML("Lower bound must be greater than upper bound"),duration = 2)
+        }
       })
-    })
-    ###HERE
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2, ] == x)])
-      output$pick_ko_rxn = renderUI(selectInput(
-        inputId = "pick_ko_rxn",
-        label = "Pick a reaction to KO:",
-        choices = choices_list,width = "200px"
+        names_dict[1, which(names_dict[2,] == x)])
+      output$pick_ko_rxn = renderUI(
+        selectInput(
+          inputId = "pick_ko_rxn",
+          label = "Pick a reaction to KO:",
+          choices = choices_list,
+          width = "200px"
+        )
+      )
+      output$button_apply_ko = renderUI(actionButton(
+        inputId = "apply_ko",
+        label = "Apply",
+        style = 'padding:10px;'
       ))
-      output$button_apply_ko = renderUI(actionButton(inputId = "apply_ko", label = "Apply",style='padding:10px;'))
     })
-    observeEvent(input$apply_ko,{
+    observeEvent(input$apply_ko, {
       reaction = (input$pick_ko_rxn)
-      reaction_ID = strsplit(reaction,split = "_")[[1]][2]
-      command = paste("bash ko_rxn_wrapper.sh", "/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/data/toycon.xml" , reaction_ID)
+      reaction_ID = strsplit(reaction, split = "_")[[1]][2]
+      command = paste(
+        "bash ko_rxn_wrapper.sh",
+        "/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/data/toycon.xml" ,
+        reaction_ID
+      )
       system(command = command)
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "tomato"
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
-      flux = read.csv("data/flux_ko.txt",header = F,as.is = T)
+      flux = read.csv("data/flux_ko.txt",
+                      header = F,
+                      as.is = T)
       path_ko = as.character(flux[2])
       output$text_flux_ko = renderText({
-        paste("<br/>", "<b>Flux: ", as.character(flux[1]), "</b>", "<br/>", "<br/>")
+        paste("<br/>",
+              "<b>Flux: ",
+              as.character(flux[1]),
+              "</b>",
+              "<br/>",
+              "<br/>")
       })
       sbml_model_ko = rsbml_read(path_ko)
       data_ko = rsbml_graph((sbml_model_ko))
@@ -350,9 +415,14 @@ shinyServer(function(input, output) {
           visGroups(groupname = "Reaction",
                     color = color_reaction_ko,
                     shape = "box") %>%
-          visLayout(randomSeed = 123) 
+          visLayout(randomSeed = 123)
       })
     })
   })
-})
+  session$onSessionEnded(function() {
+    setwd("data")
+    file.remove(list.files(pattern = "flux*"))
+    file.remove(list.files(pattern = "*removed*"))
+  })
 
+})
