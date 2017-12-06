@@ -6,8 +6,6 @@
 # This is the user-interface definition of a Shiny web application.
 
 library(shiny)
-library(rsconnect)
-library(visNetwork)
 library(shinythemes)
 shinyUI(
   navbarPage(
