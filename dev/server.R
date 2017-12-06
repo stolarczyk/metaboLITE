@@ -337,6 +337,8 @@ shinyServer(function(input, output,session) {
       })
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
+      updateTabsetPanel(session, "tabs",
+                        selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
         names_dict[1, which(names_dict[2,] == x)])
@@ -355,6 +357,7 @@ shinyServer(function(input, output,session) {
       ))
     })
     observeEvent(input$apply_ko, {
+
       reaction = (input$pick_ko_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       command = paste(
