@@ -103,13 +103,21 @@ shinyServer(function(input, output,session) {
           output$text_flux = renderText({
             paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
           })
-          command = paste("bash gimme_wrapper.sh", path_to_file())
-          system(command = command)
-          fluxes = read.csv(
-            "data/fluxes_gimme.csv",
-            header = F,
-            stringsAsFactors = F
-          )
+          if (file.exists("data/fluxes_gimme.csv")) {
+            fluxes = read.csv(
+              "data/fluxes_gimme.csv",
+              header = F,
+              stringsAsFactors = F
+            )
+          }else{
+            command = paste("bash gimme_wrapper.sh", path_to_file())
+            system(command = command)
+            fluxes = read.csv(
+              "data/fluxes_gimme.csv",
+              header = F,
+              stringsAsFactors = F
+            )
+          }
           fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
                                    grepl("\\-", fluxes[, 1])),]
           fluxes_output = fluxes
@@ -152,13 +160,21 @@ shinyServer(function(input, output,session) {
             paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
           })
           weights_edges = c()
-          command = paste("bash gimme_wrapper.sh", path_to_file())
-          system(command = command)
-          fluxes = read.csv(
-            "data/fluxes_gimme.csv",
-            header = F,
-            stringsAsFactors = F
-          )
+          if (file.exists("data/fluxes_gimme.csv")) {
+            fluxes = read.csv(
+              "data/fluxes_gimme.csv",
+              header = F,
+              stringsAsFactors = F
+            )
+          }else{
+            command = paste("bash gimme_wrapper.sh", path_to_file())
+            system(command = command)
+            fluxes = read.csv(
+              "data/fluxes_gimme.csv",
+              header = F,
+              stringsAsFactors = F
+            )
+          }
           to_del = which(grepl("\\+", fluxes[, 1]) |
                            grepl("\\-", fluxes[, 1]))
           fluxes = fluxes[-to_del,]
@@ -227,7 +243,7 @@ shinyServer(function(input, output,session) {
                   stepY = 100,
                   width = 0.1) %>%
         visOptions(highlightNearest = TRUE) %>%
-        visEdges(color = "black", arrows = "from") %>%
+        visEdges(color = "black", arrows = "to") %>%
         visGroups(groupname = "Metabolite",
                   color = color_metabolite,
                   shape = "circle") %>%

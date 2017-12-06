@@ -41,11 +41,12 @@ shinyUI(
         ),
         actionButton("update", "Update"),
         htmlOutput("text_flux"),
-        tableOutput(outputId = 'fluxes')
+        tableOutput(outputId = 'fluxes'),
+        width = 5
       ),
       mainPanel(visNetworkOutput(
-        "graph", width = "800", height = "600"
-      ))
+        "graph", width = "700", height = "600"
+      ),width = 7)
     ),
     tabPanel(
       "Change media",
