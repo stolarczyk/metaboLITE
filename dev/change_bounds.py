@@ -2,8 +2,9 @@ import cobra
 import sys
 
 toycon = cobra.io.read_sbml_model(sys.argv[1])
-
-toycon.reactions.get_by_id(sys.argv[2]).bounds = (-1, 100)
+lower = int(sys.argv[3])
+upper = int(sys.argv[4])
+toycon.reactions.get_by_id(sys.argv[2]).bounds = (lower, upper)
 
 flux = toycon.optimize().f
 
