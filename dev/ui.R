@@ -3,11 +3,13 @@
 
 
 
+
 # This is the user-interface definition of a Shiny web application.
 
 library(shiny)
 library(shinythemes)
 library(visNetwork)
+library(shinyjs)
 shinyUI(
   navbarPage(
     "Toycon model",
@@ -33,9 +35,9 @@ shinyUI(
           label = HTML("Apply weights to edges:"),
           choices = c(
             "None" = "none",
-            "log(stoichiometry)" = "stoichiometry",
-            "log(GIMME)" = "gimme",
-            "GIMME&stoichiometry" = "gimmestoichiometry"
+            "log2(stoichiometry)" = "stoichiometry",
+            "log2(GIMME)" = "gimme",
+            "log2(GIMME & stoichiometry)" = "gimmestoichiometry"
           )
         ),
         actionButton("update", "Update"),
@@ -45,14 +47,14 @@ shinyUI(
       ),
       mainPanel(visNetworkOutput(
         "graph", width = "700", height = "600"
-      ),width = 7)
+      ), width = 7)
     ),
     tabPanel(
       "Change media",
       sidebarPanel(
+        uiOutput("pick_rxn"),
         uiOutput("lbound"),
         uiOutput("ubound"),
-        uiOutput("pick_rxn"),
         uiOutput("button_apply_media"),
         htmlOutput("text_flux_media")
       )
