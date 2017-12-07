@@ -7,6 +7,7 @@
 
 library(shiny)
 library(shinythemes)
+library(visNetwork)
 shinyUI(
   navbarPage(
     "Toycon model",

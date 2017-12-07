@@ -8,6 +8,7 @@ library(ggplot2)
 library(visNetwork)
 library(xtable)
 library(dplyr)
+library(sna)
 
 
 shinyServer(function(input, output,session) {
@@ -190,6 +191,7 @@ shinyServer(function(input, output,session) {
               data@edgeData@data[[j]]$flux = fluxes[i, 2]
             }
           }
+
           edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
           for (i in seq(1, length(data@edgeData@data))) {
             hit = which(edges_df[, 6] == ndata[i])
@@ -204,11 +206,16 @@ shinyServer(function(input, output,session) {
             df1$reaction = ndata[i]
             new_df = merge(new_df, df1, all = T)
           }
-          new_df = new_df[which(grepl("^R", new_df$reaction)),]
+          selection = union(which(grepl("^R_", new_df$reaction)),which(grepl("\\|R_E", new_df$reaction)))
+          new_df = new_df[selection,]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][1])
+          rotate = which(grepl("M_",new_df$reaction))
+          cache = new_df[rotate,"reaction"]
+          new_df[rotate,"reaction"] = new_df[rotate,"metabolite"]
+          new_df[rotate,"metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
             names_dict[1, which(names_dict[2,] == x)])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
@@ -225,7 +232,7 @@ shinyServer(function(input, output,session) {
           net = asNetwork(toycon_graph)
           net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
           reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
-                                                              "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
+                                                              "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                          "vertex.names")]))])
           for (i in seq(1, length(net$mel))) {
             weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
