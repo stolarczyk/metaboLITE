@@ -3,6 +3,6 @@ cwd=$(pwd)
 cd ~/PycharmProjects/uva_oldcobra/
 source bin/activate
 python -W ignore runGIMME.py $1
-mv gimme_fluxes.csv $cwd/data
+mv fluxes_gimme.csv $cwd/data
 deactivate
 
