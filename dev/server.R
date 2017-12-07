@@ -69,7 +69,7 @@ shinyServer(function(input, output, session) {
         fluxes = read.table("data/flux.txt")
         flux = as.character(read.table("data/flux.txt"))
         output$text_flux = renderText({
-          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
+          paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
         })
       }
       #Weighting edges
@@ -80,7 +80,7 @@ shinyServer(function(input, output, session) {
         output$text_flux = renderText({
           paste("<br/>",
                 "<br/>",
-                "<b>Flux: ",
+                "<b>Objective value: ",
                 flux,
                 "</b>",
                 "<br/>",
@@ -148,7 +148,7 @@ shinyServer(function(input, output, session) {
           system(command = command)
           flux = as.character(read.table("data/flux.txt"))
           output$text_flux = renderText({
-            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
           })
           if (file.exists("data/fluxes_gimme.csv")) {
             fluxes = read.csv(
@@ -207,7 +207,7 @@ shinyServer(function(input, output, session) {
           system(command = command)
           flux = as.character(read.table("data/flux.txt"))
           output$text_flux = renderText({
-            paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>", "<br/>")
+            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
           })
           weights_edges = c()
           if (file.exists("data/fluxes_gimme.csv")) {
@@ -384,7 +384,7 @@ shinyServer(function(input, output, session) {
         system(command = command)
         flux = as.character(read.table("data/flux_bounds.txt"))
         output$text_flux_media = renderText({
-          paste("<br/>", "<b>Flux: ", flux, "</b>", "<br/>")
+          paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
         })
       } else{
         showNotification(
@@ -441,7 +441,7 @@ shinyServer(function(input, output, session) {
       path_ko = as.character(flux[2])
       output$text_flux_ko = renderText({
         paste("<br/>",
-              "<b>Flux: ",
+              "<b>Objective value: ",
               as.character(flux[1]),
               "</b>",
               "<br/>")
