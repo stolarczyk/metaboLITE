@@ -9,9 +9,11 @@ library(visNetwork)
 library(xtable)
 library(dplyr)
 library(sna)
-
+library(shinyBS)
+library(rPython)
 
 shinyServer(function(input, output, session) {
+  addPopover(session = session,id = "weighting", title = "Weighting", content = "Greater flux through reactions will be shown as thicker edges of", placement = "right", trigger = "hover")
   setwd("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/")
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
@@ -29,7 +31,6 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$edges$width = 2
     visdata$edges$length = 150
-    #visdata$edges$arrows = c("from", "to")
     net = asNetwork(toycon_graph)
     names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
     #Setting colors according to node class
@@ -64,19 +65,16 @@ shinyServer(function(input, output, session) {
         output$fluxes = renderTable({
           
         })
-        command = paste("bash check_flux_wrapper.sh", path_to_file())
-        system(command = command)
-        fluxes = read.table("data/flux.txt")
-        flux = as.character(read.table("data/flux.txt"))
+        python.load("check_flux.py")
+        flux=python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
         })
       }
       #Weighting edges
       else{
-        command = paste("bash check_flux_wrapper.sh", path_to_file())
-        system(command = command)
-        flux = as.character(read.table("data/flux.txt"))
+        python.load("check_flux.py")
+        flux=python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>",
                 "<br/>",
@@ -143,154 +141,154 @@ shinyServer(function(input, output, session) {
           
           
         }
-        if (isolate(input$weighting) == "gimme") {
-          command = paste("bash check_flux_wrapper.sh", path_to_file())
-          system(command = command)
-          flux = as.character(read.table("data/flux.txt"))
-          output$text_flux = renderText({
-            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
-          })
-          if (file.exists("data/fluxes_gimme.csv")) {
-            fluxes = read.csv(
-              "data/fluxes_gimme.csv",
-              header = F,
-              stringsAsFactors = F
-            )
-          } else{
-            command = paste("bash gimme_wrapper.sh", path_to_file())
-            system(command = command)
-            fluxes = read.csv(
-              "data/fluxes_gimme.csv",
-              header = F,
-              stringsAsFactors = F
-            )
-          }
-          fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
-                                   grepl("\\-", fluxes[, 1])), ]
-          fluxes_output = fluxes
-          colnames(fluxes_output) = c("Reaction", "Flux")
-          for (i in seq(1, dim(names_dict)[2], by = 1)) {
-            #Mapping nodes IDs to names for table displaying purposes
-            if (any(which(fluxes_output[, 1] == names_dict[2, i])))
-              fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
-          }
-          output$fluxes = renderTable({
-            fluxes_output
-          }, caption = "GIMME fluxes",
-          caption.placement = getOption("xtable.caption.placement", "top"),
-          caption.width = getOption("xtable.caption.width", NULL))
-          ndata = names(data@edgeData)
-          for (i in seq(1, dim(fluxes)[1])) {
-            hits = which(grepl(fluxes[i, 1], ndata))
-            for (j in hits) {
-              data@edgeData@data[[j]]$weight = fluxes[i, 2]
-            }
-          }
-          
-          toycon_graph = igraph.from.graphNEL(data)
-          net = asNetwork(toycon_graph)
-          net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-          reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
-                                                              "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
-                                                                                                                         "vertex.names")]))])
-          for (i in seq(1, length(net$mel))) {
-            weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
-          }
-          edgesize = log(abs(weights_edges)) + 1
-          visdata$edges$width = edgesize
-        }
-        if (isolate(input$weighting) == "gimmestoichiometry") {
-          new_df = c()
-          edges_df = c()
-          weights_edges = c()
-          command = paste("bash check_flux_wrapper.sh", path_to_file())
-          system(command = command)
-          flux = as.character(read.table("data/flux.txt"))
-          output$text_flux = renderText({
-            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
-          })
-          weights_edges = c()
-          if (file.exists("data/fluxes_gimme.csv")) {
-            fluxes = read.csv(
-              "data/fluxes_gimme.csv",
-              header = F,
-              stringsAsFactors = F
-            )
-          } else{
-            command = paste("bash gimme_wrapper.sh", path_to_file())
-            system(command = command)
-            fluxes = read.csv(
-              "data/fluxes_gimme.csv",
-              header = F,
-              stringsAsFactors = F
-            )
-          }
-          to_del = which(grepl("\\+", fluxes[, 1]) |
-                           grepl("\\-", fluxes[, 1]))
-          fluxes = fluxes[-to_del, ]
-          fluxes_output = fluxes
-          colnames(fluxes_output) = c("Reaction", "Flux")
-          for (i in seq(1, dim(names_dict)[2], by = 1)) {
-            #Mapping nodes IDs to names for table displaying purposes
-            if (any(which(fluxes_output[, 1] == names_dict[2, i])))
-              fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
-          }
-          
-          ndata = names(data@edgeData)
-          for (i in seq(1, dim(fluxes)[1])) {
-            hits = which(grepl(fluxes[i, 1], ndata))
-            for (j in hits) {
-              data@edgeData@data[[j]]$flux = fluxes[i, 2]
-            }
-          }
-          
-          edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
-          for (i in seq(1, length(data@edgeData@data))) {
-            hit = which(edges_df[, 6] == ndata[i])
-            data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
-          }
-          for (i in seq(1, length(data@edgeData@data))) {
-            data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$flux * data@edgeData@data[[i]]$stoi
-          }
-          new_df = data.frame()
-          for (i in seq(1, length(data@edgeData@data))) {
-            df1 = as.data.frame(data@edgeData@data[[i]])
-            df1$reaction = ndata[i]
-            new_df = merge(new_df, df1, all = T)
-          }
-          selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-          new_df = new_df[selection, ]
-          new_df$metabolite = sapply(new_df$reaction, function(x)
-            strsplit(x, split = "\\|")[[1]][2])
-          new_df$reaction = sapply(new_df$reaction, function(x)
-            strsplit(x, split = "\\|")[[1]][1])
-          rotate = which(grepl("M_", new_df$reaction))
-          cache = new_df[rotate, "reaction"]
-          new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
-          new_df[rotate, "metabolite"] = cache
-          new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
-          new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
-          new_df = new_df[, c(4, 5, 3, 2, 1)]
-          
-          output$fluxes = renderTable({
-            new_df
-          }, caption = "GIMME fluxes & stoichiometry",
-          caption.placement = getOption("xtable.caption.placement", "top"),
-          caption.width = getOption("xtable.caption.width", NULL))
-          
-          toycon_graph = igraph.from.graphNEL(data)
-          net = asNetwork(toycon_graph)
-          net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-          reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
-                                                              "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
-                                                                                                                          "vertex.names")]))])
-          for (i in seq(1, length(net$mel))) {
-            weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
-          }
-          visdata$edges$width = log(abs(weights_edges))
-        }
+        # if (isolate(input$weighting) == "gimme") {
+        #   command = paste("bash check_flux_wrapper.sh", path_to_file())
+        #   system(command = command)
+        #   flux = as.character(read.table("data/flux.txt"))
+        #   output$text_flux = renderText({
+        #     paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
+        #   })
+        #   if (file.exists("data/fluxes_gimme.csv")) {
+        #     fluxes = read.csv(
+        #       "data/fluxes_gimme.csv",
+        #       header = F,
+        #       stringsAsFactors = F
+        #     )
+        #   } else{
+        #     command = paste("bash gimme_wrapper.sh", path_to_file())
+        #     system(command = command)
+        #     fluxes = read.csv(
+        #       "data/fluxes_gimme.csv",
+        #       header = F,
+        #       stringsAsFactors = F
+        #     )
+        #   }
+        #   fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
+        #                            grepl("\\-", fluxes[, 1])), ]
+        #   fluxes_output = fluxes
+        #   colnames(fluxes_output) = c("Reaction", "Flux")
+        #   for (i in seq(1, dim(names_dict)[2], by = 1)) {
+        #     #Mapping nodes IDs to names for table displaying purposes
+        #     if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+        #       fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+        #   }
+        #   output$fluxes = renderTable({
+        #     fluxes_output
+        #   }, caption = "GIMME fluxes",
+        #   caption.placement = getOption("xtable.caption.placement", "top"),
+        #   caption.width = getOption("xtable.caption.width", NULL))
+        #   ndata = names(data@edgeData)
+        #   for (i in seq(1, dim(fluxes)[1])) {
+        #     hits = which(grepl(fluxes[i, 1], ndata))
+        #     for (j in hits) {
+        #       data@edgeData@data[[j]]$weight = fluxes[i, 2]
+        #     }
+        #   }
+        #   
+        #   toycon_graph = igraph.from.graphNEL(data)
+        #   net = asNetwork(toycon_graph)
+        #   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+        #   reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
+        #                                                       "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
+        #                                                                                                                  "vertex.names")]))])
+        #   for (i in seq(1, length(net$mel))) {
+        #     weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+        #   }
+        #   edgesize = log(abs(weights_edges)) + 1
+        #   visdata$edges$width = edgesize
+        # }
+        # if (isolate(input$weighting) == "gimmestoichiometry") {
+        #   new_df = c()
+        #   edges_df = c()
+        #   weights_edges = c()
+        #   command = paste("bash check_flux_wrapper.sh", path_to_file())
+        #   system(command = command)
+        #   flux = as.character(read.table("data/flux.txt"))
+        #   output$text_flux = renderText({
+        #     paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
+        #   })
+        #   weights_edges = c()
+        #   if (file.exists("data/fluxes_gimme.csv")) {
+        #     fluxes = read.csv(
+        #       "data/fluxes_gimme.csv",
+        #       header = F,
+        #       stringsAsFactors = F
+        #     )
+        #   } else{
+        #     command = paste("bash gimme_wrapper.sh", path_to_file())
+        #     system(command = command)
+        #     fluxes = read.csv(
+        #       "data/fluxes_gimme.csv",
+        #       header = F,
+        #       stringsAsFactors = F
+        #     )
+        #   }
+        #   to_del = which(grepl("\\+", fluxes[, 1]) |
+        #                    grepl("\\-", fluxes[, 1]))
+        #   fluxes = fluxes[-to_del, ]
+        #   fluxes_output = fluxes
+        #   colnames(fluxes_output) = c("Reaction", "Flux")
+        #   for (i in seq(1, dim(names_dict)[2], by = 1)) {
+        #     #Mapping nodes IDs to names for table displaying purposes
+        #     if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+        #       fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+        #   }
+        #   
+        #   ndata = names(data@edgeData)
+        #   for (i in seq(1, dim(fluxes)[1])) {
+        #     hits = which(grepl(fluxes[i, 1], ndata))
+        #     for (j in hits) {
+        #       data@edgeData@data[[j]]$flux = fluxes[i, 2]
+        #     }
+        #   }
+        #   
+        #   edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
+        #   for (i in seq(1, length(data@edgeData@data))) {
+        #     hit = which(edges_df[, 6] == ndata[i])
+        #     data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
+        #   }
+        #   for (i in seq(1, length(data@edgeData@data))) {
+        #     data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$flux * data@edgeData@data[[i]]$stoi
+        #   }
+        #   new_df = data.frame()
+        #   for (i in seq(1, length(data@edgeData@data))) {
+        #     df1 = as.data.frame(data@edgeData@data[[i]])
+        #     df1$reaction = ndata[i]
+        #     new_df = merge(new_df, df1, all = T)
+        #   }
+        #   selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
+        #   new_df = new_df[selection, ]
+        #   new_df$metabolite = sapply(new_df$reaction, function(x)
+        #     strsplit(x, split = "\\|")[[1]][2])
+        #   new_df$reaction = sapply(new_df$reaction, function(x)
+        #     strsplit(x, split = "\\|")[[1]][1])
+        #   rotate = which(grepl("M_", new_df$reaction))
+        #   cache = new_df[rotate, "reaction"]
+        #   new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
+        #   new_df[rotate, "metabolite"] = cache
+        #   new_df$reaction = sapply(new_df$reaction, function(x)
+        #     names_dict[1, which(names_dict[2, ] == x)])
+        #   new_df$metabolite = sapply(new_df$metabolite, function(x)
+        #     names_dict[1, which(names_dict[2, ] == x)])
+        #   new_df = new_df[, c(4, 5, 3, 2, 1)]
+        #   
+        #   output$fluxes = renderTable({
+        #     new_df
+        #   }, caption = "GIMME fluxes & stoichiometry",
+        #   caption.placement = getOption("xtable.caption.placement", "top"),
+        #   caption.width = getOption("xtable.caption.width", NULL))
+        #   
+        #   toycon_graph = igraph.from.graphNEL(data)
+        #   net = asNetwork(toycon_graph)
+        #   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+        #   reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
+        #                                                       "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
+        #                                                                                                                   "vertex.names")]))])
+        #   for (i in seq(1, length(net$mel))) {
+        #     weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+        #   }
+        #   visdata$edges$width = log(abs(weights_edges))
+        # }
       }
       
       #Plotting graph
@@ -308,18 +306,17 @@ shinyServer(function(input, output, session) {
                   shape = "box") %>%
         visLayout(randomSeed = 123)
     })
-    output$change_media = renderUI(
-      actionButton(
+    output$change_media = renderUI(popify(bsButton(
         inputId = "change_media",
-        label = "Change media",
-        style = 'padding:10px;'
-      )
+        label = "Change media"
+      ),title = "Creates the \"Change media\" tab", content = "Simulate model growth media changes by manipulating the exchange reactions bounds",placement = "right",trigger = "hover")
     )
-    output$ko_rxn = renderUI(actionButton(
+    
+    output$ko_rxn = renderUI(popify(bsButton(
       inputId = "ko_rxn",
-      label = "KO reaction",
-      style = 'padding:10px;'
-    ))
+      label = "KO reaction"
+    ),title = "Creates the \"Reaction KO\" tab", content = "Simulate reaction Knockouts (KOs) and visualize the model",placement = "right",trigger = "hover")
+    )
     
     #Prepare select input dropdown menu of reactions to constrain in media types
     observeEvent(input$change_media, {

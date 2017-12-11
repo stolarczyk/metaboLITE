@@ -9,6 +9,7 @@
 library(shiny)
 library(shinythemes)
 library(visNetwork)
+library(shinyBS)
 
 shinyUI(
   navbarPage(
@@ -27,20 +28,19 @@ shinyUI(
           width = "500px"
         ),
         
-        div(style = "vertical-align:top;horizontal-align:left; width: 150px; height: 50px", uiOutput("change_media")),
-        div(style = "vertical-align:top;horizontal-align:right; width: 150px;height: 60px", uiOutput("ko_rxn")),
-        
+        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
+        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
+
         radioButtons(
           inputId = "weighting",
-          label = HTML("Apply weights to edges:"),
+          label = HTML("Visualize flux on the graph:"),
           choices = c(
             "None" = "none",
-            "log2(stoichiometry)" = "stoichiometry",
-            "log2(GIMME)" = "gimme",
-            "log2(GIMME & stoichiometry)" = "gimmestoichiometry"
-          )
+            "log2(stoichiometry)" = "stoichiometry"
+          ),width = "50%"
         ),
-        actionButton("update", "Update"),
+        
+        actionButton("update", "Apply", size = "default"),
         htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
         width = 5
