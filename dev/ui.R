@@ -76,7 +76,7 @@ shinyUI(
       "KO reactions",
       sidebarPanel(
         uiOutput("pick_ko_rxn"),
-        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("button_apply_ko")),
+        div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
         div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
         htmlOutput("text_flux_ko"),
         tableOutput(outputId = 'fluxes_ko')

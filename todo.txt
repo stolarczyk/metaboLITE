@@ -1,0 +1,12 @@
+- packageability: DONE
+- no GIMME: DONE
+- popup help tags: DONE?
+- textbooky model layout: DONE?
+
+
+- Emphasize main reactions by changing text size/bolding names: DONE
+- popup help tags launched by question marks or double click on the button
+- layout similar to the one in the paper
+- reset as a button: DONE
+- predefined media changing + popup tags with their specifications: UI DONE
+- load model from saved variable, not file: DONE
