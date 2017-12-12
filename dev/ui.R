@@ -64,7 +64,8 @@ shinyUI(
       sidebarPanel(
         uiOutput("pick_ko_rxn"),
         uiOutput("button_apply_ko"),
-        htmlOutput("text_flux_ko")
+        htmlOutput("text_flux_ko"),
+        tableOutput(outputId = 'fluxes_ko')
       ),
       mainPanel(visNetworkOutput(
         "graph_ko", width = "800", height = "600"

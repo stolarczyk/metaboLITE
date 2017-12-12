@@ -75,7 +75,8 @@ shinyServer(function(input, output, session) {
         }
       }
     }
-    edges_names=sapply(edges_names, function(x) fill_blank(x,max(nchar(edges_names))))
+    edges_names = sapply(edges_names, function(x)
+      fill_blank(x, max(nchar(edges_names))))
     names_dict = rbind(edges_names, names) #Names and IDs dictionary
     visdata$nodes$label = as.vector(edges_names)
     output$graph = renderVisNetwork({
@@ -109,7 +110,6 @@ shinyServer(function(input, output, session) {
         weights_edges = c()
         if (isolate(input$weighting) == "stoichiometry") {
           ndata = names(data@edgeData)
-          
           edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
           for (i in seq(1, length(data@edgeData@data))) {
             hit = which(edges_df[, 6] == ndata[i])
@@ -125,7 +125,7 @@ shinyServer(function(input, output, session) {
             new_df = merge(new_df, df1, all = T)
           }
           selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-          new_df = new_df[selection,]
+          new_df = new_df[selection, ]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
@@ -135,9 +135,9 @@ shinyServer(function(input, output, session) {
           new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
           new_df[rotate, "metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2,] == x)])
+            names_dict[1, which(names_dict[2, ] == x)])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2,] == x)])
+            names_dict[1, which(names_dict[2, ] == x)])
           new_df = new_df[, c(3, 4, 2)]
           
           output$fluxes = renderTable({
@@ -157,168 +157,26 @@ shinyServer(function(input, output, session) {
             weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
           }
           visdata$edges$width = log(abs(weights_edges))
-          
-          
-          
         }
-        # if (isolate(input$weighting) == "gimme") {
-        #   command = paste("bash check_flux_wrapper.sh", path_to_file())
-        #   system(command = command)
-        #   flux = as.character(read.table("data/flux.txt"))
-        #   output$text_flux = renderText({
-        #     paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
-        #   })
-        #   if (file.exists("data/fluxes_gimme.csv")) {
-        #     fluxes = read.csv(
-        #       "data/fluxes_gimme.csv",
-        #       header = F,
-        #       stringsAsFactors = F
-        #     )
-        #   } else{
-        #     command = paste("bash gimme_wrapper.sh", path_to_file())
-        #     system(command = command)
-        #     fluxes = read.csv(
-        #       "data/fluxes_gimme.csv",
-        #       header = F,
-        #       stringsAsFactors = F
-        #     )
-        #   }
-        #   fluxes = fluxes[-which(grepl("\\+", fluxes[, 1]) |
-        #                            grepl("\\-", fluxes[, 1])), ]
-        #   fluxes_output = fluxes
-        #   colnames(fluxes_output) = c("Reaction", "Flux")
-        #   for (i in seq(1, dim(names_dict)[2], by = 1)) {
-        #     #Mapping nodes IDs to names for table displaying purposes
-        #     if (any(which(fluxes_output[, 1] == names_dict[2, i])))
-        #       fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
-        #   }
-        #   output$fluxes = renderTable({
-        #     fluxes_output
-        #   }, caption = "GIMME fluxes",
-        #   caption.placement = getOption("xtable.caption.placement", "top"),
-        #   caption.width = getOption("xtable.caption.width", NULL))
-        #   ndata = names(data@edgeData)
-        #   for (i in seq(1, dim(fluxes)[1])) {
-        #     hits = which(grepl(fluxes[i, 1], ndata))
-        #     for (j in hits) {
-        #       data@edgeData@data[[j]]$weight = fluxes[i, 2]
-        #     }
-        #   }
-        #
-        #   toycon_graph = igraph.from.graphNEL(data)
-        #   net = asNetwork(toycon_graph)
-        #   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-        #   reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
-        #                                                       "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
-        #                                                                                                                  "vertex.names")]))])
-        #   for (i in seq(1, length(net$mel))) {
-        #     weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
-        #   }
-        #   edgesize = log(abs(weights_edges)) + 1
-        #   visdata$edges$width = edgesize
-        # }
-        # if (isolate(input$weighting) == "gimmestoichiometry") {
-        #   new_df = c()
-        #   edges_df = c()
-        #   weights_edges = c()
-        #   command = paste("bash check_flux_wrapper.sh", path_to_file())
-        #   system(command = command)
-        #   flux = as.character(read.table("data/flux.txt"))
-        #   output$text_flux = renderText({
-        #     paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>", "<br/>")
-        #   })
-        #   weights_edges = c()
-        #   if (file.exists("data/fluxes_gimme.csv")) {
-        #     fluxes = read.csv(
-        #       "data/fluxes_gimme.csv",
-        #       header = F,
-        #       stringsAsFactors = F
-        #     )
-        #   } else{
-        #     command = paste("bash gimme_wrapper.sh", path_to_file())
-        #     system(command = command)
-        #     fluxes = read.csv(
-        #       "data/fluxes_gimme.csv",
-        #       header = F,
-        #       stringsAsFactors = F
-        #     )
-        #   }
-        #   to_del = which(grepl("\\+", fluxes[, 1]) |
-        #                    grepl("\\-", fluxes[, 1]))
-        #   fluxes = fluxes[-to_del, ]
-        #   fluxes_output = fluxes
-        #   colnames(fluxes_output) = c("Reaction", "Flux")
-        #   for (i in seq(1, dim(names_dict)[2], by = 1)) {
-        #     #Mapping nodes IDs to names for table displaying purposes
-        #     if (any(which(fluxes_output[, 1] == names_dict[2, i])))
-        #       fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
-        #   }
-        #
-        #   ndata = names(data@edgeData)
-        #   for (i in seq(1, dim(fluxes)[1])) {
-        #     hits = which(grepl(fluxes[i, 1], ndata))
-        #     for (j in hits) {
-        #       data@edgeData@data[[j]]$flux = fluxes[i, 2]
-        #     }
-        #   }
-        #
-        #   edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
-        #   for (i in seq(1, length(data@edgeData@data))) {
-        #     hit = which(edges_df[, 6] == ndata[i])
-        #     data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
-        #   }
-        #   for (i in seq(1, length(data@edgeData@data))) {
-        #     data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$flux * data@edgeData@data[[i]]$stoi
-        #   }
-        #   new_df = data.frame()
-        #   for (i in seq(1, length(data@edgeData@data))) {
-        #     df1 = as.data.frame(data@edgeData@data[[i]])
-        #     df1$reaction = ndata[i]
-        #     new_df = merge(new_df, df1, all = T)
-        #   }
-        #   selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-        #   new_df = new_df[selection, ]
-        #   new_df$metabolite = sapply(new_df$reaction, function(x)
-        #     strsplit(x, split = "\\|")[[1]][2])
-        #   new_df$reaction = sapply(new_df$reaction, function(x)
-        #     strsplit(x, split = "\\|")[[1]][1])
-        #   rotate = which(grepl("M_", new_df$reaction))
-        #   cache = new_df[rotate, "reaction"]
-        #   new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
-        #   new_df[rotate, "metabolite"] = cache
-        #   new_df$reaction = sapply(new_df$reaction, function(x)
-        #     names_dict[1, which(names_dict[2, ] == x)])
-        #   new_df$metabolite = sapply(new_df$metabolite, function(x)
-        #     names_dict[1, which(names_dict[2, ] == x)])
-        #   new_df = new_df[, c(4, 5, 3, 2, 1)]
-        #
-        #   output$fluxes = renderTable({
-        #     new_df
-        #   }, caption = "GIMME fluxes & stoichiometry",
-        #   caption.placement = getOption("xtable.caption.placement", "top"),
-        #   caption.width = getOption("xtable.caption.width", NULL))
-        #
-        #   toycon_graph = igraph.from.graphNEL(data)
-        #   net = asNetwork(toycon_graph)
-        #   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-        #   reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
-        #                                                       "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
-        #                                                                                                                   "vertex.names")]))])
-        #   for (i in seq(1, length(net$mel))) {
-        #     weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
-        #   }
-        #   visdata$edges$width = log(abs(weights_edges))
-        # }
       }
       coords = read.csv("data/textbooky_coords.csv")
-      visdata$nodes = cbind(visdata$nodes,coords)
+      visdata$nodes = cbind(visdata$nodes, coords)
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(stepX = 75,
                   stepY = 100,
                   width = 0.1) %>%
         visOptions(highlightNearest = TRUE) %>%
-        visEdges(color = "black", arrows = "to",smooth = list(enabled = TRUE, type = "vertical",roundness = 0.1,forceDirection = "vertical")) %>%
+        visEdges(
+          color = "black",
+          arrows = "to",
+          smooth = list(
+            enabled = TRUE,
+            type = "vertical",
+            roundness = 0.1,
+            forceDirection = "vertical"
+          )
+        ) %>%
         # visNodes(fixed = T) %>%
         visGroups(groupname = "Metabolite",
                   color = color_metabolite,
@@ -327,7 +185,11 @@ shinyServer(function(input, output, session) {
                   color = color_reaction,
                   shape = "box") %>%
         visLayout(randomSeed = 1) %>%
-        visPhysics(barnesHut = list(springLength = 200, springConstant = 0,gravitationalConstant = 0))
+        visPhysics(barnesHut = list(
+          springLength = 200,
+          springConstant = 0,
+          gravitationalConstant = 0
+        ))
     })
     output$change_media = renderUI(
       popify(
@@ -356,7 +218,7 @@ shinyServer(function(input, output, session) {
       showTab(inputId = "tabs", target = "Change media")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)])
+        names_dict[1, which(names_dict[2, ] == x)])
       output$pick_rxn = renderUI(
         selectInput(
           inputId = "pick_rxn",
@@ -404,9 +266,9 @@ shinyServer(function(input, output, session) {
       reaction = (input$pick_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       if (lb < ub) {
-        python.assign( "lb", lb )
-        python.assign( "ub", ub )
-        python.assign( "reaction_ID", reaction_ID )
+        python.assign("lb", lb)
+        python.assign("ub", ub)
+        python.assign("reaction_ID", reaction_ID)
         python.load("change_bounds.py")
         flux = python.get(var.name = "flux")
         output$text_flux_media = renderText({
@@ -432,7 +294,9 @@ shinyServer(function(input, output, session) {
                         selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)])
+        names_dict[1, which(names_dict[2, ] == x)])
+      choices_list[[length(choices_list) + 1]] = "R_Reset"
+      names(choices_list)[length(choices_list)] = "Reset"
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
@@ -450,10 +314,26 @@ shinyServer(function(input, output, session) {
     observeEvent(input$apply_ko, {
       reaction = (input$pick_ko_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
-      python.assign( "reaction_ID", reaction_ID )
-      python.load("ko_rxn.py")
+      python.assign("reaction_ID", reaction_ID)
+      python.load("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/ko_rxn.py")
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
+      fluxes = python.get(var.name = "fluxes")
+  
+      fluxes_output = t(rbind(t(names(fluxes)),t(fluxes)))
+      fluxes_output[,1] = paste("R_",fluxes_output[,1],sep = "")
+      rownames(fluxes_output) = c()
+      colnames(fluxes_output) = c("Reaction", "Flux")
+      for (i in seq(1, dim(names_dict)[2], by = 1)) {
+        #Mapping nodes IDs to names for table displaying purposes
+        if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+          fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+      }
+      output$fluxes_ko = renderTable({
+        fluxes_output
+      }, caption = "Fluxes after the KO",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", NULL))
       color_reaction = "lightblue"
       color_metabolite = "tomato"
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -461,9 +341,11 @@ shinyServer(function(input, output, session) {
       path_ko = path_removed
       output$text_flux_ko = renderText({
         paste("<br/>",
+              "<br/>",
               "<b>Objective value: ",
               as.character(flux[1]),
               "</b>",
+              "<br/>",
               "<br/>")
       })
       sbml_model_ko = rsbml_read(path_ko)
@@ -501,15 +383,23 @@ shinyServer(function(input, output, session) {
           }
         }
       }
+      edges_names_ko = sapply(edges_names_ko, function(x)
+        fill_blank(x, max(nchar(
+          edges_names_ko
+        ))))
       names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
       visdata_ko$nodes$label = as.vector(edges_names_ko)
       coords = read.csv("data/textbooky_coords.csv")
       set1 = rownames(visdata_ko$nodes)
       set2 = rownames(coords)
-      #Nie wykrywa brakujacej reakcji, ogarnij
-      deleted_rxn = setdiff(set1,set2)
-      coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
-      visdata_ko$nodes = cbind(visdata_ko$nodes,coords_deleted_rxn)
+      deleted_rxn = setdiff(set2, set1)
+      if (length(deleted_rxn) > 0) {
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
+      }
+      else{
+        coords_deleted_rxn = coords
+      }
+      visdata_ko$nodes = cbind(visdata_ko$nodes, coords_deleted_rxn)
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata_ko$nodes, edges = visdata_ko$edges) %>%
@@ -524,7 +414,11 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction_ko,
                     shape = "box") %>%
-          visPhysics(barnesHut = list(springLength = 200, springConstant = 0,gravitationalConstant = 0)) %>%
+          visPhysics(barnesHut = list(
+            springLength = 200,
+            springConstant = 0,
+            gravitationalConstant = 0
+          )) %>%
           visLayout(randomSeed = 1)
       })
     })
