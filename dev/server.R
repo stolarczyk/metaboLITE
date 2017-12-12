@@ -25,24 +25,18 @@ fill_blank <- function(x, len) {
 }
 
 shinyServer(function(input, output, session) {
-  addPopover(
-    session = session,
-    id = "weighting",
-    title = "Weighting",
-    content = "Greater flux through reactions will be shown as thicker edges of",
-    placement = "right",
-    trigger = "hover"
-  )
+
   setwd("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/")
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
-  
+
   path_to_file = reactive({
     req(input$file$datapath)
   })
-  observeEvent(input$update, {
-    ptf = path_to_file()
-    sbml_model = rsbml_read(path_to_file())
+  observeEvent(input$update, ignoreNULL = F ,{
+    #ptf = path_to_file()
+    #sbml_model = rsbml_read(path_to_file())
+    load("/home/mstolarczyk/Uczelnia/UVA/shinyapp/model_var.RData")
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
@@ -79,6 +73,7 @@ shinyServer(function(input, output, session) {
       fill_blank(x, max(nchar(edges_names))))
     names_dict = rbind(edges_names, names) #Names and IDs dictionary
     visdata$nodes$label = as.vector(edges_names)
+
     output$graph = renderVisNetwork({
       #reading SBML files
       if (isolate(input$weighting) == "none") {
@@ -161,6 +156,12 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv("data/textbooky_coords.csv")
       visdata$nodes = cbind(visdata$nodes, coords)
+      #Emphasize main reactions
+      visdata$nodes[which(grepl("glycolysis",names_dict[1,])),"font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration",names_dict[1,])),"font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase",names_dict[1,])),"font"] = "25px arial"
+      visdata$nodes[which(grepl("demand",names_dict[1,])),"font"] = "25px arial"
+      
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(stepX = 75,
@@ -287,6 +288,31 @@ shinyServer(function(input, output, session) {
           session = session
         )
       }
+      output$media1 = renderUI({popify(
+        bsButton(inputId = "media1",
+                 label = "Media1"),
+        title = "Apply predefined media1",
+        content = "Changes:",
+        placement = "right",
+        trigger = "hover"
+      )})
+      output$text_media = renderText({paste("<br/>", "<b>Use predefined media: ","</b>", "<br/>")})
+      output$media2 =renderUI({ popify(
+        bsButton(inputId = "media2",
+                 label = "Media2"),
+        title = "Apply predefined media2",
+        content = "Changes:",
+        placement = "right",
+        trigger = "hover"
+      )})
+      output$media3 = renderUI({popify(
+        bsButton(inputId = "media3",
+                 label = "Media3"),
+        title = "Apply predefined media3",
+        content = "Changes:",
+        placement = "right",
+        trigger = "hover"
+      )})
     })
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
@@ -295,8 +321,8 @@ shinyServer(function(input, output, session) {
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
         names_dict[1, which(names_dict[2, ] == x)])
-      choices_list[[length(choices_list) + 1]] = "R_Reset"
-      names(choices_list)[length(choices_list)] = "Reset"
+      # choices_list[[length(choices_list) + 1]] = "R_Reset"
+      # names(choices_list)[length(choices_list)] = "Reset"
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
@@ -311,15 +337,13 @@ shinyServer(function(input, output, session) {
         style = 'padding:10px;'
       ))
     })
-    observeEvent(input$apply_ko, {
-      reaction = (input$pick_ko_rxn)
-      reaction_ID = strsplit(reaction, split = "_")[[1]][2]
+    observeEvent(input$reset, {
+      reaction_ID = "Reset"
       python.assign("reaction_ID", reaction_ID)
       python.load("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/ko_rxn.py")
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
       fluxes = python.get(var.name = "fluxes")
-  
       fluxes_output = t(rbind(t(names(fluxes)),t(fluxes)))
       fluxes_output[,1] = paste("R_",fluxes_output[,1],sep = "")
       rownames(fluxes_output) = c()
@@ -331,7 +355,7 @@ shinyServer(function(input, output, session) {
       }
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, caption = "Fluxes after the KO",
+      }, caption = "Fluxes without any KOs",
       caption.placement = getOption("xtable.caption.placement", "top"),
       caption.width = getOption("xtable.caption.width", NULL))
       color_reaction = "lightblue"
@@ -400,6 +424,135 @@ shinyServer(function(input, output, session) {
         coords_deleted_rxn = coords
       }
       visdata_ko$nodes = cbind(visdata_ko$nodes, coords_deleted_rxn)
+      visdata_ko$nodes[which(grepl("glycolysis",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("respiration",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("synthase",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("demand",names_dict_ko[1,])),"font"] = "25px arial"
+      output$graph_ko = renderVisNetwork({
+        #Plotting graph
+        visNetwork(nodes = visdata_ko$nodes, edges = visdata_ko$edges) %>%
+          visLegend(stepX = 75,
+                    stepY = 100,
+                    width = 0.1) %>%
+          visOptions(highlightNearest = TRUE) %>%
+          visEdges(color = "black", arrows = "from") %>%
+          visGroups(groupname = "Metabolite",
+                    color = color_metabolite_ko,
+                    shape = "circle") %>%
+          visGroups(groupname = "Reaction",
+                    color = color_reaction_ko,
+                    shape = "box") %>%
+          visPhysics(barnesHut = list(
+            springLength = 200,
+            springConstant = 0,
+            gravitationalConstant = 0
+          )) %>%
+          visLayout(randomSeed = 1)
+      })
+    })
+    observeEvent(input$apply_ko, {
+      output$reset_ko = renderUI(popify(
+        bsButton(inputId = "reset",
+                 label = "Reset"),
+        title = "Reset model",
+        content = "Brings the model back to its original state",
+        placement = "right",
+        trigger = "hover"
+      ))
+
+      reaction = (input$pick_ko_rxn)
+      reaction_ID = strsplit(reaction, split = "_")[[1]][2]
+      python.assign("reaction_ID", reaction_ID)
+      python.load("/home/mstolarczyk/Uczelnia/UVA/shinyapp/dev/ko_rxn.py")
+      flux = python.get(var.name = "flux")
+      path_removed = python.get(var.name = "path_removed")
+      fluxes = python.get(var.name = "fluxes")
+  
+      fluxes_output = t(rbind(t(names(fluxes)),t(fluxes)))
+      fluxes_output[,1] = paste("R_",fluxes_output[,1],sep = "")
+      rownames(fluxes_output) = c()
+      colnames(fluxes_output) = c("Reaction", "Flux")
+      for (i in seq(1, dim(names_dict)[2], by = 1)) {
+        #Mapping nodes IDs to names for table displaying purposes
+        if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+          fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+      }
+      output$fluxes_ko = renderTable({
+        fluxes_output
+      },width = "250", caption = paste("Fluxes after the KO of",names_dict[1,which(names_dict[2,] == paste("R_",reaction_ID,sep = ""))]),
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", NULL))
+      color_reaction = "lightblue"
+      color_metabolite = "tomato"
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      edges_names = names
+      path_ko = path_removed
+      output$text_flux_ko = renderText({
+        paste("<br/>",
+              "<br/>",
+              "<b>Objective value: ",
+              as.character(flux[1]),
+              "</b>",
+              "<br/>",
+              "<br/>")
+      })
+      sbml_model_ko = rsbml_read(path_ko)
+      data_ko = rsbml_graph((sbml_model_ko))
+      toycon_graph_ko = igraph.from.graphNEL(data_ko)
+      visdata_ko <- toVisNetworkData(toycon_graph_ko)
+      visdata_ko$nodes$group = rep("Metabolite", length(visdata_ko$nodes$id))
+      visdata_ko$nodes$group[which(grepl("R", visdata_ko$nodes$id))] = "Reaction"
+      visdata_ko$edges$width = 2
+      visdata_ko$edges$length = 150
+      #visdata$edges$arrows = c("from", "to")
+      net_ko = asNetwork(toycon_graph_ko)
+      names_ko = unlist(net_ko$val)[seq(2, length(unlist(net_ko$val)), 2)]
+      
+      #Setting colors according to node class
+      color_reaction_ko = "lightblue"
+      color_metabolite_ko = "tomato"
+      net_ko %v% "type" = ifelse(grepl("R", names_ko), "Reaction", "Metabolite")
+      edges_names_ko = names_ko
+      #Setting names
+      for (i in seq(1, length(names_ko))) {
+        if (any(names(sbml_model_ko@model@species) == as.character(names_ko[i]))) {
+          metabolite_name_ko = sbml_model_ko@model@species[[which(names(sbml_model@model@species) == as.character(names_ko[i]))]]@name
+          compartment_ko = sbml_model_ko@model@species[[which(names(sbml_model_ko@model@species) == as.character(names_ko[i]))]]@compartment
+          metabolite_ko = paste(metabolite_name_ko, compartment_ko, sep = "_")
+          edges_names_ko[i] = metabolite_ko
+        }
+        else{
+          if (any(names(sbml_model_ko@model@reactions) == as.character(names_ko[i]))) {
+            reaction_name_ko = sbml_model_ko@model@reactions[[which(names(sbml_model_ko@model@reactions) == as.character(names_ko[i]))]]@name
+            edges_names_ko[i] = reaction_name_ko
+          }
+          else{
+            edges_names_ko[i] = "NoName"
+          }
+        }
+      }
+      edges_names_ko = sapply(edges_names_ko, function(x)
+        fill_blank(x, max(nchar(
+          edges_names_ko
+        ))))
+      names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
+      visdata_ko$nodes$label = as.vector(edges_names_ko)
+      coords = read.csv("data/textbooky_coords.csv")
+      set1 = rownames(visdata_ko$nodes)
+      set2 = rownames(coords)
+      deleted_rxn = setdiff(set2, set1)
+      if (length(deleted_rxn) > 0) {
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
+      }
+      else{
+        coords_deleted_rxn = coords
+      }
+      visdata_ko$nodes = cbind(visdata_ko$nodes, coords_deleted_rxn)
+      #Emphasize main reactions
+      visdata_ko$nodes[which(grepl("glycolysis",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("respiration",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("synthase",names_dict_ko[1,])),"font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("demand",names_dict_ko[1,])),"font"] = "25px arial"
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata_ko$nodes, edges = visdata_ko$edges) %>%

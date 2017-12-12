@@ -19,14 +19,14 @@ shinyUI(
     tabPanel(
       "Visualize",
       sidebarPanel(
-        fileInput(
-          inputId = "file",
-          label = "Select a model to visualize:",
-          accept = "text/xml",
-          buttonLabel = "Browse...",
-          placeholder = "No file selected",
-          width = "500px"
-        ),
+        # fileInput(
+        #   inputId = "file",
+        #   label = "Select a model to visualize:",
+        #   accept = "text/xml",
+        #   buttonLabel = "Browse...",
+        #   placeholder = "No file selected",
+        #   width = "500px"
+        # ),
         
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
@@ -40,7 +40,16 @@ shinyUI(
           ),width = "50%"
         ),
         
-        actionButton("update", "Apply", size = "default"),
+        popify(
+          bsButton(inputId = "update",
+                   label = "Apply weights"),
+          title = "Weighting",
+          content = "Greater flux through reactions in the model will be shown as thicker edges of the graph",
+          placement = "right",
+          trigger = "hover"
+        ),
+        
+        
         htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
         width = 5
@@ -56,14 +65,19 @@ shinyUI(
         uiOutput("lbound"),
         uiOutput("ubound"),
         uiOutput("button_apply_media"),
-        htmlOutput("text_flux_media")
+        htmlOutput("text_flux_media"),
+        div(style = "vertical-align:top; width: 50%;height: 60px", htmlOutput("text_media")),
+        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media1")),
+        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media2")),
+        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media3"))
       )
     ),
     tabPanel(
       "KO reactions",
       sidebarPanel(
         uiOutput("pick_ko_rxn"),
-        uiOutput("button_apply_ko"),
+        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("button_apply_ko")),
+        div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
         htmlOutput("text_flux_ko"),
         tableOutput(outputId = 'fluxes_ko')
       ),
