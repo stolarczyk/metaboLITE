@@ -1,0 +1,79 @@
+---
+title: "Toycon visualization app documentation"
+author: "Michal Stolarczyk"
+date: "December 6, 2017"
+output:
+  html_document:
+    number_sections: yes
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Input
+
+## Model
+
+As an SBML fbc L3V1 [file](http://sbml.org/Software/libSBML/docs/python-api/group__fbc.html)  
+
+## (potentially) Differential expression data
+
+As a text file (Currently the data are randomly generated)
+
+# Methods
+
+- [GIMME](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000082)
+
+- [FBA](https://www.nature.com/articles/nbt.1614)
+
+# Software
+
+## non default R packages
+
+**R version 3.4.2 "Short Summer" (2017-09-28)**
+
+- [igraph: Network Analysis and Visualization](https://CRAN.R-project.org/package=igraph)
+
+- [libSBML: application programming interface for the SBML format](http://sbml.org/Software/libSBML/Downloading_libSBML#R)
+
+- [R support for SBML, using libsbml](https://www.bioconductor.org/packages/release/bioc/html/rsbml.html)
+
+- [shiny: Web Application Framework for R](https://CRAN.R-project.org/package=shiny)
+
+- [intergraph: Coercion Routines for Network Data Objects](https://CRAN.R-project.org/package=intergraph)
+
+- [ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics](https://CRAN.R-project.org/package=ggplot2)
+
+- [visNetwork: Network Visualization using 'vis.js' Library](https://CRAN.R-project.org/package=visNetwork)
+
+- [xtable: Export Tables to LaTeX or HTML](https://CRAN.R-project.org/package=xtable)
+
+- [dplyr: A Grammar of Data Manipulation](https://CRAN.R-project.org/package=dplyr)
+
+- [sna: Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
+
+## non default Python packages
+
+**Python version 2.7.12 (2016-06-25)**
+
+- [framed: metabolic modeling for Python](https://pypi.python.org/pypi/framed)
+
+**Python version 3.5.2 (2016-06-27)**
+
+- [COBRApy: constraints-based modeling of biological networks](https://pypi.python.org/pypi/cobra/0.9.1)
+
+# Design
+
+![Diagram presenting the design of the application](scheme.svg)
+
+# To do
+
+- Apply the FBA fluxes to the graphs in Reaction KO and Change media sections
+
+
