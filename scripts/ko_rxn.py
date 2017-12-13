@@ -22,7 +22,7 @@ else:
   fragments = fragments[:-1]
   filename = last_fragment.split(".")[0]
   filename = filename + "_removed_" + reaction_ID + ".xml"
-  fragments[-1] = filename
+  fragments.append(filename)
   path_removed = '/'.join(fragments)
   toycon.reactions.get_by_id(reaction_ID).remove_from_model()
   cobra.io.write_sbml_model(toycon, path_removed)
