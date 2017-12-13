@@ -70,7 +70,10 @@ shinyUI(
         div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media1")),
         div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media2")),
         div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media3"))
-      )
+      ),
+      mainPanel(visNetworkOutput(
+        "graph_media", width = "800", height = "600"
+      ))
     ),
     tabPanel(
       "KO reactions",

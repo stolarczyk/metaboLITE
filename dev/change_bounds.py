@@ -7,3 +7,4 @@ upper = int(ub)
 toycon.reactions.get_by_id(reaction_ID).bounds = (lower, upper)
 
 flux = toycon.optimize().f
+fluxes = toycon.optimize().fluxes.to_dict()
