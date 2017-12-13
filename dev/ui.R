@@ -19,15 +19,6 @@ shinyUI(
     tabPanel(
       "Visualize",
       sidebarPanel(
-        # fileInput(
-        #   inputId = "file",
-        #   label = "Select a model to visualize:",
-        #   accept = "text/xml",
-        #   buttonLabel = "Browse...",
-        #   placeholder = "No file selected",
-        #   width = "500px"
-        # ),
-        
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
 
