@@ -260,6 +260,33 @@ shinyServer(function(input, output, session) {
       ))
     })
     
+    observeEvent(input$media1, {
+      media_type = "media1"
+      python.assign("media_type", media_type)
+      python.load("run_media.py")
+      flux = python.get(var.name = "flux")
+      output$text_flux_media = renderText({
+        paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+      })
+    })
+    observeEvent(input$media2, {
+      media_type = "media2"
+      python.assign("media_type", media_type)
+      python.load("run_media.py")
+      flux = python.get(var.name = "flux")
+      output$text_flux_media = renderText({
+        paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+      })
+    })
+    observeEvent(input$media3, {
+      media_type = "media3"
+      python.assign("media_type", media_type)
+      python.load("run_media.py")
+      flux = python.get(var.name = "flux")
+      output$text_flux_media = renderText({
+        paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+      })
+    })
     observeEvent(input$apply_media, {
       lb = input$lbound
       ub = input$ubound
@@ -292,8 +319,7 @@ shinyServer(function(input, output, session) {
           bsButton(inputId = "media1",
                    label = "Media1"),
           title = "Apply predefined media1",
-          content = "Changes:",
-          placement = "right",
+          content = "<b>glucose exchange bounds:</b><br> lower = -20, upper = 100 <br> <b>O2 exchange bounds:</b><br>lower = 0, upper = 10",          placement = "right",
           trigger = "hover"
         )
       })
@@ -305,8 +331,7 @@ shinyServer(function(input, output, session) {
           bsButton(inputId = "media2",
                    label = "Media2"),
           title = "Apply predefined media2",
-          content = "Changes:",
-          placement = "right",
+          content = "<b>lactate exchange bounds:</b><br> lower = -100, upper = 100 <br> <b>H20 exchange bounds:</b><br>lower = -100, upper = 100",          placement = "right",
           trigger = "hover"
         )
       })
@@ -315,7 +340,7 @@ shinyServer(function(input, output, session) {
           bsButton(inputId = "media3",
                    label = "Media3"),
           title = "Apply predefined media3",
-          content = "Changes:",
+          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 100 <br> <b>CO2 exchange bounds:</b><br>lower = -100, upper = 0",
           placement = "right",
           trigger = "hover"
         )
@@ -328,8 +353,6 @@ shinyServer(function(input, output, session) {
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
         names_dict[1, which(names_dict[2,] == x)])
-      # choices_list[[length(choices_list) + 1]] = "R_Reset"
-      # names(choices_list)[length(choices_list)] = "Reset"
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
@@ -388,13 +411,34 @@ shinyServer(function(input, output, session) {
           "<br/>"
         )
       })
+      
       sbml_model_ko = rsbml_read(path_ko)
       data_ko = rsbml_graph((sbml_model_ko))
+      ndata = names(data_ko@edgeData)
+      for (i in seq(1, dim(fluxes_output)[1])) {
+        hits = which(grepl(fluxes_output[i, 1], ndata))
+        for (j in hits) {
+          data_ko@edgeData@data[[j]]$weight = fluxes_output[i, 2]
+        }
+      }
+      
+      toycon_graph = igraph.from.graphNEL(data_ko)
+      net = asNetwork(toycon_graph)
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
+                                                          "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
+                                                                                                                     "vertex.names")]))])
+
       toycon_graph_ko = igraph.from.graphNEL(data_ko)
       visdata_ko <- toVisNetworkData(toycon_graph_ko)
       visdata_ko$nodes$group = rep("Metabolite", length(visdata_ko$nodes$id))
       visdata_ko$nodes$group[which(grepl("R", visdata_ko$nodes$id))] = "Reaction"
-      visdata_ko$edges$width = 2
+      weights_edges = c()
+      for (i in seq(1, length(net$mel))) {
+        weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+      }
+      edgesize = log(abs(weights_edges)) + 1
+      visdata_ko$edges$width = edgesize
       visdata_ko$edges$length = 150
       #visdata$edges$arrows = c("from", "to")
       net_ko = asNetwork(toycon_graph_ko)
@@ -516,6 +560,8 @@ shinyServer(function(input, output, session) {
           "<br/>"
         )
       })
+      
+  
       sbml_model_ko = rsbml_read(path_ko)
       data_ko = rsbml_graph((sbml_model_ko))
       toycon_graph_ko = igraph.from.graphNEL(data_ko)
