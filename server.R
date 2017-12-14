@@ -31,15 +31,27 @@ fill_blank <- function(x, len) {
 
 shinyServer(function(input, output, session) {
   working_dir = getwd()
-  model_file_path = paste(working_dir,"/data/toycon.xml",sep = "")
+  path = "/data/toycon.xml"
+  if( .Platform$OS.type == "windows" ){
+    path = gsub("\\\\", "/", path)
+  }
+  model_file_path = paste(working_dir,path,sep = "")
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   observeEvent(input$update, ignoreNULL = F , {
     working_dir = getwd()
-    model_file_path = paste(working_dir,"/data/toycon.xml",sep = "")
-    load(paste(working_dir,"/data/model_var.RData",sep = ""))
+    path = "/data/toycon.xml"
+    if( .Platform$OS.type == "windows" ){
+      path = gsub("\\\\", "/", path)
+    }
+    model_file_path = paste(working_dir,path,sep = "")
+    path="/data/model_var.RData"
+    if( .Platform$OS.type == "windows" ){
+      path = gsub("\\\\", "/", path)
+    }
+    load(paste(working_dir,path,sep = ""))
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
@@ -85,7 +97,11 @@ shinyServer(function(input, output, session) {
           
         })
         python.assign("model_file_path",model_file_path)
-        python.load(paste(working_dir,"/scripts/check_flux.py",sep = ""))
+        path = "/scripts/check_flux.py"
+        if( .Platform$OS.type == "windows" ){
+          path = gsub("\\\\", "/", path)
+        }
+        python.load(paste(working_dir,path,sep = ""))
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
@@ -94,7 +110,11 @@ shinyServer(function(input, output, session) {
       #Weighting edges
       else{
         python.assign("model_file_path",model_file_path)
-        python.load(paste(working_dir,"/scripts/check_flux.py",sep = ""))
+        path = "/scripts/check_flux.py"
+        if( .Platform$OS.type == "windows" ){
+          path = gsub("\\\\", "/", path)
+        }
+        python.load(paste(working_dir,path,sep = ""))
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>",
@@ -159,7 +179,11 @@ shinyServer(function(input, output, session) {
           visdata$edges$width = log(abs(weights_edges))
         }
       }
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
       visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
@@ -275,7 +299,11 @@ shinyServer(function(input, output, session) {
       media_type = "media1"
       python.assign("media_type", media_type)
       python.assign("model_file_path",model_file_path)
-      python.load(paste(working_dir,"/scripts/run_media.py",sep = ""))
+      path="/scripts/run_media.py"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir,path,sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -357,7 +385,11 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       set1 = rownames(visdata$nodes)
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
@@ -400,7 +432,11 @@ shinyServer(function(input, output, session) {
       media_type = "media2"
       python.assign("media_type", media_type)
       python.assign("model_file_path",model_file_path)
-      python.load(paste(working_dir,"/scripts/run_media.py",sep = ""))
+      path="/scripts/run_media.py"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir,path,sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -482,7 +518,11 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       set1 = rownames(visdata$nodes)
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
@@ -525,7 +565,11 @@ shinyServer(function(input, output, session) {
       media_type = "media3"
       python.assign("media_type", media_type)
       python.assign("model_file_path",model_file_path)
-      python.load(paste(working_dir,"/scripts/run_media.py",sep = ""))
+      path="/scripts/run_media.py"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir,path,sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -607,7 +651,11 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       set1 = rownames(visdata$nodes)
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
@@ -656,7 +704,11 @@ shinyServer(function(input, output, session) {
         python.assign("ub", ub)
         python.assign("reaction_ID", reaction_ID)
         python.assign("model_file_path",model_file_path)
-        python.load(paste(working_dir,"/scripts/change_bounds.py",sep = ""))
+        path="/scripts/change_bounds.py"
+        if( .Platform$OS.type == "windows" ){
+          path = gsub("\\\\", "/", path)
+        }
+        python.load(paste(working_dir,path,sep = ""))
         flux = python.get(var.name = "flux")
         fluxes = python.get(var.name = "fluxes")
         fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -741,7 +793,11 @@ shinyServer(function(input, output, session) {
           ))))
         names_dict = rbind(edges_names, names) #Names and IDs dictionary
         visdata$nodes$label = as.vector(edges_names)
-        coords = read.csv("data/textbooky_coords.csv")
+        path="data/textbooky_coords.csv"
+        if( .Platform$OS.type == "windows" ){
+          path = gsub("\\\\", "/", path)
+        }
+        coords = read.csv(path)
         set1 = rownames(visdata$nodes)
         set2 = rownames(coords)
         deleted_rxn = setdiff(set2, set1)
@@ -862,7 +918,11 @@ shinyServer(function(input, output, session) {
       reaction_ID = "Reset"
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path",model_file_path)
-      python.load(paste(working_dir,"/scripts/ko_rxn.py",sep = ""))
+      path="/scripts/ko_rxn.py"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir,path,sep = ""))
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
       fluxes = python.get(var.name = "fluxes")
@@ -925,7 +985,6 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata_ko$edges$width = edgesize
       visdata_ko$edges$length = 150
-      #visdata$edges$arrows = c("from", "to")
       net_ko = asNetwork(toycon_graph_ko)
       names_ko = unlist(net_ko$val)[seq(2, length(unlist(net_ko$val)), 2)]
       
@@ -958,7 +1017,11 @@ shinyServer(function(input, output, session) {
         ))))
       names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
       visdata_ko$nodes$label = as.vector(edges_names_ko)
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       set1 = rownames(visdata_ko$nodes)
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
@@ -1013,7 +1076,11 @@ shinyServer(function(input, output, session) {
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path",model_file_path)
-      python.load(paste(working_dir,"/scripts/ko_rxn.py",sep = ""))
+      path="/scripts/ko_rxn.py"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir,path,sep = ""))
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
       path_ko = path_removed
@@ -1100,7 +1167,11 @@ shinyServer(function(input, output, session) {
         ))))
       names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
       visdata_ko$nodes$label = as.vector(edges_names_ko)
-      coords = read.csv("data/textbooky_coords.csv")
+      path="data/textbooky_coords.csv"
+      if( .Platform$OS.type == "windows" ){
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
       set1 = rownames(visdata_ko$nodes)
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
