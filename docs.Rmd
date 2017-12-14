@@ -130,3 +130,12 @@ The necessary instructions on how to install Windows version of this package are
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
+# Usage
+
+To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
+
+```shiny::runApp(appDir = "path/to/the/shinyapp/directory")```
+
+or in the command line:
+
+```R -e "shiny::runApp(appDir = 'path/to/the/shinyapp/directory', launch.browser=TRUE)"```

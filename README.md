@@ -15,6 +15,7 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
         1. [libSBML](#libSBML_win)
         2. [Python](#Python_win)
         2. [R](#R_win)
+3. [Usage](#Usage)
 
 # Introduction<a name="introduction"></a>
 
@@ -134,3 +135,12 @@ The necessary instructions on how to install Windows version of this package are
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
+# Usage
+
+To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
+
+```shiny::runApp(appDir = "path/to/the/shinyapp/directory")```
+
+or in the command line:
+
+```R -e "shiny::runApp(appDir = 'path/to/the/shinyapp/directory', launch.browser=TRUE)"```
