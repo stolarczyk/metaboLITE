@@ -11,7 +11,7 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
         1. [libSBML](#libSBML)
         2. [Python](#Python)
         2. [R](#R)
-    2. [Windowks](#Windows)
+    2. [Windows](#Windows)
         1. [libSBML](#libSBML_win)
         2. [Python](#Python_win)
         2. [R](#R_win)
