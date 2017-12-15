@@ -43,10 +43,11 @@ shinyUI(
         
         htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
+        #checkboxInput(inputId="pro",label="Pro mode",value = F),
         width = 5
       ),
       mainPanel(visNetworkOutput(
-        "graph", width = "700", height = "600"
+        "graph", width = "800", height = "600"
       ), width = 7)
     ),
     tabPanel(
