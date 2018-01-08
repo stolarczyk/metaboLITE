@@ -135,6 +135,7 @@ The necessary instructions on how to install Windows version of this package are
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages.
 # Usage<a name="Usage"></a>
 
 To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
