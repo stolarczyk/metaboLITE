@@ -25,10 +25,10 @@ The *ToyCon visualization app* is an R shiny app that aids the basic understandi
 
 ## Functionalities<a name="Functionalities"></a>
 
-- Network layout visualization
-- Network stoichiometry visualization
-- Reaction knockouts (KOs) impact visualization
-- Media changes impact visualization
+- **Network layout visualization**, which is intended to graphically present the interconnections between metabolites and reactions in the model.
+- **Network stoichiometry visualization**, which is intended to depict the stoichiometric coefficients in view of the aforesaid network representation of the model.
+- **Reaction knockouts (KOs) impact visualization**, which is intended to present the influence of the specific reaction KOs on model architecture. By means of the [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) this functionality can be used to detect either essential (when removed render the model carry 0 flux through the [objective function](https://en.wikipedia.org/wiki/Flux_balance_analysis#Objective_function)) or nonessential (when removed do not influence the effective flux value through the objective function) reactions.
+- **Media changes impact visualization**, which is intended to deptict the incluence of growth media changes on the model growth and fluxes through reactions. The media changes are performed by constraining the exchange reactions in the model during the FBA simulation. For example in order to check the influence of oxygen shortage on the model growth one needs to lower the upper (and lower) flux [bound(s)](https://en.wikipedia.org/wiki/Flux_balance_analysis#Mathematical_description) of the oxygen exchange reaction.
 
 # Installation<a name="Installation"></a>
 
@@ -85,7 +85,7 @@ Prior to the rPython package installation please read these [instructions](https
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
-Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages.
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages after the language installation.
 
 ## Windows<a name="Windows"></a>
 
@@ -137,11 +137,11 @@ The necessary instructions on how to install Windows version of this package are
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
-Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages.
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages after the language installation.
 
 # Usage<a name="Usage"></a>
 
-Besides installation of the both R and Python packages no further app installation is needed. Simply download the contents of this [repository](https://gitlab.com/mstolarczyk/shinyapp.git) and save them in the directory of your choice (represented as `"path/to/the/shinyapp/directory"` below).
+Besides the installation of both R and Python packages no further app installation is needed. Simply download the contents of this [repository](https://gitlab.com/mstolarczyk/shinyapp.git) and save them in the directory of your choice (represented as `"path/to/the/shinyapp/directory"` below).
 
 To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
 
@@ -149,4 +149,4 @@ To launch the app simply run the following line of code in your favourite R IDE,
 
 or in the command line:
 
-```R -e "shiny::runApp(appDir = 'path/to/the/shinyapp/directory', launch.browser=TRUE)"```
+```R -e "shiny::runApp(appDir = "path/to/the/shinyapp/directory", launch.browser=TRUE)"```
