@@ -85,6 +85,8 @@ Prior to the rPython package installation please read these [instructions](https
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages.
+
 ## Windows<a name="Windows"></a>
 
 ### libSBML<a name="libSBML_win"></a>
@@ -136,7 +138,10 @@ The necessary instructions on how to install Windows version of this package are
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
 Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages.
+
 # Usage<a name="Usage"></a>
+
+Besides installation of the both R and Python packages no further app installation is needed. Simply download the contents of this [repository](https://gitlab.com/mstolarczyk/shinyapp.git) and save them in the directory of your choice (represented as `"path/to/the/shinyapp/directory"` below).
 
 To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
 
