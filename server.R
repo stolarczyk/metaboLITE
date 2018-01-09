@@ -287,10 +287,13 @@ shinyServer(function(input, output, session) {
         )
       )
       output$button_apply_media = renderUI(
-        actionButton(
-          inputId = "apply_media",
-          label = "Constrain",
-          style = 'padding:10px;'
+        popify(
+          bsButton(inputId = "apply_media",
+                   label = "Constrain"),
+          title = "Constrain selected reaction",
+          content = "The media changes are performed by constraining the exchange reactions in the model during the FBA simulation",
+          placement = "right",
+          trigger = "hover"
         )
       )
     })

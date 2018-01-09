@@ -33,9 +33,9 @@ shinyUI(
         
         popify(
           bsButton(inputId = "update",
-                   label = "Apply weights"),
-          title = "Weighting",
-          content = "Greater flux through reactions in the model will be shown as thicker edges of the graph",
+                   label = "Apply"),
+          title = "Apply the settings",
+          content = "Greater flux reactions or stoichiometry in the model will be shown as thicker edges of the graph",
           placement = "right",
           trigger = "hover"
         ),
