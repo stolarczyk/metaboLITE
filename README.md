@@ -53,7 +53,7 @@ Install [Python](https://www.python.org/downloads/) programming language (versio
 
 ### R<a name="R"></a>
 
-Install R programming language (version of your choice, tested on 3.4.3) with following packages:
+Install [R](https://www.r-project.org/) programming language (version of your choice, tested on 3.4.3) with following packages:
 
 - rPython: [Package Allowing R to Call Python](https://CRAN.R-project.org/package=rPython)
 
@@ -101,7 +101,7 @@ Install [Python](https://www.python.org/downloads/) programming language (versio
 
 ### R<a name="R_win"></a>
 
-Install R programming language (version of your choice, tested on 3.4.3) with following packages:
+Install [R](https://www.r-project.org/) programming language (version of your choice, tested on 3.4.3) with following packages:
 
 - rPython-win: [Package Allowing R to Call Python](https://CRAN.R-project.org/package=rPython)
 
@@ -133,9 +133,9 @@ Or you can use [this](scripts/install_packages.R) script to automatically instal
 
 # Usage<a name="Usage"></a>
 
-Besides the installation of both R and Python packages no further app installation is needed. Simply download the contents of this [repository](https://gitlab.com/mstolarczyk/shinyapp.git) and save them in the directory of your choice (represented as `"path/to/the/shinyapp/directory"` below).
+Besides the installation of packages for both R and Python no further app installation is needed. Simply download the contents of this [repository](https://gitlab.com/mstolarczyk/shinyapp.git) and save them in the directory of your choice (represented as `"path/to/the/shinyapp/directory"` below).
 
-To launch the app simply run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
+To launch the app just run the following line of code in your favourite R IDE, e.g. [RStudio](https://www.rstudio.com/):
 
 ```shiny::runApp(appDir = "path/to/the/shinyapp/directory")```
 
