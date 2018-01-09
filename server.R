@@ -2,7 +2,6 @@
 # LOADING LIBRARIES -------------------------------------------------------
 
 library(igraph)
-library(libSBML)
 library(rsbml)
 library(shiny)
 library(intergraph)
@@ -13,6 +12,7 @@ library(dplyr)
 library(sna)
 library(shinyBS)
 library(rPython)
+library(shinythemes)
 
 # FUNCTIONS ---------------------------------------------------------------
 
@@ -177,6 +177,7 @@ shinyServer(function(input, output, session) {
             weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
           }
           visdata$edges$width = log(abs(weights_edges))
+          visdata$edges$title = paste("Stoichiometric coefficient: ",ceiling(weights_edges))
         }
       }
       path="data/textbooky_coords.csv"
@@ -354,6 +355,7 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
+      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -487,6 +489,7 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
+      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -620,6 +623,7 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
+      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -985,6 +989,7 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata_ko$edges$width = edgesize
       visdata_ko$edges$length = 150
+      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
       net_ko = asNetwork(toycon_graph_ko)
       names_ko = unlist(net_ko$val)[seq(2, length(unlist(net_ko$val)), 2)]
       
@@ -1138,6 +1143,7 @@ shinyServer(function(input, output, session) {
       }
       edgesize = log(abs(weights_edges)) + 1
       visdata_ko$edges$width = edgesize
+      visdata_ko$edges$title = paste("Flux: ",ceiling(weights_edges))
       
       #Setting colors according to node class
       color_reaction_ko = "lightblue"
