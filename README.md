@@ -33,7 +33,7 @@ The *ToyCon visualization app* is an R shiny app that aids the basic understandi
 # Installation<a name="Installation"></a>
 
 The application is written in R programming language and uses [COBRApy](https://opencobra.github.io/cobrapy/) for under the hood [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) simulations, reaction knockouts and constraining fluxes through exchange reactions.
-Consequently an installation of [libsBML](http://sbml.org/Software/libSBML/), [R](https://www.r-project.org/) and [Python](https://www.python.org/) with functioning [cobra](https://pypi.python.org/pypi/cobra/) package is required.
+Consequently an installation of [libSBML](http://sbml.org/Software/libSBML/), [R](https://www.r-project.org/) and [Python](https://www.python.org/) with functioning [cobra](https://pypi.python.org/pypi/cobra/) package is required.
 
 ## UNIX<a name="UNIX"></a>
 
@@ -50,6 +50,14 @@ Install [Python](https://www.python.org/downloads/) programming language (versio
 - sys: [System-specific parameters and functions](https://docs.python.org/2/library/sys.html)
 
 - cobra: [constraint-based reconstruction and analysis in python](https://pypi.python.org/pypi/cobra/0.10.0a1)
+
+To install the packages using [pip](https://pypi.python.org/pypi/pip) package management system type in the terminal:
+
+```sudo pip install <package name>```
+
+e.g.:
+
+```sudo pip install sys```
 
 ### R<a name="R"></a>
 
@@ -98,6 +106,14 @@ Install [Python](https://www.python.org/downloads/) programming language (versio
 - sys: [System-specific parameters and functions](https://docs.python.org/2/library/sys.html)
 
 - cobra: [constraint-based reconstruction and analysis in python](https://pypi.python.org/pypi/cobra/0.10.0a1)
+
+To install the packages using [pip](https://pypi.python.org/pypi/pip) package management system type in the Command Prompt:
+
+``` <absolute path to pip.exe> install <package_name>```
+
+e.g.:
+
+```C:/Python27/Scripts/pip.exe install sys``` (you may need to adjust the path accordingly)
 
 ### R<a name="R_win"></a>
 
