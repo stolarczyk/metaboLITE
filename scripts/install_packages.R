@@ -27,6 +27,7 @@ install.packages.auto <- function(x) {
 
 #The lines below install all the required packgages for the full functionality of the ToyCon shinyapp. 
 
-required_packages = c("igraph","rsbml","shiny","intergraph","ggplot2","visNetwork","xtable","dplyr","sna","shinyBS","rPython","shinythemes")
+required_packages = c("igraph","shiny","intergraph","ggplot2","visNetwork","xtable","dplyr","sna","shinyBS","shinythemes")
 install.packages.auto(x = required_packages)
 
+warning("The rPython package may require attention during installation under systems with multiple Python versions installed. Please see the README file in the project repository at https://gitlab.com/mstolarczyk/shinyapp.git")
