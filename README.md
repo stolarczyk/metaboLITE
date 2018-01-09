@@ -21,13 +21,13 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
 
 ## What is this?<a name="what"></a>
 
-The *ToyCon visualization app* is an R shiny app that aids the basic understanding of concepts conveyed in the ToyCon publication: *iNRG: A toy network capturing central energy metabolism for use with constraint-based methods.*
+The *ToyCon visualization app* is an R shiny app that aids the basic understanding of concepts conveyed in the following publication: *iNRG: A toy network capturing central energy metabolism for use with constraint-based methods.*
 
 ## Functionalities<a name="Functionalities"></a>
 
-- **Network layout visualization**, which is intended to graphically present the interconnections between metabolites and reactions in the model.
-- **Network stoichiometry visualization**, which is intended to depict the stoichiometric coefficients in view of the aforesaid network representation of the model.
-- **Reaction knockouts (KOs) impact visualization**, which is intended to present the influence of the specific reaction KOs on model architecture. By means of the [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) this functionality can be used to detect either essential (when removed render the model carry 0 flux through the [objective function](https://en.wikipedia.org/wiki/Flux_balance_analysis#Objective_function)) or nonessential (when removed do not influence the effective flux value through the objective function) reactions.
+- **Network layout visualization**, which is intended to graphically present the interconnections between metabolites and reactions in the [genome-scale metabolic reconstruction](https://en.wikipedia.org/wiki/Metabolic_network_modelling#Genome-Scale_Metabolic_Reconstruction). Nodes of the graph represent metabolites and reactions whereas egdes - connections between them. 
+- **Network stoichiometry visualization**, which is intended to depict the stoichiometric coefficients in view of the aforesaid network representation of the genome-scale metabolic reconstruction. The width of the edges correspond to the stoichiometic coefficients that determine ratios of each metabolite in the reactions.
+- **Reaction knockouts (KOs) impact visualization**, which is intended to present the influence of the specific reaction KOs on genome-scale metabolic reconstruction architecture and fluxes in the model. By means of the [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) this functionality can be used to detect either essential (when removed render the model carry 0 flux through the [objective function](https://en.wikipedia.org/wiki/Flux_balance_analysis#Objective_function)) or nonessential (when removed do not influence the effective flux value through the objective function) reactions.
 - **Media changes impact visualization**, which is intended to deptict the incluence of growth media changes on the model growth and fluxes through reactions. The media changes are performed by constraining the exchange reactions in the model during the FBA simulation. For example in order to check the influence of oxygen shortage on the model growth one needs to lower the upper (and lower) flux [bound(s)](https://en.wikipedia.org/wiki/Flux_balance_analysis#Mathematical_description) of the oxygen exchange reaction.
 
 # Installation<a name="Installation"></a>
@@ -40,8 +40,6 @@ Consequently an installation of [libsBML](http://sbml.org/Software/libSBML/), [R
 ### libSBML<a name="libSBML"></a>
 
 Install system [libSBML](http://sbml.org/Software/libSBML/Downloading_libSBML) programming library. Necessary files and instructions for installation under UNIX are available [here](https://sourceforge.net/projects/sbml/files/libsbml/5.15.0/stable/)
-
-Install [libSBML R language interface](http://sbml.org/Software/libSBML/Downloading_libSBML#R)
 
 Install [libSBML Python language interface](http://sbml.org/Software/libSBML/Downloading_libSBML#Python)
 
@@ -62,8 +60,6 @@ Install R programming language (version of your choice, tested on 3.4.3) with fo
 Prior to the rPython package installation please read these [instructions](https://cran.r-project.org/web/packages/rPython/INSTALL) to choose the appropriate Python version (with cobra package installed) in systems where several Python versions coexist.
 
 - igraph: [Network Analysis and Visualization](https://CRAN.R-project.org/package=igraph)
-
-- libSBML: [application programming interface for the SBML format](http://sbml.org/Software/libSBML/Downloading_libSBML#R)
 
 - rsbml: [R support for SBML, using libsbml](https://www.bioconductor.org/packages/release/bioc/html/rsbml.html)
 
@@ -93,8 +89,6 @@ Or you can use [this](scripts/install_packages.R) script to automatically instal
 
 Install system [libSBML](http://sbml.org/Software/libSBML/Downloading_libSBML) programming library. Necessary files and instructions for installation under Windows are available [here](https://sourceforge.net/projects/sbml/files/libsbml/5.15.0/stable/Windows/64-bit/)
 
-Install [libSBML R language interface](http://sbml.org/Software/libSBML/Downloading_libSBML#R)
-
 Install [libSBML Python language interface](http://sbml.org/Software/libSBML/Downloading_libSBML#Python)
 
 ### Python<a name="Python_win"></a>
@@ -114,8 +108,6 @@ Install R programming language (version of your choice, tested on 3.4.3) with fo
 The necessary instructions on how to install Windows version of this package are available on the package's [GitHub page](https://github.com/cjgb/rPython-win)
 
 - igraph: [Network Analysis and Visualization](https://CRAN.R-project.org/package=igraph)
-
-- libSBML: [application programming interface for the SBML format](http://sbml.org/Software/libSBML/Downloading_libSBML#R)
 
 - rsbml: [R support for SBML, using libsbml](https://www.bioconductor.org/packages/release/bioc/html/rsbml.html)
 
