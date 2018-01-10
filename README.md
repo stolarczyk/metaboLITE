@@ -89,7 +89,7 @@ Prior to the rPython package installation please read these [instructions](https
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
-Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages after the language installation.
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
 
 ## Windows<a name="Windows"></a>
 
@@ -145,7 +145,7 @@ The necessary instructions on how to install Windows version of this package are
 
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
-Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages after the language installation.
+Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
 
 # Usage<a name="Usage"></a>
 
