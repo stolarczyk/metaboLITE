@@ -767,6 +767,7 @@ shinyServer(function(input, output, session) {
         edgesize = log(abs(weights_edges)) + 1
         visdata$edges$width = edgesize
         visdata$edges$length = 150
+        visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
         #visdata$edges$arrows = c("from", "to")
         net = asNetwork(toycon_graph)
         names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
