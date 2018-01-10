@@ -993,7 +993,7 @@ shinyServer(function(input, output, session) {
       edgesize = log(abs(weights_edges)) + 1
       visdata_ko$edges$width = edgesize
       visdata_ko$edges$length = 150
-      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata_ko$edges$title = paste("Flux: ",ceiling(weights_edges))
       net_ko = asNetwork(toycon_graph_ko)
       names_ko = unlist(net_ko$val)[seq(2, length(unlist(net_ko$val)), 2)]
       
