@@ -35,7 +35,7 @@ shinyUI(
           bsButton(inputId = "update",
                    label = "Apply"),
           title = "Apply the settings",
-          content = "Greater flux reactions or stoichiometry in the model will be shown as thicker edges of the graph",
+          content = "Greater flux through reactions or stoichiometry in the model will be shown as thicker edges of the graph",
           placement = "right",
           trigger = "hover"
         ),
