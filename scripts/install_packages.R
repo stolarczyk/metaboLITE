@@ -7,17 +7,17 @@
 install.packages.auto <- function(x) {
   for(package in x){
     package <- as.character(substitute(package)) 
-    if(isTRUE(x %in% .packages(all.available=TRUE))) { 
-      eval(parse(text = sprintf("require(\"%s\")", package)))
+    if(any(.packages(all.available=TRUE) == package)) { 
+      eval(parse(text = sprintf("library(\"%s\")", package)))
     } else { 
       eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE)", package)))
     }
-    if(isTRUE(x %in% .packages(all.available=TRUE))) { 
-      eval(parse(text = sprintf("require(\"%s\")", package)))
+    if(any(.packages(all.available=TRUE) == package)) { 
+      eval(parse(text = sprintf("library(\"%s\")", package)))
     } else {
       source("http://bioconductor.org/biocLite.R")
       eval(parse(text = sprintf("biocLite(\"%s\")", package)))
-      eval(parse(text = sprintf("require(\"%s\")", package)))
+      eval(parse(text = sprintf("library(\"%s\")", package)))
     }
   }
 }
@@ -30,4 +30,4 @@ install.packages.auto <- function(x) {
 required_packages = c("igraph","shiny","intergraph","ggplot2","visNetwork","xtable","dplyr","sna","shinyBS","shinythemes")
 install.packages.auto(x = required_packages)
 
-warning("The rPython package may require attention during installation under systems with multiple Python versions installed. Please see the README file in the project repository at https://gitlab.com/mstolarczyk/shinyapp.git")
+warning("The rPython package may require attention during installation under systems with multiple Python versions installed. Please see the README file in the project repository at https://github.com/michaelllo1993/shinyapp")
