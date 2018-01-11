@@ -67,12 +67,14 @@ Install [R](https://www.r-project.org/) programming language (version of your ch
 
 Prior to the rPython package installation please read these [instructions](https://cran.r-project.org/web/packages/rPython/INSTALL) to choose the appropriate Python version (with cobra package installed) in systems where several Python versions coexist.
 
-**Optionally** Please note that in order to use the Python virtual environemnt you need to install the rPython package from command line after activating the virtual environment. As fllows:
+**Optionally:** Please note that in order to use the Python [virtual environemnt](https://virtualenv.pypa.io/en/stable/userguide/) you need to install the rPython package from command line after activating the virtual environment. As follows:
 
 Activate the Python virtual environment
+
 ```source <path to Python virtual environemnt>/bin/activate```
 
 Install the rPython R package
+
 ```R CMD INSTALL <path to rPython package source>```
 
 Subsequently launch the application from command line after activating the Python virtual environment every time. As shown [here](#launch_commandline). 
