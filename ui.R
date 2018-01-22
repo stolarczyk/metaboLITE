@@ -59,9 +59,9 @@ shinyUI(
         uiOutput("button_apply_media"),
         htmlOutput("text_flux_media"),
         div(style = "vertical-align:top; width: 50%;height: 60px", htmlOutput("text_media")),
-        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media1")),
-        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media2")),
-        div(style = "vertical-align:top; width: 25%;height: 60px", uiOutput("media3"))
+        div(style = "vertical-align:top; width: 45%;height: 60px", uiOutput("media1")),
+        div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("media2")),
+        div(style = "vertical-align:top; width: 45%;height: 60px", uiOutput("media3"))
       ),
       mainPanel(visNetworkOutput(
         "graph_media", width = "800", height = "600"

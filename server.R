@@ -863,9 +863,9 @@ shinyServer(function(input, output, session) {
       output$media1 = renderUI({
         popify(
           bsButton(inputId = "media1",
-                   label = "Media1"),
-          title = "Apply predefined media1",
-          content = "<b>glucose exchange bounds:</b><br> lower = -20, upper = 100 <br> <b>O2 exchange bounds:</b><br>lower = 0, upper = 10",
+                   label = "Glucose free media"),
+          title = "Apply glucose free media",
+          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
           placement = "right",
           trigger = "hover"
         )
@@ -876,9 +876,9 @@ shinyServer(function(input, output, session) {
       output$media2 = renderUI({
         popify(
           bsButton(inputId = "media2",
-                   label = "Media2"),
-          title = "Apply predefined media2",
-          content = "<b>lactate exchange bounds:</b><br> lower = -100, upper = 100 <br> <b>H20 exchange bounds:</b><br>lower = -100, upper = 100",
+                   label = "Microaerophilic media"),
+          title = "Apply microaerophilic media",
+          content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
           placement = "right",
           trigger = "hover"
         )
@@ -886,9 +886,9 @@ shinyServer(function(input, output, session) {
       output$media3 = renderUI({
         popify(
           bsButton(inputId = "media3",
-                   label = "Media3"),
-          title = "Apply predefined media3",
-          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 100 <br> <b>CO2 exchange bounds:</b><br>lower = -100, upper = 0",
+                   label = "Lactate rich media"),
+          title = "Apply lactate rich media",
+          content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
           placement = "right",
           trigger = "hover"
         )
