@@ -159,6 +159,7 @@ shinyServer(function(input, output, session) {
           new_df$metabolite = sapply(new_df$metabolite, function(x)
             names_dict[1, which(names_dict[2,] == x)])
           new_df = new_df[, c(3, 4, 2)]
+          new_df$stoi = as.character(new_df$stoi)
           
           output$fluxes = renderTable({
             new_df
