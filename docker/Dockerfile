@@ -68,12 +68,13 @@ RUN apt-get update
 RUN apt-get install -y cmake
 
 RUN wget -O /tmp/sundials.tar.gz 'https://computation.llnl.gov/projects/sundials/download/sundials-2.6.2.tar.gz'
-#RUN tar -xzf /tmp/sundials.tar.gz
-#RUN
-#RUN cd sundials
-#RUN cmake -DCMAKE_INSTALL_PREFIX=/home/myname/sundials/instdir -DEXAMPLES_INSTALL_PATH=/home/myname/sundials/instdir/examples ../srcdir
-#RUN make
-#RUN make install
+RUN tar -xzf /tmp/sundials.tar.gz
+RUN cd sundials
+RUN mkdir builddir
+RUN cd builddir
+RUN cmake ..
+RUN make
+RUN make install
 
 #RUN wget -O /tmp/rsbml.tar.gz 'https://www.bioconductor.org/packages/release/bioc/src/contrib/rsbml_2.36.0.tar.gz'
 #RUN wget -O /tmp/BiocGenerics.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/BiocGenerics_0.24.0.tar.gz'
