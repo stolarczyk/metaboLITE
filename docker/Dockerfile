@@ -79,14 +79,14 @@ RUN pip install python-libsbml cobra
 RUN git clone git@github.com:michaelllo1993/shinyapp.git
 
 #Run the app
-R -e "shiny::runApp(appDir = getwd(), port = getOption("shiny.port"),
+#R -e "shiny::runApp(appDir = getwd(), port = getOption("shiny.port"),
   launch.browser = getOption("shiny.launch.browser", interactive()),
   host = getOption("shiny.host", "127.0.0.1"), workerId = "",
   quiet = FALSE, display.mode = c("auto", "normal", "showcase"),
   test.mode = getOption("shiny.testmode", FALSE))"
 
 
-EXPOSE XXX
+#EXPOSE XXX
 
 
 
