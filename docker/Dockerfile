@@ -75,3 +75,18 @@ RUN Rscript -e "install.packages('sna')"
 # Installing python-libsbml and cobra
 RUN pip install python-libsbml cobra
 
+#Clone the R shinyapp git repository
+RUN git clone git@github.com:michaelllo1993/shinyapp.git
+
+#Run the app
+R -e "shiny::runApp(appDir = getwd(), port = getOption("shiny.port"),
+  launch.browser = getOption("shiny.launch.browser", interactive()),
+  host = getOption("shiny.host", "127.0.0.1"), workerId = "",
+  quiet = FALSE, display.mode = c("auto", "normal", "showcase"),
+  test.mode = getOption("shiny.testmode", FALSE))"
+
+
+EXPOSE XXX
+
+
+
