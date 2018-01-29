@@ -15,6 +15,7 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
         1. [libSBML](#libSBML_win)
         2. [Python](#Python_win)
         2. [R](#R_win)
+    3. [Docker container](#Docker)
 3. [Usage](#Usage)
 
 # Introduction<a name="introduction"></a>
@@ -158,6 +159,32 @@ Install [R](https://www.r-project.org/) programming language (version of your ch
 - sna: [Tools for Social Network Analysis](https://cran.r-project.org/web/packages/sna/)
 
 Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
+
+## Docker container<a name="Docker"></a>
+The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile. This is the most reliable, safest and easiest installation approach due to the intrisic Docker characterisitics. 
+
+To follow this approach install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
+
+After installation the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
+
+``` docker build [OPTIONS] PATH | URL | -` ``
+
+e.g
+
+``` cd "path/to/the/shinyapp/directory" ```
+``` sudo docker build -t toyconApp . ```
+
+Next, the container can be run using the built image with a following [command](https://docs.docker.com/get-started/part2/#build-the-app):
+
+e.g
+
+``` sudo docker run -p 8080:8080 toyconApp ```
+
+The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) and it is redirected to the same port in your OS/network with the command above.
+
+Subsequently, to runn the application go to your favourite web browser and paste:
+
+``` localhost:8080 ```
 
 # Usage<a name="Usage"></a>
 
