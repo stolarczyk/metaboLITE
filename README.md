@@ -167,7 +167,7 @@ To follow this approach install the Docker CE (community edition) software on yo
 
 After installation the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
 
-``` docker build [OPTIONS] PATH | URL | - ``
+``` docker build [OPTIONS] PATH | URL | - ```
 
 e.g
 
