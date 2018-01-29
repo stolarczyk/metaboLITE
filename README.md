@@ -171,8 +171,9 @@ After installation the docker image can be build with a following [command](http
 
 e.g
 
-``` cd "path/to/the/shinyapp/directory"
-sudo docker build -t toyconApp . ```
+``` cd "path/to/the/shinyapp/directory" ```
+
+```sudo docker build -t toyconApp . ```
 
 Next, the container can be run using the built image with a following [command](https://docs.docker.com/get-started/part2/#build-the-app):
 
