@@ -171,8 +171,8 @@ After installation the docker image can be build with a following [command](http
 
 e.g
 
-``` cd "path/to/the/shinyapp/directory" ```
-``` sudo docker build -t toyconApp . ```
+``` cd "path/to/the/shinyapp/directory"
+sudo docker build -t toyconApp . ```
 
 Next, the container can be run using the built image with a following [command](https://docs.docker.com/get-started/part2/#build-the-app):
 
@@ -182,7 +182,7 @@ e.g
 
 The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) and it is redirected to the same port in your OS/network with the command above.
 
-Subsequently, to runn the application go to your favourite web browser and paste:
+Subsequently, to run the application go to your favourite web browser and paste:
 
 ``` localhost:8080 ```
 
