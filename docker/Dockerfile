@@ -71,22 +71,22 @@ RUN Rscript -e "install.packages('intergraph')"
 RUN Rscript -e "install.packages('visNetwork')"
 RUN Rscript -e "install.packages('xtable')"
 RUN Rscript -e "install.packages('sna')"
+RUN Rscript -e "install.packages('rPython')"
+
 
 # Installing python-libsbml and cobra
 RUN pip install python-libsbml cobra
 
 #Clone the R shinyapp git repository
-RUN git clone git@github.com:michaelllo1993/shinyapp.git
+RUN git clone https://github.com/michaelllo1993/shinyapp.git
+
+#Expose the port that the app will be listening on
+EXPOSE 8080
 
 #Run the app
-#R -e "shiny::runApp(appDir = getwd(), port = getOption("shiny.port"),
-  launch.browser = getOption("shiny.launch.browser", interactive()),
-  host = getOption("shiny.host", "127.0.0.1"), workerId = "",
-  quiet = FALSE, display.mode = c("auto", "normal", "showcase"),
-  test.mode = getOption("shiny.testmode", FALSE))"
+CMD ["R","-e","shiny::runApp(appDir = '/tmp/shinyapp', port = 8080,launch.browser = F ,host = '0.0.0.0', quiet = FALSE, display.mode = 'auto',test.mode = FALSE)"]
 
 
-#EXPOSE XXX
 
 
 
