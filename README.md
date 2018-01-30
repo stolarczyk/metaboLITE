@@ -197,7 +197,7 @@ Next, the container can be run using the built or loaded image with a following 
 
 e.g
 
-```sudo docker run -p 8080:8080 toyconApp ```
+```sudo docker run -p 8080:8080 mstolarczyk/toyconapp ```
 
 The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) outside of the container and it is redirected to the same port in your OS/network with the command above.
 
