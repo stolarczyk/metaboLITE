@@ -161,7 +161,7 @@ Install [R](https://www.r-project.org/) programming language (version of your ch
 Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
 
 ## Docker container<a name="Docker"></a>
-The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and `docker/DockerImage.tar`, respectively).  This two  are the most reliable, safest and **easiest installation approaches** due to the intrisic Docker characterisitics. 
+The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/), respectively).  This two  are the most reliable, safest and **easiest installation approaches** due to the intrisic Docker characterisitics. 
 
 To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
 
@@ -175,13 +175,13 @@ e.g
 
 ```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
 
-or the image can be loaded from the provided tarball with a following [command](https://docs.docker.com/engine/reference/commandline/load/):
+or the image can be pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
 ```docker load [OPTIONS]```
 
 e.g
 
-``` sudo docker image load -i DockerImage.tar```
+``` docker pull mstolarczyk/toyconapp ```
 
 Next, the container can be run using the built or loaded image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
 
