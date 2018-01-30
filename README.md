@@ -175,6 +175,10 @@ e.g
 
 ```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
 
+Check the image status:
+
+``` sudo docker images```
+
 or the image can be pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
 ```docker pull [OPTIONS]```
@@ -182,6 +186,10 @@ or the image can be pulled from the repository with a following [command](https:
 e.g
 
 ``` docker pull mstolarczyk/toyconapp ```
+
+Check the image status:
+
+``` sudo docker images```
 
 Next, the container can be run using the built or loaded image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
 
