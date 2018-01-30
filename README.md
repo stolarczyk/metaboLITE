@@ -161,33 +161,43 @@ Install [R](https://www.r-project.org/) programming language (version of your ch
 Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
 
 ## Docker container<a name="Docker"></a>
-The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile provided with this application in `docker/Dockerfile`. This is the most reliable, safest and **easiest installation approach** due to the intrisic Docker characterisitics. 
+The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and `docker/DockerImage.tar`, respectively).  This two  are the most reliable, safest and **easiest installation approaches** due to the intrisic Docker characterisitics. 
 
-To follow this approach install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
+To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
 
 After installation the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
 
-``` docker build [OPTIONS] PATH | URL | - ```
+```docker build [OPTIONS] PATH | URL | - ```
 
 e.g
 
-``` cd "path/to/the/Dockerfile/directory" ```
+```cd "path/to/the/Dockerfile/directory" ```
 
 ```sudo docker build -t toyconApp . ``` *mind the dot at the end of the line!*
 
-Next, the container can be run using the built image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+or the image can be loaded from the provided tarball with a following [command](https://docs.docker.com/engine/reference/commandline/load/):
 
-``` docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
+```docker load [OPTIONS]```
 
 e.g
 
-``` sudo docker run -p 8080:8080 toyconApp ```
+``` sudo docker image load -i DockerImage.tar```
+
+Next, the container can be run using the built or loaded image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+
+```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
+
+e.g
+
+```sudo docker run -p 8080:8080 toyconApp ```
 
 The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) outside of the container and it is redirected to the same port in your OS/network with the command above.
 
 Subsequently, to run the application go to your favourite web browser and paste:
 
 ``` localhost:8080 ```
+
+
 
 # Usage<a name="Usage"></a>
 
