@@ -177,7 +177,7 @@ e.g
 
 or the image can be pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
-```docker load [OPTIONS]```
+```docker pull [OPTIONS]```
 
 e.g
 
