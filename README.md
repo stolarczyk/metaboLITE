@@ -173,7 +173,7 @@ e.g
 
 ```cd "path/to/the/Dockerfile/directory" ```
 
-```sudo docker build -t toyconApp . ``` *mind the dot at the end of the line!*
+```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
 
 or the image can be loaded from the provided tarball with a following [command](https://docs.docker.com/engine/reference/commandline/load/):
 
