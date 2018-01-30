@@ -167,7 +167,7 @@ To follow either of these approaches install the Docker CE (community edition) s
 
 After installation the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
 
-```docker build [OPTIONS] PATH | URL | - ```
+```docker build [OPTIONS] PATH | URL | - ``` *Please note that image building may take 10-15 minutes*
 
 e.g
 
