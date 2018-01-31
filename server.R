@@ -1,6 +1,6 @@
 
 # LOADING LIBRARIES -------------------------------------------------------
-
+library(sybil)
 library(igraph)
 library(rsbml)
 library(shiny)
