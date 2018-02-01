@@ -262,6 +262,42 @@ shinyServer(function(input, output, session) {
           width = "200px"
         )
       )
+      output$media1 = renderUI({
+        popify(
+          bsButton(inputId = "media1",
+                   label = "Glucose free media"),
+          title = "Apply glucose free media",
+          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
+      output$text_media = renderText({
+        paste("<u><b>Use predefined media: ", "</b></u>")
+      })
+      output$text_own = renderText({
+        paste("<u><b>Or adjust the exchange limits yourself: ", "</b></u>")
+      })
+      output$media2 = renderUI({
+        popify(
+          bsButton(inputId = "media2",
+                   label = "Microaerophilic media"),
+          title = "Apply microaerophilic media",
+          content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
+      output$media3 = renderUI({
+        popify(
+          bsButton(inputId = "media3",
+                   label = "Lactate rich media"),
+          title = "Apply lactate rich media",
+          content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
       output$range = renderUI(
         sliderInput(inputId = "range",min = -1000,
                     max = 1000,
@@ -860,39 +896,39 @@ shinyServer(function(input, output, session) {
       
       #VISUALIZEHERE
       
-      output$media1 = renderUI({
-        popify(
-          bsButton(inputId = "media1",
-                   label = "Glucose free media"),
-          title = "Apply glucose free media",
-          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
-      output$text_media = renderText({
-        paste("<br/>", "<b>Use predefined media: ", "</b>", "<br/>")
-      })
-      output$media2 = renderUI({
-        popify(
-          bsButton(inputId = "media2",
-                   label = "Microaerophilic media"),
-          title = "Apply microaerophilic media",
-          content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
-      output$media3 = renderUI({
-        popify(
-          bsButton(inputId = "media3",
-                   label = "Lactate rich media"),
-          title = "Apply lactate rich media",
-          content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
+      # output$media1 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media1",
+      #              label = "Glucose free media"),
+      #     title = "Apply glucose free media",
+      #     content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
+      # output$text_media = renderText({
+      #   paste("<br/>", "<b>Use predefined media: ", "</b>", "<br/>")
+      # })
+      # output$media2 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media2",
+      #              label = "Microaerophilic media"),
+      #     title = "Apply microaerophilic media",
+      #     content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
+      # output$media3 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media3",
+      #              label = "Lactate rich media"),
+      #     title = "Apply lactate rich media",
+      #     content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
     })
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
