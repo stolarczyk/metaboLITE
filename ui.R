@@ -21,6 +21,7 @@ shinyUI(
       sidebarPanel(
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
+        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("simulate_expr")),
 
         radioButtons(
           inputId = "weighting",
@@ -60,6 +61,7 @@ shinyUI(
         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
         uiOutput("pick_rxn"),
         uiOutput("range"),
+        bsPopover("range","Technical information", "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.","bottom",trigger = "click"),
         # uiOutput("lbound"),
         # uiOutput("ubound"),
         uiOutput("button_apply_media"),
@@ -82,6 +84,15 @@ shinyUI(
       mainPanel(visNetworkOutput(
         "graph_ko", width = "800", height = "600"
       ))
+    ),
+    tabPanel(
+      "Simulate expression changes",
+      sidebarPanel(
+        "TEST"
+      ),
+      mainPanel(
+        "TEST"
+      )
     )
   )
 )
