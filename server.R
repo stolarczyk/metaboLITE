@@ -1,6 +1,6 @@
 
-# LOADING LIBRARIES -------------------------------------------------------
 
+# LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
 library(shiny)
@@ -29,29 +29,31 @@ fill_blank <- function(x, len) {
   return(result)
 }
 
+
 shinyServer(function(input, output, session) {
   working_dir = getwd()
   path = "/data/toycon.xml"
-  if( .Platform$OS.type == "windows" ){
+  if (.Platform$OS.type == "windows") {
     path = gsub("\\\\", "/", path)
   }
-  model_file_path = paste(working_dir,path,sep = "")
+  model_file_path = paste(working_dir, path, sep = "")
   hideTab(inputId = "tabs", target = "Change media")
   hideTab(inputId = "tabs", target = "KO reactions")
+  hideTab(inputId = "tabs", target = "Simulate expression changes")
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   observeEvent(input$update, ignoreNULL = F , {
     working_dir = getwd()
     path = "/data/toycon.xml"
-    if( .Platform$OS.type == "windows" ){
+    if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
-    model_file_path = paste(working_dir,path,sep = "")
-    path="/data/model_var.RData"
-    if( .Platform$OS.type == "windows" ){
+    model_file_path = paste(working_dir, path, sep = "")
+    path = "/data/model_var.RData"
+    if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
-    load(paste(working_dir,path,sep = ""))
+    load(paste(working_dir, path, sep = ""))
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
@@ -71,7 +73,7 @@ shinyServer(function(input, output, session) {
       if (any(names(sbml_model@model@species) == as.character(names[i]))) {
         metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
         compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-        metabolite = paste(metabolite_name, compartment, sep = "_")
+        metabolite = paste(metabolite_name, compartment, sep = " ")
         edges_names[i] = metabolite
       }
       else{
@@ -96,12 +98,12 @@ shinyServer(function(input, output, session) {
         output$fluxes = renderTable({
           
         })
-        python.assign("model_file_path",model_file_path)
+        python.assign("model_file_path", model_file_path)
         path = "/scripts/check_flux.py"
-        if( .Platform$OS.type == "windows" ){
+        if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
-        python.load(paste(working_dir,path,sep = ""))
+        python.load(paste(working_dir, path, sep = ""))
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
@@ -109,12 +111,12 @@ shinyServer(function(input, output, session) {
       }
       #Weighting edges
       else{
-        python.assign("model_file_path",model_file_path)
+        python.assign("model_file_path", model_file_path)
         path = "/scripts/check_flux.py"
-        if( .Platform$OS.type == "windows" ){
+        if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
-        python.load(paste(working_dir,path,sep = ""))
+        python.load(paste(working_dir, path, sep = ""))
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
           paste("<br/>",
@@ -145,7 +147,7 @@ shinyServer(function(input, output, session) {
             new_df = merge(new_df, df1, all = T)
           }
           selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-          new_df = new_df[selection,]
+          new_df = new_df[selection, ]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
@@ -155,9 +157,9 @@ shinyServer(function(input, output, session) {
           new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
           new_df[rotate, "metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2,] == x)])
+            names_dict[1, which(names_dict[2, ] == x)])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2,] == x)])
+            names_dict[1, which(names_dict[2, ] == x)])
           new_df = new_df[, c(3, 4, 2)]
           new_df$stoi = as.character(new_df$stoi)
           
@@ -179,20 +181,21 @@ shinyServer(function(input, output, session) {
           }
           edgesize = log(abs(weights_edges)) + 1
           visdata$edges$width = edgesize
-          visdata$edges$title = paste("Stoichiometric coefficient: ",ceiling(weights_edges))
+          visdata$edges$title = paste("Stoichiometric coefficient: ",
+                                      ceiling(weights_edges))
         }
       }
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
       
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -246,14 +249,25 @@ shinyServer(function(input, output, session) {
       )
     )
     
+    output$simulate_expr = renderUI(
+      popify(
+        bsButton(inputId = "simulate_expr",
+                 label = "Simulate expression changes"),
+        title = "Creates the \"Simulate expression changes\" tab",
+        content = "Simulate gene expression changes and visualize the model",
+        placement = "right",
+        trigger = "hover"
+      )
+    )
+    
     #Prepare select input dropdown menu of reactions to constrain in media types
-
+    
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
     observeEvent(input$change_media, {
       showTab(inputId = "tabs", target = "Change media")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)])
+        names_dict[1, which(names_dict[2, ] == x)])
       output$pick_rxn = renderUI(
         selectInput(
           inputId = "pick_rxn",
@@ -262,26 +276,50 @@ shinyServer(function(input, output, session) {
           width = "200px"
         )
       )
-      output$lbound = renderUI(
-        sliderInput(
-          inputId = "lbound",
-          min = -1000,
-          max = 1000,
-          label = "Select the lower bound:",
-          value = 0,
-          step = 10,
-          round = TRUE,
-          ticks = TRUE,
-          width = "300px"
+      output$media1 = renderUI({
+        popify(
+          bsButton(inputId = "media1",
+                   label = "Glucose free media"),
+          title = "Apply glucose free media",
+          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
+          placement = "right",
+          trigger = "hover"
         )
-      )
-      output$ubound = renderUI(
+      })
+      output$text_media = renderText({
+        paste("<u><b>Use predefined media: ", "</b></u>")
+      })
+      output$text_own = renderText({
+        paste("<u><b>Or adjust the exchange limits yourself: ",
+              "</b></u>")
+      })
+      output$media2 = renderUI({
+        popify(
+          bsButton(inputId = "media2",
+                   label = "Microaerophilic media"),
+          title = "Apply microaerophilic media",
+          content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
+      output$media3 = renderUI({
+        popify(
+          bsButton(inputId = "media3",
+                   label = "Lactate rich media"),
+          title = "Apply lactate rich media",
+          content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
+      output$range = renderUI(
         sliderInput(
-          inputId = "ubound",
+          inputId = "range",
           min = -1000,
           max = 1000,
-          label = "Select the upper bound:",
-          value = 0,
+          label = "Select the exchange limts:",
+          value = c(-1000, 1000),
           step = 10,
           round = TRUE,
           ticks = TRUE,
@@ -299,17 +337,20 @@ shinyServer(function(input, output, session) {
         )
       )
     })
-
+    observeEvent(input$simulate_expr, {
+      showTab(inputId = "tabs", target = "Simulate expression changes")
+    })
+    
     # APPLY MEDIA1 ------------------------------------------------------------
     observeEvent(input$media1, {
       media_type = "media1"
       python.assign("media_type", media_type)
-      python.assign("model_file_path",model_file_path)
-      path="/scripts/run_media.py"
-      if( .Platform$OS.type == "windows" ){
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/run_media.py"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      python.load(paste(working_dir,path,sep = ""))
+      python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -358,12 +399,12 @@ shinyServer(function(input, output, session) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
       dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE 
+      dashed[which(weights_edges == 0)] = TRUE
       visdata$edges$dashes = dashed
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -395,8 +436,8 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
@@ -404,16 +445,16 @@ shinyServer(function(input, output, session) {
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
       if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
       }
       else{
         coords_deleted_rxn = coords
       }
       visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -436,17 +477,17 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-
+    
     # APPLY MEDIA2 ------------------------------------------------------------
     observeEvent(input$media2, {
       media_type = "media2"
       python.assign("media_type", media_type)
-      python.assign("model_file_path",model_file_path)
-      path="/scripts/run_media.py"
-      if( .Platform$OS.type == "windows" ){
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/run_media.py"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      python.load(paste(working_dir,path,sep = ""))
+      python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -495,12 +536,12 @@ shinyServer(function(input, output, session) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
       dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE 
+      dashed[which(weights_edges == 0)] = TRUE
       visdata$edges$dashes = dashed
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -532,8 +573,8 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
@@ -541,16 +582,16 @@ shinyServer(function(input, output, session) {
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
       if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
       }
       else{
         coords_deleted_rxn = coords
       }
       visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -573,17 +614,17 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-
+    
     # APPLY MEDIA3 ------------------------------------------------------------
     observeEvent(input$media3, {
       media_type = "media3"
       python.assign("media_type", media_type)
-      python.assign("model_file_path",model_file_path)
-      path="/scripts/run_media.py"
-      if( .Platform$OS.type == "windows" ){
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/run_media.py"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      python.load(paste(working_dir,path,sep = ""))
+      python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -632,12 +673,12 @@ shinyServer(function(input, output, session) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
       dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE 
+      dashed[which(weights_edges == 0)] = TRUE
       visdata$edges$dashes = dashed
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -669,8 +710,8 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
@@ -678,16 +719,16 @@ shinyServer(function(input, output, session) {
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
       if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
       }
       else{
         coords_deleted_rxn = coords
       }
       visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -713,20 +754,22 @@ shinyServer(function(input, output, session) {
     
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
-      lb = input$lbound
-      ub = input$ubound
+      lb = input$range[1]
+      ub = input$range[2]
+      # lb = input$lbound
+      # ub = input$ubound
       reaction = (input$pick_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       if (lb < ub) {
         python.assign("lb", lb)
         python.assign("ub", ub)
         python.assign("reaction_ID", reaction_ID)
-        python.assign("model_file_path",model_file_path)
-        path="/scripts/change_bounds.py"
-        if( .Platform$OS.type == "windows" ){
+        python.assign("model_file_path", model_file_path)
+        path = "/scripts/change_bounds.py"
+        if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
-        python.load(paste(working_dir,path,sep = ""))
+        python.load(paste(working_dir, path, sep = ""))
         flux = python.get(var.name = "flux")
         fluxes = python.get(var.name = "fluxes")
         fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
@@ -776,12 +819,12 @@ shinyServer(function(input, output, session) {
           weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
         }
         dashed = rep(FALSE, length(weights_edges))
-        dashed[which(weights_edges == 0)] = TRUE 
+        dashed[which(weights_edges == 0)] = TRUE
         visdata$edges$dashes = dashed
         edgesize = log(abs(weights_edges)) + 1
         visdata$edges$width = edgesize
         visdata$edges$length = 150
-        visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+        visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
         #visdata$edges$arrows = c("from", "to")
         net = asNetwork(toycon_graph)
         names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -815,8 +858,8 @@ shinyServer(function(input, output, session) {
           ))))
         names_dict = rbind(edges_names, names) #Names and IDs dictionary
         visdata$nodes$label = as.vector(edges_names)
-        path="data/textbooky_coords.csv"
-        if( .Platform$OS.type == "windows" ){
+        path = "data/textbooky_coords.csv"
+        if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
         coords = read.csv(path)
@@ -824,16 +867,16 @@ shinyServer(function(input, output, session) {
         set2 = rownames(coords)
         deleted_rxn = setdiff(set2, set1)
         if (length(deleted_rxn) > 0) {
-          coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+          coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
         }
         else{
           coords_deleted_rxn = coords
         }
         visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
-        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -874,39 +917,39 @@ shinyServer(function(input, output, session) {
       
       #VISUALIZEHERE
       
-      output$media1 = renderUI({
-        popify(
-          bsButton(inputId = "media1",
-                   label = "Glucose free media"),
-          title = "Apply glucose free media",
-          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
-      output$text_media = renderText({
-        paste("<br/>", "<b>Use predefined media: ", "</b>", "<br/>")
-      })
-      output$media2 = renderUI({
-        popify(
-          bsButton(inputId = "media2",
-                   label = "Microaerophilic media"),
-          title = "Apply microaerophilic media",
-          content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
-      output$media3 = renderUI({
-        popify(
-          bsButton(inputId = "media3",
-                   label = "Lactate rich media"),
-          title = "Apply lactate rich media",
-          content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
+      # output$media1 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media1",
+      #              label = "Glucose free media"),
+      #     title = "Apply glucose free media",
+      #     content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
+      # output$text_media = renderText({
+      #   paste("<br/>", "<b>Use predefined media: ", "</b>", "<br/>")
+      # })
+      # output$media2 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media2",
+      #              label = "Microaerophilic media"),
+      #     title = "Apply microaerophilic media",
+      #     content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
+      # output$media3 = renderUI({
+      #   popify(
+      #     bsButton(inputId = "media3",
+      #              label = "Lactate rich media"),
+      #     title = "Apply lactate rich media",
+      #     content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
+      #     placement = "right",
+      #     trigger = "hover"
+      #   )
+      # })
     })
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
@@ -914,7 +957,7 @@ shinyServer(function(input, output, session) {
                         selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)])
+        names_dict[1, which(names_dict[2, ] == x)])
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
@@ -935,16 +978,17 @@ shinyServer(function(input, output, session) {
       })
     })
     
+    
     # KO RESET ----------------------------------------------------------------
     observeEvent(input$reset, {
       reaction_ID = "Reset"
       python.assign("reaction_ID", reaction_ID)
-      python.assign("model_file_path",model_file_path)
-      path="/scripts/ko_rxn.py"
-      if( .Platform$OS.type == "windows" ){
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/ko_rxn.py"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      python.load(paste(working_dir,path,sep = ""))
+      python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
       path_ko = path_removed
@@ -1000,12 +1044,12 @@ shinyServer(function(input, output, session) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
       dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE 
+      dashed[which(weights_edges == 0)] = TRUE
       visdata$edges$dashes = dashed
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
       visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -1037,8 +1081,8 @@ shinyServer(function(input, output, session) {
         fill_blank(x, max(nchar(edges_names))))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
@@ -1046,16 +1090,16 @@ shinyServer(function(input, output, session) {
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
       if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
       }
       else{
         coords_deleted_rxn = coords
       }
       visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1078,7 +1122,7 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-
+    
     
     # APPLY KO ----------------------------------------------------------------
     observeEvent(input$apply_ko, {
@@ -1096,12 +1140,12 @@ shinyServer(function(input, output, session) {
       reaction = (input$pick_ko_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       python.assign("reaction_ID", reaction_ID)
-      python.assign("model_file_path",model_file_path)
-      path="/scripts/ko_rxn.py"
-      if( .Platform$OS.type == "windows" ){
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/ko_rxn.py"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      python.load(paste(working_dir,path,sep = ""))
+      python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
       path_removed = python.get(var.name = "path_removed")
       path_ko = path_removed
@@ -1128,7 +1172,7 @@ shinyServer(function(input, output, session) {
       }
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = paste("Fluxes after the KO of", names_dict[1, which(names_dict[2, ] == paste("R_", reaction_ID, sep = ""))]),
+      }, width = "250", caption = paste("Fluxes after the KO of", names_dict[1, which(names_dict[2,] == paste("R_", reaction_ID, sep = ""))]),
       caption.placement = getOption("xtable.caption.placement", "top"),
       caption.width = getOption("xtable.caption.width", NULL))
       
@@ -1158,11 +1202,11 @@ shinyServer(function(input, output, session) {
         weights_edges = append(weights_edges, net_ko$mel[[i]][[3]][[2]])
       }
       dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE 
+      dashed[which(weights_edges == 0)] = TRUE
       visdata_ko$edges$dashes = dashed
       edgesize = log(abs(weights_edges)) + 1
       visdata_ko$edges$width = edgesize
-      visdata_ko$edges$title = paste("Flux: ",ceiling(weights_edges))
+      visdata_ko$edges$title = paste("Flux: ", ceiling(weights_edges))
       
       #Setting colors according to node class
       color_reaction_ko = "lightblue"
@@ -1192,8 +1236,8 @@ shinyServer(function(input, output, session) {
         ))))
       names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
       visdata_ko$nodes$label = as.vector(edges_names_ko)
-      path="data/textbooky_coords.csv"
-      if( .Platform$OS.type == "windows" ){
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
@@ -1201,17 +1245,17 @@ shinyServer(function(input, output, session) {
       set2 = rownames(coords)
       deleted_rxn = setdiff(set2, set1)
       if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)),]
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
       }
       else{
         coords_deleted_rxn = coords
       }
       visdata_ko$nodes = cbind(visdata_ko$nodes, coords_deleted_rxn)
       #Emphasize main reactions
-      visdata_ko$nodes[which(grepl("glycolysis", names_dict_ko[1, ])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("respiration", names_dict_ko[1, ])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("synthase", names_dict_ko[1, ])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("demand", names_dict_ko[1, ])), "font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("glycolysis", names_dict_ko[1,])), "font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("respiration", names_dict_ko[1,])), "font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("synthase", names_dict_ko[1,])), "font"] = "25px arial"
+      visdata_ko$nodes[which(grepl("demand", names_dict_ko[1,])), "font"] = "25px arial"
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata_ko$nodes, edges = visdata_ko$edges) %>%
@@ -1234,6 +1278,7 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
+    
   })
   
   session$onSessionEnded(function() {
