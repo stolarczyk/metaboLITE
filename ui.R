@@ -54,8 +54,9 @@ shinyUI(
       "Change media",
       sidebarPanel(
         uiOutput("pick_rxn"),
-        uiOutput("lbound"),
-        uiOutput("ubound"),
+        uiOutput("range"),
+        # uiOutput("lbound"),
+        # uiOutput("ubound"),
         uiOutput("button_apply_media"),
         htmlOutput("text_flux_media"),
         div(style = "vertical-align:top; width: 50%;height: 60px", htmlOutput("text_media")),

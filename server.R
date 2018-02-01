@@ -1,6 +1,5 @@
 
 # LOADING LIBRARIES -------------------------------------------------------
-library(sybil)
 library(igraph)
 library(rsbml)
 library(shiny)
@@ -28,6 +27,7 @@ fill_blank <- function(x, len) {
   result = paste(add_left, x, add_right, sep = "")
   return(result)
 }
+
 
 shinyServer(function(input, output, session) {
   working_dir = getwd()
@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
       if (any(names(sbml_model@model@species) == as.character(names[i]))) {
         metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
         compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-        metabolite = paste(metabolite_name, compartment, sep = "_")
+        metabolite = paste(metabolite_name, compartment, sep = " ")
         edges_names[i] = metabolite
       }
       else{
@@ -262,31 +262,15 @@ shinyServer(function(input, output, session) {
           width = "200px"
         )
       )
-      output$lbound = renderUI(
-        sliderInput(
-          inputId = "lbound",
-          min = -1000,
-          max = 1000,
-          label = "Select the lower bound:",
-          value = 0,
-          step = 10,
-          round = TRUE,
-          ticks = TRUE,
-          width = "300px"
-        )
-      )
-      output$ubound = renderUI(
-        sliderInput(
-          inputId = "ubound",
-          min = -1000,
-          max = 1000,
-          label = "Select the upper bound:",
-          value = 0,
-          step = 10,
-          round = TRUE,
-          ticks = TRUE,
-          width = "300px"
-        )
+      output$range = renderUI(
+        sliderInput(inputId = "range",min = -1000,
+                    max = 1000,
+                    label = "Select the exchange limts:",
+                    value = c(-1000,1000),
+                    step = 10,
+                    round = TRUE,
+                    ticks = TRUE,
+                    width = "300px")
       )
       output$button_apply_media = renderUI(
         popify(
@@ -713,8 +697,10 @@ shinyServer(function(input, output, session) {
     
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
-      lb = input$lbound
-      ub = input$ubound
+      lb = input$range[1]
+      ub = input$range[2]
+      # lb = input$lbound
+      # ub = input$ubound
       reaction = (input$pick_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       if (lb < ub) {
