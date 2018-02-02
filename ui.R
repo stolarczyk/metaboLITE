@@ -21,8 +21,7 @@ shinyUI(
       sidebarPanel(
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
-        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("simulate_expr")),
-
+        div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("simulate_expr")),
         radioButtons(
           inputId = "weighting",
           label = HTML("Visualize flux on the graph:"),
@@ -88,11 +87,15 @@ shinyUI(
     tabPanel(
       "Simulate expression changes",
       sidebarPanel(
-        "TEST"
+        uiOutput("pick_expr_gene"),
+        uiOutput("expr"),
+        uiOutput("button_apply_expr"),
+        htmlOutput("text_flux_expr"),
+        tableOutput(outputId = 'fluxes_expr')
       ),
-      mainPanel(
-        "TEST"
-      )
+      mainPanel(visNetworkOutput(
+        "graph_expr", width = "800", height = "600"
+      ))
     )
   )
 )

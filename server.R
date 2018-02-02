@@ -30,16 +30,17 @@ fill_blank <- function(x, len) {
 }
 
 
-shinyServer(function(input, output, session) {
+shinyServer(function(input, output, session) {  
+  hideTab(inputId = "tabs", target = "Change media")
+  hideTab(inputId = "tabs", target = "KO reactions")
+  hideTab(inputId = "tabs", target = "Simulate expression changes")
   working_dir = getwd()
   path = "/data/toycon.xml"
   if (.Platform$OS.type == "windows") {
     path = gsub("\\\\", "/", path)
   }
   model_file_path = paste(working_dir, path, sep = "")
-  hideTab(inputId = "tabs", target = "Change media")
-  hideTab(inputId = "tabs", target = "KO reactions")
-  hideTab(inputId = "tabs", target = "Simulate expression changes")
+
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   observeEvent(input$update, ignoreNULL = F , {
@@ -54,6 +55,7 @@ shinyServer(function(input, output, session) {
       path = gsub("\\\\", "/", path)
     }
     load(paste(working_dir, path, sep = ""))
+    toycon = readRDS(paste(working_dir,"/data/toycon1.rda",sep = ""))
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
@@ -299,7 +301,7 @@ shinyServer(function(input, output, session) {
                    label = "Microaerophilic media"),
           title = "Apply microaerophilic media",
           content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-          placement = "right",
+          placement = "right",      
           trigger = "hover"
         )
       })
@@ -337,8 +339,49 @@ shinyServer(function(input, output, session) {
         )
       )
     })
+
+# SHOW SIMULATE EXPR TAB --------------------------------------------------
+
+    
     observeEvent(input$simulate_expr, {
       showTab(inputId = "tabs", target = "Simulate expression changes")
+      
+      
+      choices_list_expr = as.list(toycon@react_name)
+      names(choices_list_expr) = paste(toycon@allGenes,toycon@react_name,sep = ": ")
+      output$pick_expr_gene = renderUI(
+        selectInput(
+          inputId = "pick_expr_gene",
+          label = "Pick a gene for expression adjustment:",
+          choices = choices_list_expr,
+          width = "200px"
+        )
+      )
+      
+      output$button_apply_expr = renderUI({
+        popify(
+          bsButton(inputId = "apply_expr",
+                   label = "Adjust"),
+          title = "Adjusts the gene expression level",
+          content = "The pseudo-expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively. It directly influences the flux that is carried by the reaction catalyzed by the enzyme encoded by the gene in question",
+          placement = "right",
+          trigger = "hover"
+        )
+      })
+      
+      output$expr = renderUI(
+        sliderInput(
+          inputId = "expr",
+          min = 0,
+          max = 1,
+          label = "Select the gene expression level:",
+          value = 0.5,
+          step = 0.1,
+          round = TRUE,
+          ticks = F,
+          width = "300px"
+        )
+      )
     })
     
     # APPLY MEDIA1 ------------------------------------------------------------
@@ -756,8 +799,6 @@ shinyServer(function(input, output, session) {
     observeEvent(input$apply_media, {
       lb = input$range[1]
       ub = input$range[2]
-      # lb = input$lbound
-      # ub = input$ubound
       reaction = (input$pick_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       if (lb < ub) {
@@ -1279,6 +1320,152 @@ shinyServer(function(input, output, session) {
       })
     })
     
+
+# APPLY GENE EXPRESSION ---------------------------------------------------
+    observeEvent(input$apply_expr, {
+      reaction_name = (input$pick_expr_gene)
+      reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
+      
+      bound = (input$expr)*1000
+      python.assign("bound", bound)
+      python.assign("reaction_ID", reaction_ID)
+      python.assign("model_file_path", model_file_path)
+      path = "/scripts/simulate_expression.py"
+      if (.Platform$OS.type == "windows") {
+        path = gsub("\\\\", "/", path)
+      }
+      python.load(paste(working_dir, path, sep = ""))
+      flux = python.get(var.name = "flux")
+      fluxes = python.get(var.name = "fluxes")
+      fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
+      fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
+      rownames(fluxes_output) = c()
+      colnames(fluxes_output) = c("Reaction", "Flux")
+      
+      data = rsbml_graph((sbml_model))
+      ndata = names(data@edgeData)
+      for (i in seq(1, dim(fluxes_output)[1])) {
+        hits = which(grepl(fluxes_output[i, 1], ndata))
+        for (j in hits) {
+          data@edgeData@data[[j]]$weight = as.numeric(fluxes_output[i, 2])
+        }
+      }
+      
+      
+      for (i in seq(1, dim(names_dict)[2], by = 1)) {
+        #Mapping nodes IDs to names for table displaying purposes
+        if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+          fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+      }
+      output$fluxes_expr = renderTable({
+        fluxes_output
+      }, width = "250", caption = "Fluxes after gene expression adjustment",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", NULL))
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      edges_names = names
+      output$text_flux_expr = renderText({
+        paste("<br/>",
+              "<b>Objective value: ",
+              as.character(flux),
+              "</b>",
+              "<br/>")
+      })
+      
+      toycon_graph = igraph.from.graphNEL(data)
+      net = asNetwork(toycon_graph)
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
+                                                          "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
+                                                                                                                     "vertex.names")]))])
+      
+      toycon_graph = igraph.from.graphNEL(data)
+      visdata <- toVisNetworkData(toycon_graph)
+      visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
+      visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      weights_edges = c()
+      for (i in seq(1, length(net$mel))) {
+        weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+      }
+      dashed = rep(FALSE, length(weights_edges))
+      dashed[which(weights_edges == 0)] = TRUE
+      visdata$edges$dashes = dashed
+      edgesize = log(abs(weights_edges)) + 1
+      visdata$edges$width = edgesize
+      visdata$edges$length = 150
+      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
+      #visdata$edges$arrows = c("from", "to")
+      net = asNetwork(toycon_graph)
+      names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
+      
+      #Setting colors according to node class
+      color_reaction = "lightblue"
+      color_metabolite = "tomato"
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      edges_names = names
+      #Setting names
+      for (i in seq(1, length(names))) {
+        if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
+          metabolite = paste(metabolite_name, compartment, sep = "_")
+          edges_names[i] = metabolite
+        }
+        else{
+          if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+            reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+            edges_names[i] = reaction_name
+          }
+          else{
+            edges_names[i] = "NoName"
+          }
+        }
+      }
+      edges_names = sapply(edges_names, function(x)
+        fill_blank(x, max(nchar(edges_names))))
+      names_dict = rbind(edges_names, names) #Names and IDs dictionary
+      visdata$nodes$label = as.vector(edges_names)
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
+      set1 = rownames(visdata$nodes)
+      set2 = rownames(coords)
+      deleted_rxn = setdiff(set2, set1)
+      if (length(deleted_rxn) > 0) {
+        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
+      }
+      else{
+        coords_deleted_rxn = coords
+      }
+      visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
+      output$graph_expr = renderVisNetwork({
+        #Plotting graph
+        visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
+          visLegend(stepX = 75,
+                    stepY = 100,
+                    width = 0.1) %>%
+          visOptions(highlightNearest = TRUE) %>%
+          visEdges(color = "black", arrows = "to") %>%
+          visGroups(groupname = "Metabolite",
+                    color = color_metabolite,
+                    shape = "circle") %>%
+          visGroups(groupname = "Reaction",
+                    color = color_reaction,
+                    shape = "box") %>%
+          visPhysics(barnesHut = list(
+            springLength = 200,
+            springConstant = 0,
+            gravitationalConstant = 0
+          )) %>%
+          visLayout(randomSeed = 1)
+      })
+    })
   })
   
   session$onSessionEnded(function() {
