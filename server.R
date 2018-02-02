@@ -54,6 +54,12 @@ shinyServer(function(input, output, session) {
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
+    output$text_main = renderText({
+      paste("<u><b>Launch tabs with following functionalities: ", "</b></u>")
+    })
+    output$text_vis = renderText({
+      paste("<u><b>Visualize the metabolic network: ", "</b></u>")
+    })
     load(paste(working_dir, path, sep = ""))
     toycon = readRDS(paste(working_dir,"/data/toycon1.rda",sep = ""))
     data = rsbml_graph((sbml_model))
@@ -372,7 +378,7 @@ shinyServer(function(input, output, session) {
       output$expr = renderUI(
         sliderInput(
           inputId = "expr",
-          min = 0,
+          min = -1,
           max = 1,
           label = "Select the gene expression level:",
           value = 0.5,

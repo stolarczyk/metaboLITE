@@ -19,12 +19,14 @@ shinyUI(
     tabPanel(
       "Visualize",
       sidebarPanel(
+        div(style = "vertical-align:top; width: 100%;height: 30px", htmlOutput("text_main")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
         div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
         div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("simulate_expr")),
+        div(style = "vertical-align:top; width: 100%;height: 30px", htmlOutput("text_vis")),
         radioButtons(
           inputId = "weighting",
-          label = HTML("Visualize flux on the graph:"),
+          label = HTML("Display weights:"),
           choices = c(
             "None" = "none",
             "log2(stoichiometry)" = "stoichiometry"
