@@ -378,7 +378,7 @@ shinyServer(function(input, output, session) {
       output$expr = renderUI(
         sliderInput(
           inputId = "expr",
-          min = -1,
+          min = 0,
           max = 1,
           label = "Select the gene expression level:",
           value = 0.5,
@@ -1332,7 +1332,7 @@ shinyServer(function(input, output, session) {
       reaction_name = (input$pick_expr_gene)
       reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
       
-      bound = (input$expr)*1000
+      bound = input$expr
       python.assign("bound", bound)
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)

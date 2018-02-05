@@ -16,7 +16,8 @@ else:
     toycon.reactions.get_by_id(reaction_ID).knock_out()
     solution = toycon.optimize()
     flux = solution.objective_value
-    fluxes = solution.fluxes.to_dict()
+    fluxes = toycon.optimize().fluxes.round(2)
+    fluxes = fluxes.to_dict()
     path = model_file_path
     fragments = path.split("\\")
     last_fragment = fragments[-1]
@@ -31,7 +32,9 @@ else:
     toycon.reactions.get_by_id(reaction_ID).knock_out()
     solution = toycon.optimize()
     flux = solution.objective_value
-    fluxes = solution.fluxes.to_dict()
+    #Save the results
+    fluxes = toycon.optimize().fluxes.round(2)
+    fluxes = fluxes.to_dict()
     path = model_file_path
     fragments = path.split("/")
     last_fragment = fragments[-1]
