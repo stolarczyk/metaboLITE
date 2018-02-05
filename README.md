@@ -7,15 +7,15 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
     1. [What is this?](#what)
     2. [Functionalities](#Functionalities)
 2. [Installation](#Installation)
-    1. [UNIX](#UNIX)
+    1. [Docker container](#Docker)
+    2. [UNIX](#UNIX)
         1. [libSBML](#libSBML)
         2. [Python](#Python)
-        2. [R](#R)
-    2. [Windows](#Windows)
+        3. [R](#R)
+    3. [Windows](#Windows)
         1. [libSBML](#libSBML_win)
         2. [Python](#Python_win)
-        2. [R](#R_win)
-    3. [Docker container](#Docker)
+        3. [R](#R_win)
 3. [Usage](#Usage)
 
 # Introduction<a name="introduction"></a>
@@ -34,10 +34,56 @@ The *ToyCon visualization app* is an R shiny app that aids the basic understandi
 
 # Installation<a name="Installation"></a>
 
-The application is written in R programming language and uses [COBRApy](https://opencobra.github.io/cobrapy/) for under the hood [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) simulations, reaction knockouts and constraining fluxes through exchange reactions.
-Consequently an installation of [libSBML](http://sbml.org/Software/libSBML/), [R](https://www.r-project.org/) and [Python](https://www.python.org/) with functioning [cobra](https://pypi.python.org/pypi/cobra/) package is required.
+## Docker container<a name="Docker"></a>
+The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/), respectively).
+
+To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
+
+After installation the docker image can pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
+
+```docker pull [OPTIONS]```
+
+e.g
+
+``` docker pull mstolarczyk/toyconapp ```
+
+Check the image status:
+
+``` sudo docker images```
+
+or the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
+
+```docker build [OPTIONS] PATH | URL | - ``` *Please note that image building may take 10-15 minutes*
+
+e.g
+
+```cd "path/to/the/Dockerfile/directory" ```
+
+```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
+
+Check the image status:
+
+``` sudo docker images```
+
+Next, the container can be run using the built or loaded image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+
+```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
+
+e.g
+
+```sudo docker run -p 8080:8080 mstolarczyk/toyconapp ```
+
+The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) outside of the container and it is redirected to the same port in your OS/network with the command above.
+
+Subsequently, to run the application go to your favourite web browser and paste:
+
+``` localhost:8080 ```
+
 
 ## UNIX<a name="UNIX"></a>
+
+The application is written in R programming language and uses [COBRApy](https://opencobra.github.io/cobrapy/) for under the hood [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) simulations, reaction knockouts and constraining fluxes through exchange reactions.
+Consequently an installation of [libSBML](http://sbml.org/Software/libSBML/), [R](https://www.r-project.org/) and [Python](https://www.python.org/) with functioning [cobra](https://pypi.python.org/pypi/cobra/) package is required.
 
 ### libSBML<a name="libSBML"></a>
 
@@ -107,6 +153,9 @@ Or you can use [this](scripts/install_packages.R) script to automatically instal
 
 ## Windows<a name="Windows"></a>
 
+The application is written in R programming language and uses [COBRApy](https://opencobra.github.io/cobrapy/) for under the hood [Flux Balance Analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3108565/pdf/nihms299330.pdf) (FBA) simulations, reaction knockouts and constraining fluxes through exchange reactions.
+Consequently an installation of [libSBML](http://sbml.org/Software/libSBML/), [R](https://www.r-project.org/) and [Python](https://www.python.org/) with functioning [cobra](https://pypi.python.org/pypi/cobra/) package is required.
+
 ### libSBML<a name="libSBML_win"></a>
 
 Install system [libSBML](http://sbml.org/Software/libSBML/Downloading_libSBML) programming library. Necessary files and instructions for installation under Windows are available [here](https://sourceforge.net/projects/sbml/files/libsbml/5.15.0/stable/Windows/64-bit/)
@@ -161,50 +210,6 @@ Install [R](https://www.r-project.org/) programming language (version of your ch
 
 Or you can use [this](scripts/install_packages.R) script to automatically install all required R packages (except from the rPython package, which requires special attention) after the language installation.
 
-## Docker container<a name="Docker"></a>
-The alternative way to run the application is using the [Docker](https://www.docker.com/what-docker) software to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/), respectively).  This two  are the most reliable, safest and **easiest installation approaches** due to the intrisic Docker characterisitics. 
-
-To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
-
-After installation the docker image can pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
-
-```docker pull [OPTIONS]```
-
-e.g
-
-``` docker pull mstolarczyk/toyconapp ```
-
-Check the image status:
-
-``` sudo docker images```
-
-or the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
-
-```docker build [OPTIONS] PATH | URL | - ``` *Please note that image building may take 10-15 minutes*
-
-e.g
-
-```cd "path/to/the/Dockerfile/directory" ```
-
-```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
-
-Check the image status:
-
-``` sudo docker images```
-
-Next, the container can be run using the built or loaded image with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
-
-```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
-
-e.g
-
-```sudo docker run -p 8080:8080 mstolarczyk/toyconapp ```
-
-The set of two numbers separated by the colon after the `-p` flag specifies the port mapping. The application is programmed to listen on port 8080 (second number of the two) inside of the container. The port is then [exposed](https://docs.docker.com/engine/reference/builder/#expose) outside of the container and it is redirected to the same port in your OS/network with the command above.
-
-Subsequently, to run the application go to your favourite web browser and paste:
-
-``` localhost:8080 ```
 
 
 
