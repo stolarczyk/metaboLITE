@@ -166,7 +166,19 @@ The alternative way to run the application is using the [Docker](https://www.doc
 
 To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/). 
 
-After installation the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
+After installation the docker image can pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
+
+```docker pull [OPTIONS]```
+
+e.g
+
+``` docker pull mstolarczyk/toyconapp ```
+
+Check the image status:
+
+``` sudo docker images```
+
+or the docker image can be build with a following [command](https://docs.docker.com/engine/reference/commandline/build/):
 
 ```docker build [OPTIONS] PATH | URL | - ``` *Please note that image building may take 10-15 minutes*
 
@@ -175,18 +187,6 @@ e.g
 ```cd "path/to/the/Dockerfile/directory" ```
 
 ```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
-
-Check the image status:
-
-``` sudo docker images```
-
-or the image can be pulled from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
-
-```docker pull [OPTIONS]```
-
-e.g
-
-``` docker pull mstolarczyk/toyconapp ```
 
 Check the image status:
 
