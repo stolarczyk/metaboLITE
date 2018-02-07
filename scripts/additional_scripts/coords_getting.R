@@ -1,7 +1,7 @@
 mynetwork <- visNetwork(visdata$nodes, visdata$edges) %>%
   visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
   visLayout(randomSeed = 1) %>%
-  visEdges(color = "black", arrows = "to",smooth = list(enabled = TRUE, type = "vertical",roundness = 0.1,forceDirection = "vertical")) %>%
+  visEdges(color = "black", arrows = "to",smooth = list(enabled = TRUE, type = "continuous",roundness = 0.5,forceDirection = "vertical")) %>%
   visPhysics(enabled = FALSE) # disable physics to move nodes
 
 require(shiny)

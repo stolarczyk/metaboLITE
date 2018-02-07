@@ -18,6 +18,9 @@ library(shinythemes)
 
 
 fill_blank <- function(x, len) {
+  if(nchar(x)>len){
+    result=x
+  }else{
   len_ori = nchar(x)
   len_diff = len - len_ori
   len_add = len_diff / 2
@@ -25,7 +28,7 @@ fill_blank <- function(x, len) {
   len_add_right = len_diff - len_add_left
   add_left = paste(rep(" ", len_add_left), collapse = "")
   add_right = paste(rep(" ", len_add_right), collapse = "")
-  result = paste(add_left, x, add_right, sep = "")
+  result = paste(add_left, x, add_right, sep = "")}
   return(result)
 }
 
