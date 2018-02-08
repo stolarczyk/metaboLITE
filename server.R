@@ -68,12 +68,36 @@ shinyServer(function(input, output, session) {
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
+    visdata_ori = visdata
+    #Adding duplicate metabolites/reactions
+    visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+    visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+    visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+    visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+    visdata$nodes[24,] = c("R_E41","R_E41")
+    visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+    visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+    
+    rownames(visdata$nodes) = visdata$nodes[,1]
+    
+    visdata$edges[15,1] = "M_m09c1"
+    visdata$edges[30,2] = "M_m09c1"
+    visdata$edges[8,1] = "M_m06c1"
+    visdata$edges[28,2] = "M_m06c1"
+    visdata$edges[31,] = c("M_m06c1","R_E41","1")
+    visdata$edges[16,1] = "M_m02c1"
+    visdata$edges[26,2] = "M_m02c1"
+    visdata$edges[12,1] = "M_m01c1"
+    visdata$edges[29,2] = "M_m01c1"
+    visdata$edges[17,1] = "M_m05c1"
+    visdata$edges[27,2] = "M_m05m1"
+    
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
-    names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
+    names = rownames(visdata$nodes)
     #Setting colors according to node class
     color_reaction = "lightblue"
     color_metabolite = "tomato"
@@ -81,10 +105,15 @@ shinyServer(function(input, output, session) {
     edges_names = names
     #Setting names
     for (i in seq(1, length(names))) {
+      if(nchar(names[i])<6){
+        names[i] = substr(names[i],1,4)
+      }else{
+        names[i] = substr(names[i],1,6)
+      }
       if (any(names(sbml_model@model@species) == as.character(names[i]))) {
         metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-        compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-        metabolite = paste(metabolite_name, compartment, sep = " ")
+        #compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
+        metabolite = metabolite_name
         edges_names[i] = metabolite
       }
       else{
@@ -98,7 +127,7 @@ shinyServer(function(input, output, session) {
       }
     }
     edges_names = sapply(edges_names, function(x)
-      fill_blank(x, max(nchar(edges_names))))
+      fill_blank(x, 7))
     names_dict = rbind(edges_names, names) #Names and IDs dictionary
     visdata$nodes$label = as.vector(edges_names)
     
@@ -143,9 +172,9 @@ shinyServer(function(input, output, session) {
         weights_edges = c()
         if (isolate(input$weighting) == "stoichiometry") {
           ndata = names(data@edgeData)
-          edges_df = dplyr::mutate(visdata$edges, name = paste(from, to, sep = "|"))
+          edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
           for (i in seq(1, length(data@edgeData@data))) {
-            hit = which(edges_df[, 6] == ndata[i])
+            hit = which(edges_df$name == ndata[i])
             data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
           }
           for (i in seq(1, length(data@edgeData@data))) {
@@ -168,28 +197,32 @@ shinyServer(function(input, output, session) {
           new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
           new_df[rotate, "metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
+            names_dict[1, which(names_dict[2, ] == x)[1]])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2, ] == x)])
+            names_dict[1, which(names_dict[2, ] == x)[1]])
           new_df = new_df[, c(3, 4, 2)]
           new_df$stoi = as.character(new_df$stoi)
-          
           output$fluxes = renderTable({
             new_df
           }, caption = "Stoichiometry",
           caption.placement = getOption("xtable.caption.placement", "top"),
           caption.width = getOption("xtable.caption.width", NULL))
-          
           toycon_graph = igraph.from.graphNEL(data)
           net = asNetwork(toycon_graph)
           net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
           reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                               "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                           "vertex.names")]))])
-          weights_edges = c()
-          for (i in seq(1, length(net$mel))) {
-            weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+          # weights_edges = c()
+          # for (i in seq(1, length(net$mel))) {
+          #   weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
+          # }
+          from_idx=which(substr(visdata$edges[dim(visdata$edges)[1],1][1],1,nchar(visdata$edges[dim(visdata$edges)[1],1][1])-1)==visdata$edges[,1])
+          to_idx=which(substr(visdata$edges[dim(visdata$edges)[1],2][1],1,nchar(visdata$edges[dim(visdata$edges)[1],2][1])-1)==visdata$edges[,2])
+          if(from_idx==to_idx){
+            visdata$edges[dim(visdata$edges)[1],3] = visdata$edges[from_idx,3]
           }
+          weights_edges = as.numeric(visdata$edges$weight)
           edgesize = log(abs(weights_edges)) + 1
           visdata$edges$width = edgesize
           visdata$edges$title = paste("Stoichiometric coefficient: ",
