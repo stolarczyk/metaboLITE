@@ -32,6 +32,30 @@ fill_blank <- function(x, len) {
   return(result)
 }
 
+transfer_visdata_weights <- function(visdata,visdata_ori){
+  for(i in seq(1,dim(visdata$edges)[1])){
+    from = visdata$edges[i,]$from
+    to = visdata$edges[i,]$to
+    if(grepl("^M",from) && grepl("1$",from)){
+      from = substr(from,0,nchar(from)-1)
+    }else{
+      if(grepl("^R",from) && nchar(from)==5){
+        from = substr(from,0,nchar(from)-1)
+      }
+    }
+    if(grepl("^M",to) && grepl("1$",to)){
+      to = substr(to,0,nchar(to)-1)
+    }else{
+      if(grepl("^R",to) && nchar(to)==5){
+        to = substr(to,0,nchar(to)-1)
+      }
+    }
+    row = intersect(which(grepl(from,visdata_ori$edges$from)),which(grepl(to,visdata_ori$edges$to)))
+    visdata$edges[i,]$weight = visdata_ori$edges[row,]$weight
+    visdata$edges[i,]$width = visdata_ori$edges[row,]$width
+  }
+  return(visdata)
+}
 
 shinyServer(function(input, output, session) {  
   hideTab(inputId = "tabs", target = "Change media")
@@ -97,10 +121,11 @@ shinyServer(function(input, output, session) {
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
-    names = rownames(visdata$nodes)
+    
     #Setting colors according to node class
     color_reaction = "lightblue"
     color_metabolite = "tomato"
+    names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
     #Setting names
@@ -111,9 +136,7 @@ shinyServer(function(input, output, session) {
         names[i] = substr(names[i],1,6)
       }
       if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-        metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-        #compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-        metabolite = metabolite_name
+        metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
         edges_names[i] = metabolite
       }
       else{
@@ -126,6 +149,7 @@ shinyServer(function(input, output, session) {
         }
       }
     }
+    #Make the names equal length (7 is the max length of matabolite name)
     edges_names = sapply(edges_names, function(x)
       fill_blank(x, 7))
     names_dict = rbind(edges_names, names) #Names and IDs dictionary
@@ -213,10 +237,6 @@ shinyServer(function(input, output, session) {
           reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                               "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                           "vertex.names")]))])
-          # weights_edges = c()
-          # for (i in seq(1, length(net$mel))) {
-          #   weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
-          # }
           from_idx=which(substr(visdata$edges[dim(visdata$edges)[1],1][1],1,nchar(visdata$edges[dim(visdata$edges)[1],1][1])-1)==visdata$edges[,1])
           to_idx=which(substr(visdata$edges[dim(visdata$edges)[1],2][1],1,nchar(visdata$edges[dim(visdata$edges)[1],2][1])-1)==visdata$edges[,2])
           if(from_idx==to_idx){
@@ -257,7 +277,6 @@ shinyServer(function(input, output, session) {
             forceDirection = "vertical"
           )
         ) %>%
-        # visNodes(fixed = T) %>%
         visGroups(groupname = "Metabolite",
                   color = color_metabolite,
                   shape = "circle") %>%
@@ -311,7 +330,7 @@ shinyServer(function(input, output, session) {
       showTab(inputId = "tabs", target = "Change media")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2, ] == x)])
+        names_dict[1, which(names_dict[2, ] == x)[1]])
       output$pick_rxn = renderUI(
         selectInput(
           inputId = "pick_rxn",
@@ -458,8 +477,6 @@ shinyServer(function(input, output, session) {
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
-      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-      edges_names = names
       output$text_flux_media = renderText({
         paste("<br/>",
               "<b>Objective value: ",
@@ -474,22 +491,52 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
-      
       toycon_graph = igraph.from.graphNEL(data)
-      visdata <- toVisNetworkData(toycon_graph)
+      visdata_ori <- toVisNetworkData(toycon_graph)
+      visdata=visdata_ori
+      visdata_ori$nodes$group = rep("Metabolite", length(visdata_ori$nodes$id))
+      visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
+      #Adding duplicate metabolites/reactions
+      
+      visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+      visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+      visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+      visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+      visdata$nodes[24,] = c("R_E41","R_E41")
+      visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+      visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+      
+      rownames(visdata$nodes) = visdata$nodes[,1]
+      
+      visdata$edges[15,1] = "M_m09c1"
+      visdata$edges[30,2] = "M_m09c1"
+      visdata$edges[8,1] = "M_m06c1"
+      visdata$edges[28,2] = "M_m06c1"
+      visdata$edges[31,] = c("M_m06c1","R_E41","1")
+      visdata$edges[16,1] = "M_m02c1"
+      visdata$edges[26,2] = "M_m02c1"
+      visdata$edges[12,1] = "M_m01c1"
+      visdata$edges[29,2] = "M_m01c1"
+      visdata$edges[17,1] = "M_m05c1"
+      visdata$edges[27,2] = "M_m05m1"
+      
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      
+      
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
-      dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE
-      visdata$edges$dashes = dashed
-      edgesize = log(abs(weights_edges)) + 1
+      edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
       visdata$edges$width = edgesize
-      visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
+      #visdata = transfer_visdata_weights(visdata,visdata_ori)
+      
+      
+      dashed = rep(FALSE, dim(visdata$edges)[1])
+      dashed[which(visdata$edges$weight == 0)] = TRUE
+      visdata$edges$dashes = dashed
+      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -497,14 +544,18 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "tomato"
+      names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
+        if(nchar(names[i])<6){
+          names[i] = substr(names[i],1,4)
+        }else{
+          names[i] = substr(names[i],1,6)
+        }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-          metabolite = paste(metabolite_name, compartment, sep = "_")
+          metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
           edges_names[i] = metabolite
         }
         else{
@@ -517,25 +568,18 @@ shinyServer(function(input, output, session) {
           }
         }
       }
+      #Make the names equal length (7 is the max length of matabolite name)
       edges_names = sapply(edges_names, function(x)
-        fill_blank(x, max(nchar(edges_names))))
+        fill_blank(x, 7))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
+      names_dict = rbind(edges_names, names) #Names and IDs dictionary
       path = "data/textbooky_coords.csv"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
-      set1 = rownames(visdata$nodes)
-      set2 = rownames(coords)
-      deleted_rxn = setdiff(set2, set1)
-      if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
-      }
-      else{
-        coords_deleted_rxn = coords
-      }
-      visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
+      visdata$nodes = cbind(visdata$nodes, coords)
       visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
@@ -562,7 +606,6 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-    
     # APPLY MEDIA2 ------------------------------------------------------------
     observeEvent(input$media2, {
       media_type = "media2"
@@ -595,8 +638,6 @@ shinyServer(function(input, output, session) {
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
-      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-      edges_names = names
       output$text_flux_media = renderText({
         paste("<br/>",
               "<b>Objective value: ",
@@ -611,22 +652,52 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
-      
       toycon_graph = igraph.from.graphNEL(data)
-      visdata <- toVisNetworkData(toycon_graph)
+      visdata_ori <- toVisNetworkData(toycon_graph)
+      visdata=visdata_ori
+      visdata_ori$nodes$group = rep("Metabolite", length(visdata_ori$nodes$id))
+      visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
+      #Adding duplicate metabolites/reactions
+      
+      visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+      visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+      visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+      visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+      visdata$nodes[24,] = c("R_E41","R_E41")
+      visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+      visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+      
+      rownames(visdata$nodes) = visdata$nodes[,1]
+      
+      visdata$edges[15,1] = "M_m09c1"
+      visdata$edges[30,2] = "M_m09c1"
+      visdata$edges[8,1] = "M_m06c1"
+      visdata$edges[28,2] = "M_m06c1"
+      visdata$edges[31,] = c("M_m06c1","R_E41","1")
+      visdata$edges[16,1] = "M_m02c1"
+      visdata$edges[26,2] = "M_m02c1"
+      visdata$edges[12,1] = "M_m01c1"
+      visdata$edges[29,2] = "M_m01c1"
+      visdata$edges[17,1] = "M_m05c1"
+      visdata$edges[27,2] = "M_m05m1"
+      
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      
+      
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
-      dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE
-      visdata$edges$dashes = dashed
-      edgesize = log(abs(weights_edges)) + 1
+      edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
       visdata$edges$width = edgesize
-      visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
+      #visdata = transfer_visdata_weights(visdata,visdata_ori)
+      
+      
+      dashed = rep(FALSE, dim(visdata$edges)[1])
+      dashed[which(visdata$edges$weight == 0)] = TRUE
+      visdata$edges$dashes = dashed
+      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -634,14 +705,18 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "tomato"
+      names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
+        if(nchar(names[i])<6){
+          names[i] = substr(names[i],1,4)
+        }else{
+          names[i] = substr(names[i],1,6)
+        }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-          metabolite = paste(metabolite_name, compartment, sep = "_")
+          metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
           edges_names[i] = metabolite
         }
         else{
@@ -654,25 +729,18 @@ shinyServer(function(input, output, session) {
           }
         }
       }
+      #Make the names equal length (7 is the max length of matabolite name)
       edges_names = sapply(edges_names, function(x)
-        fill_blank(x, max(nchar(edges_names))))
+        fill_blank(x, 7))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
+      names_dict = rbind(edges_names, names) #Names and IDs dictionary
       path = "data/textbooky_coords.csv"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
-      set1 = rownames(visdata$nodes)
-      set2 = rownames(coords)
-      deleted_rxn = setdiff(set2, set1)
-      if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
-      }
-      else{
-        coords_deleted_rxn = coords
-      }
-      visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
+      visdata$nodes = cbind(visdata$nodes, coords)
       visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
@@ -732,8 +800,6 @@ shinyServer(function(input, output, session) {
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
-      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-      edges_names = names
       output$text_flux_media = renderText({
         paste("<br/>",
               "<b>Objective value: ",
@@ -748,22 +814,52 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
-      
       toycon_graph = igraph.from.graphNEL(data)
-      visdata <- toVisNetworkData(toycon_graph)
+      visdata_ori <- toVisNetworkData(toycon_graph)
+      visdata=visdata_ori
+      visdata_ori$nodes$group = rep("Metabolite", length(visdata_ori$nodes$id))
+      visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
+      #Adding duplicate metabolites/reactions
+      
+      visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+      visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+      visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+      visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+      visdata$nodes[24,] = c("R_E41","R_E41")
+      visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+      visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+      
+      rownames(visdata$nodes) = visdata$nodes[,1]
+      
+      visdata$edges[15,1] = "M_m09c1"
+      visdata$edges[30,2] = "M_m09c1"
+      visdata$edges[8,1] = "M_m06c1"
+      visdata$edges[28,2] = "M_m06c1"
+      visdata$edges[31,] = c("M_m06c1","R_E41","1")
+      visdata$edges[16,1] = "M_m02c1"
+      visdata$edges[26,2] = "M_m02c1"
+      visdata$edges[12,1] = "M_m01c1"
+      visdata$edges[29,2] = "M_m01c1"
+      visdata$edges[17,1] = "M_m05c1"
+      visdata$edges[27,2] = "M_m05m1"
+      
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      
+      
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
-      dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE
-      visdata$edges$dashes = dashed
-      edgesize = log(abs(weights_edges)) + 1
+      edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
       visdata$edges$width = edgesize
-      visdata$edges$length = 150
-      visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
+      #visdata = transfer_visdata_weights(visdata,visdata_ori)
+      
+      
+      dashed = rep(FALSE, dim(visdata$edges)[1])
+      dashed[which(visdata$edges$weight == 0)] = TRUE
+      visdata$edges$dashes = dashed
+      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -771,14 +867,18 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "tomato"
+      names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
+        if(nchar(names[i])<6){
+          names[i] = substr(names[i],1,4)
+        }else{
+          names[i] = substr(names[i],1,6)
+        }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-          metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-          compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-          metabolite = paste(metabolite_name, compartment, sep = "_")
+          metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
           edges_names[i] = metabolite
         }
         else{
@@ -791,25 +891,18 @@ shinyServer(function(input, output, session) {
           }
         }
       }
+      #Make the names equal length (7 is the max length of matabolite name)
       edges_names = sapply(edges_names, function(x)
-        fill_blank(x, max(nchar(edges_names))))
+        fill_blank(x, 7))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
+      names_dict = rbind(edges_names, names) #Names and IDs dictionary
       path = "data/textbooky_coords.csv"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       coords = read.csv(path)
-      set1 = rownames(visdata$nodes)
-      set2 = rownames(coords)
-      deleted_rxn = setdiff(set2, set1)
-      if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
-      }
-      else{
-        coords_deleted_rxn = coords
-      }
-      visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
+      visdata$nodes = cbind(visdata$nodes, coords)
       visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
       visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
@@ -875,9 +968,6 @@ shinyServer(function(input, output, session) {
           if (any(which(fluxes_output[, 1] == names_dict[2, i])))
             fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
         }
-        
-        net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-        edges_names = names
         output$text_flux_media = renderText({
           paste("<br/>",
                 "<b>Objective value: ",
@@ -892,22 +982,52 @@ shinyServer(function(input, output, session) {
         reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                             "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                        "vertex.names")]))])
-        
         toycon_graph = igraph.from.graphNEL(data)
-        visdata <- toVisNetworkData(toycon_graph)
+        visdata_ori <- toVisNetworkData(toycon_graph)
+        visdata=visdata_ori
+        visdata_ori$nodes$group = rep("Metabolite", length(visdata_ori$nodes$id))
+        visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
+        #Adding duplicate metabolites/reactions
+        
+        visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+        visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+        visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+        visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+        visdata$nodes[24,] = c("R_E41","R_E41")
+        visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+        visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+        
+        rownames(visdata$nodes) = visdata$nodes[,1]
+        
+        visdata$edges[15,1] = "M_m09c1"
+        visdata$edges[30,2] = "M_m09c1"
+        visdata$edges[8,1] = "M_m06c1"
+        visdata$edges[28,2] = "M_m06c1"
+        visdata$edges[31,] = c("M_m06c1","R_E41","1")
+        visdata$edges[16,1] = "M_m02c1"
+        visdata$edges[26,2] = "M_m02c1"
+        visdata$edges[12,1] = "M_m01c1"
+        visdata$edges[29,2] = "M_m01c1"
+        visdata$edges[17,1] = "M_m05c1"
+        visdata$edges[27,2] = "M_m05m1"
+        
         visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
         visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+        
+        
         weights_edges = c()
         for (i in seq(1, length(net$mel))) {
           weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
         }
-        dashed = rep(FALSE, length(weights_edges))
-        dashed[which(weights_edges == 0)] = TRUE
-        visdata$edges$dashes = dashed
-        edgesize = log(abs(weights_edges)) + 1
+        edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
         visdata$edges$width = edgesize
-        visdata$edges$length = 150
-        visdata$edges$title = paste("Flux: ", ceiling(weights_edges))
+        #visdata = transfer_visdata_weights(visdata,visdata_ori)
+        
+        
+        dashed = rep(FALSE, dim(visdata$edges)[1])
+        dashed[which(visdata$edges$weight == 0)] = TRUE
+        visdata$edges$dashes = dashed
+        visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
         #visdata$edges$arrows = c("from", "to")
         net = asNetwork(toycon_graph)
         names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -915,14 +1035,18 @@ shinyServer(function(input, output, session) {
         #Setting colors according to node class
         color_reaction = "lightblue"
         color_metabolite = "tomato"
+        names = rownames(visdata$nodes)
         net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
         edges_names = names
         #Setting names
         for (i in seq(1, length(names))) {
+          if(nchar(names[i])<6){
+            names[i] = substr(names[i],1,4)
+          }else{
+            names[i] = substr(names[i],1,6)
+          }
           if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-            metabolite_name = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-            compartment = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@compartment
-            metabolite = paste(metabolite_name, compartment, sep = "_")
+            metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
             edges_names[i] = metabolite
           }
           else{
@@ -935,27 +1059,18 @@ shinyServer(function(input, output, session) {
             }
           }
         }
+        #Make the names equal length (7 is the max length of matabolite name)
         edges_names = sapply(edges_names, function(x)
-          fill_blank(x, max(nchar(
-            edges_names
-          ))))
+          fill_blank(x, 7))
         names_dict = rbind(edges_names, names) #Names and IDs dictionary
         visdata$nodes$label = as.vector(edges_names)
+        names_dict = rbind(edges_names, names) #Names and IDs dictionary
         path = "data/textbooky_coords.csv"
         if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
         coords = read.csv(path)
-        set1 = rownames(visdata$nodes)
-        set2 = rownames(coords)
-        deleted_rxn = setdiff(set2, set1)
-        if (length(deleted_rxn) > 0) {
-          coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
-        }
-        else{
-          coords_deleted_rxn = coords
-        }
-        visdata$nodes = cbind(visdata$nodes, coords_deleted_rxn)
+        visdata$nodes = cbind(visdata$nodes, coords)
         visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
         visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
         visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
@@ -974,13 +1089,11 @@ shinyServer(function(input, output, session) {
             visGroups(groupname = "Reaction",
                       color = color_reaction,
                       shape = "box") %>%
-            visPhysics(
-              barnesHut = list(
-                springLength = 200,
-                springConstant = 0,
-                gravitationalConstant = 0
-              )
-            ) %>%
+            visPhysics(barnesHut = list(
+              springLength = 200,
+              springConstant = 0,
+              gravitationalConstant = 0
+            )) %>%
             visLayout(randomSeed = 1)
         })
       } else{
