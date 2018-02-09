@@ -45,7 +45,6 @@ shinyUI(
         
         htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
-        #checkboxInput(inputId="pro",label="Pro mode",value = F),
         width = 5
       ),
       mainPanel(visNetworkOutput(
@@ -62,7 +61,7 @@ shinyUI(
         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
         uiOutput("pick_rxn"),
         uiOutput("range"),
-        bsPopover("range","Technical information", "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.","bottom",trigger = "click"),
+        bsPopover("range","Technical information", "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.","bottom",trigger = "hover"),
         # uiOutput("lbound"),
         # uiOutput("ubound"),
         uiOutput("button_apply_media"),

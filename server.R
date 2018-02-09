@@ -1384,96 +1384,156 @@ shinyServer(function(input, output, session) {
         )
       })
       
-      toycon_graph_ko = igraph.from.graphNEL(data_ko)
-      visdata_ko <- toVisNetworkData(toycon_graph_ko)
-      visdata_ko$nodes$group = rep("Metabolite", length(visdata_ko$nodes$id))
-      visdata_ko$nodes$group[which(grepl("R", visdata_ko$nodes$id))] = "Reaction"
-      visdata_ko$edges$length = 150
-      net_ko = asNetwork(toycon_graph_ko)
-      names_ko = unlist(net_ko$val)[seq(2, length(unlist(net_ko$val)), 2)]
-      net_ko %v% "type" = ifelse(grepl("R", names_ko), "Reaction", "Metabolite")
-      
-      weights_edges = c()
-      for (i in seq(1, length(net_ko$mel))) {
-        weights_edges = append(weights_edges, net_ko$mel[[i]][[3]][[2]])
-      }
-      dashed = rep(FALSE, length(weights_edges))
-      dashed[which(weights_edges == 0)] = TRUE
-      visdata_ko$edges$dashes = dashed
-      edgesize = log(abs(weights_edges)) + 1
-      visdata_ko$edges$width = edgesize
-      visdata_ko$edges$title = paste("Flux: ", ceiling(weights_edges))
-      
-      #Setting colors according to node class
-      color_reaction_ko = "lightblue"
-      color_metabolite_ko = "tomato"
-      edges_names_ko = names_ko
-      #Setting names
-      for (i in seq(1, length(names_ko))) {
-        if (any(names(sbml_model_ko@model@species) == as.character(names_ko[i]))) {
-          metabolite_name_ko = sbml_model_ko@model@species[[which(names(sbml_model@model@species) == as.character(names_ko[i]))]]@name
-          compartment_ko = sbml_model_ko@model@species[[which(names(sbml_model_ko@model@species) == as.character(names_ko[i]))]]@compartment
-          metabolite_ko = paste(metabolite_name_ko, compartment_ko, sep = "_")
-          edges_names_ko[i] = metabolite_ko
-        }
-        else{
-          if (any(names(sbml_model_ko@model@reactions) == as.character(names_ko[i]))) {
-            reaction_name_ko = sbml_model_ko@model@reactions[[which(names(sbml_model_ko@model@reactions) == as.character(names_ko[i]))]]@name
-            edges_names_ko[i] = reaction_name_ko
-          }
-          else{
-            edges_names_ko[i] = "NoName"
-          }
-        }
-      }
-      edges_names_ko = sapply(edges_names_ko, function(x)
-        fill_blank(x, max(nchar(
-          edges_names_ko
-        ))))
-      names_dict_ko = rbind(edges_names_ko, names_ko) #Names and IDs dictionary
-      visdata_ko$nodes$label = as.vector(edges_names_ko)
-      path = "data/textbooky_coords.csv"
+      working_dir = getwd()
+      path = "/data/toycon.xml"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      coords = read.csv(path)
-      set1 = rownames(visdata_ko$nodes)
-      set2 = rownames(coords)
-      deleted_rxn = setdiff(set2, set1)
-      if (length(deleted_rxn) > 0) {
-        coords_deleted_rxn = coords[-(which(rownames(coords) == deleted_rxn)), ]
+      model_file_path = paste(working_dir, path, sep = "")
+      path = "/data/model_var.RData"
+      if (.Platform$OS.type == "windows") {
+        path = gsub("\\\\", "/", path)
       }
-      else{
-        coords_deleted_rxn = coords
+      output$text_main = renderText({
+        paste("<u><b>Launch tabs with following functionalities: ", "</b></u>")
+      })
+      output$text_vis = renderText({
+        paste("<u><b>Visualize the metabolic network: ", "</b></u>")
+      })
+      load(paste(working_dir, path, sep = ""))
+      toycon = readRDS(paste(working_dir,"/data/toycon1.rda",sep = ""))
+      data = rsbml_graph((sbml_model))
+      toycon_graph = igraph.from.graphNEL(data)
+      visdata <- toVisNetworkData(toycon_graph)
+      visdata_ori = visdata
+      #Adding duplicate metabolites/reactions
+      visdata$nodes[23,] = c("M_m01c1","M_m01c1")
+      visdata$nodes[22,] = c("M_m02c1","M_m02c1")
+      visdata$nodes[21,] = c("M_m06c1","M_m06c1")
+      visdata$nodes[20,] = c("M_m09c1","M_m09c1")
+      visdata$nodes[24,] = c("R_E41","R_E41")
+      visdata$nodes[25,] = c("M_m05c1","M_m05c1")
+      visdata$nodes[26,] = c("M_m05m1","M_m05m1")
+      
+      rownames(visdata$nodes) = visdata$nodes[,1]
+      
+      visdata$edges[15,1] = "M_m09c1"
+      visdata$edges[30,2] = "M_m09c1"
+      visdata$edges[8,1] = "M_m06c1"
+      visdata$edges[28,2] = "M_m06c1"
+      visdata$edges[31,] = c("M_m06c1","R_E41","1")
+      visdata$edges[16,1] = "M_m02c1"
+      visdata$edges[26,2] = "M_m02c1"
+      visdata$edges[12,1] = "M_m01c1"
+      visdata$edges[29,2] = "M_m01c1"
+      visdata$edges[17,1] = "M_m05c1"
+      visdata$edges[27,2] = "M_m05m1"
+      
+      visdata$nodes = visdata$nodes[-which(visdata$nodes$id==reaction),]
+      visdata$edges=visdata$edges[-which(visdata$edges$from==reaction | visdata$edges$to==reaction),]
+      
+      visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
+      visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      visdata$edges$width = 2
+      visdata$edges$length = 150
+      net = asNetwork(toycon_graph)
+      
+      #Setting colors according to node class
+      color_reaction = "lightblue"
+      color_metabolite = "tomato"
+      names = rownames(visdata$nodes)
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      edges_names = names
+      #Setting names
+      for (i in seq(1, length(names))) {
+        if(nchar(names[i])<6){
+          names[i] = substr(names[i],1,4)
+        }else{
+          names[i] = substr(names[i],1,6)
+        }
+        if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+          metabolite= sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+          edges_names[i] = metabolite
+        }
+        else{
+          if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+            reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+            edges_names[i] = reaction_name
+          }
+          else{
+            edges_names[i] = "NoName"
+          }
+        }
       }
-      visdata_ko$nodes = cbind(visdata_ko$nodes, coords_deleted_rxn)
-      #Emphasize main reactions
-      visdata_ko$nodes[which(grepl("glycolysis", names_dict_ko[1,])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("respiration", names_dict_ko[1,])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("synthase", names_dict_ko[1,])), "font"] = "25px arial"
-      visdata_ko$nodes[which(grepl("demand", names_dict_ko[1,])), "font"] = "25px arial"
+      #Make the names equal length (7 is the max length of matabolite name)
+      edges_names = sapply(edges_names, function(x)
+        fill_blank(x, 7))
+      names_dict = rbind(edges_names, names) #Names and IDs dictionary
+      visdata$nodes$label = as.vector(edges_names)
+      
       output$graph_ko = renderVisNetwork({
+        #reading SBML files
+        if (isolate(input$weighting) == "none") {
+          edgesize = 0.75
+          output$fluxes = renderTable({
+            
+          })
+          python.assign("model_file_path", model_file_path)
+          path = "/scripts/check_flux.py"
+          if (.Platform$OS.type == "windows") {
+            path = gsub("\\\\", "/", path)
+          }
+          python.load(paste(working_dir, path, sep = ""))
+          flux = python.get(var.name = "flux")
+          output$text_flux = renderText({
+            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+          })
+        }
+        
+        path = "data/textbooky_coords.csv"
+        if (.Platform$OS.type == "windows") {
+          path = gsub("\\\\", "/", path)
+        }
+        coords = read.csv(path)
+        coords = coords[-which(rownames(coords) == reaction),]
+        visdata$nodes = cbind(visdata$nodes, coords)
+        #Emphasize main reactions
+        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "25px arial"
+        
         #Plotting graph
-        visNetwork(nodes = visdata_ko$nodes, edges = visdata_ko$edges) %>%
+        visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(stepX = 75,
                     stepY = 100,
                     width = 0.1) %>%
           visOptions(highlightNearest = TRUE) %>%
-          visEdges(color = "black", arrows = "to") %>%
+          visEdges(
+            color = "black",
+            arrows = "to",
+            smooth = list(
+              enabled = TRUE,
+              type = "vertical",
+              roundness = 0.1,
+              forceDirection = "vertical"
+            )
+          ) %>%
           visGroups(groupname = "Metabolite",
-                    color = color_metabolite_ko,
+                    color = color_metabolite,
                     shape = "circle") %>%
           visGroups(groupname = "Reaction",
-                    color = color_reaction_ko,
+                    color = color_reaction,
                     shape = "box") %>%
+          visLayout(randomSeed = 1) %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
             gravitationalConstant = 0
-          )) %>%
-          visLayout(randomSeed = 1)
+          ))
+        
       })
-    })
+   })
     
 
 # APPLY GENE EXPRESSION ---------------------------------------------------
