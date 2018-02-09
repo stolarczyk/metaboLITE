@@ -1109,51 +1109,15 @@ shinyServer(function(input, output, session) {
           session = session
         )
       }
-      
-      
-      #VISUALIZEHERE
-      
-      # output$media1 = renderUI({
-      #   popify(
-      #     bsButton(inputId = "media1",
-      #              label = "Glucose free media"),
-      #     title = "Apply glucose free media",
-      #     content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
-      #     placement = "right",
-      #     trigger = "hover"
-      #   )
-      # })
-      # output$text_media = renderText({
-      #   paste("<br/>", "<b>Use predefined media: ", "</b>", "<br/>")
-      # })
-      # output$media2 = renderUI({
-      #   popify(
-      #     bsButton(inputId = "media2",
-      #              label = "Microaerophilic media"),
-      #     title = "Apply microaerophilic media",
-      #     content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-      #     placement = "right",
-      #     trigger = "hover"
-      #   )
-      # })
-      # output$media3 = renderUI({
-      #   popify(
-      #     bsButton(inputId = "media3",
-      #              label = "Lactate rich media"),
-      #     title = "Apply lactate rich media",
-      #     content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
-      #     placement = "right",
-      #     trigger = "hover"
-      #   )
-      # })
     })
+    
     observeEvent(input$ko_rxn, {
       showTab(inputId = "tabs", target = "KO reactions")
       updateTabsetPanel(session, "tabs",
                         selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2, ] == x)])
+        names_dict[1, which(names_dict[2, ] == x)[1]])
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
@@ -1343,23 +1307,14 @@ shinyServer(function(input, output, session) {
       }
       python.load(paste(working_dir, path, sep = ""))
       flux = python.get(var.name = "flux")
-      path_removed = python.get(var.name = "path_removed")
-      path_ko = path_removed
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
       fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
       rownames(fluxes_output) = c()
       colnames(fluxes_output) = c("Reaction", "Flux")
+      fluxes = fluxes_output
       
-      sbml_model_ko = rsbml_read(path_ko)
-      data_ko = rsbml_graph((sbml_model_ko))
-      ndata = names(data_ko@edgeData)
-      for (i in seq(1, dim(fluxes_output)[1])) {
-        hits = which(grepl(fluxes_output[i, 1], ndata))
-        for (j in hits) {
-          data_ko@edgeData@data[[j]]$weight = as.numeric(fluxes_output[i, 2])
-        }
-      }
+
       
       for (i in seq(1, dim(names_dict)[2], by = 1)) {
         #Mapping nodes IDs to names for table displaying purposes
@@ -1403,9 +1358,10 @@ shinyServer(function(input, output, session) {
       load(paste(working_dir, path, sep = ""))
       toycon = readRDS(paste(working_dir,"/data/toycon1.rda",sep = ""))
       data = rsbml_graph((sbml_model))
+      ndata = names(data@edgeData)
+      
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
-      visdata_ori = visdata
       #Adding duplicate metabolites/reactions
       visdata$nodes[23,] = c("M_m01c1","M_m01c1")
       visdata$nodes[22,] = c("M_m02c1","M_m02c1")
@@ -1429,12 +1385,13 @@ shinyServer(function(input, output, session) {
       visdata$edges[17,1] = "M_m05c1"
       visdata$edges[27,2] = "M_m05m1"
       
+      
+      
       visdata$nodes = visdata$nodes[-which(visdata$nodes$id==reaction),]
       visdata$edges=visdata$edges[-which(visdata$edges$from==reaction | visdata$edges$to==reaction),]
-      
+
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$edges$width = 2
       visdata$edges$length = 150
       net = asNetwork(toycon_graph)
       
@@ -1470,25 +1427,8 @@ shinyServer(function(input, output, session) {
         fill_blank(x, 7))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      
       output$graph_ko = renderVisNetwork({
         #reading SBML files
-        if (isolate(input$weighting) == "none") {
-          edgesize = 0.75
-          output$fluxes = renderTable({
-            
-          })
-          python.assign("model_file_path", model_file_path)
-          path = "/scripts/check_flux.py"
-          if (.Platform$OS.type == "windows") {
-            path = gsub("\\\\", "/", path)
-          }
-          python.load(paste(working_dir, path, sep = ""))
-          flux = python.get(var.name = "flux")
-          output$text_flux = renderText({
-            paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
-          })
-        }
         
         path = "data/textbooky_coords.csv"
         if (.Platform$OS.type == "windows") {
@@ -1497,6 +1437,22 @@ shinyServer(function(input, output, session) {
         coords = read.csv(path)
         coords = coords[-which(rownames(coords) == reaction),]
         visdata$nodes = cbind(visdata$nodes, coords)
+        for (i in seq(1, dim(fluxes)[1])) {
+          hits = which(grepl(as.character(fluxes[i,1]),visdata$edges$from) | grepl(as.character(fluxes[i,1]),visdata$edges$to))
+          for (j in hits) {
+            visdata$edges$weight[j] = as.numeric(fluxes[i, 2])
+          }
+        }
+        weights_edges = as.numeric(visdata$edges$weight)
+        print("Weights edges")
+        print(weights_edges)
+        edgesize = log(abs(weights_edges)) + 1
+        visdata$edges$width = edgesize
+        visdata$edges$title = paste("Flux: ",
+                                    ceiling(weights_edges))
+        dashed = rep(FALSE, dim(visdata$edges)[1])
+        dashed[which(visdata$edges$weight == 0)] = TRUE
+        visdata$edges$dashes = dashed
         #Emphasize main reactions
         visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "25px arial"
         visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "25px arial"
