@@ -886,11 +886,14 @@ shinyServer(function(input, output, session) {
     
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
+      #get the bouds to be applied
       lb = input$range[1]
       ub = input$range[2]
+      #get the reaction to be constrained
       reaction = (input$pick_rxn)
       reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       if (lb < ub) {
+        #use Python to change the bouds and perform the FBA
         python.assign("lb", lb)
         python.assign("ub", ub)
         python.assign("reaction_ID", reaction_ID)
@@ -900,13 +903,14 @@ shinyServer(function(input, output, session) {
           path = gsub("\\\\", "/", path)
         }
         python.load(paste(working_dir, path, sep = ""))
+        #Get the results
         flux = python.get(var.name = "flux")
         fluxes = python.get(var.name = "fluxes")
         fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
         fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
         rownames(fluxes_output) = c()
         colnames(fluxes_output) = c("Reaction", "Flux")
-        
+        #Import fluxes into the data object for further use
         data = rsbml_graph((sbml_model))
         ndata = names(data@edgeData)
         for (i in seq(1, dim(fluxes_output)[1])) {
@@ -916,12 +920,12 @@ shinyServer(function(input, output, session) {
           }
         }
         
-        
         for (i in seq(1, dim(names_dict)[2], by = 1)) {
           #Mapping nodes IDs to names for table displaying purposes
           if (any(which(fluxes_output[, 1] == names_dict[2, i])))
             fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
         }
+        #Render UI text 
         output$text_flux_media = renderText({
           paste("<br/>",
                 "<b>Objective value: ",
@@ -931,13 +935,17 @@ shinyServer(function(input, output, session) {
         })
         
         toycon_graph = igraph.from.graphNEL(data)
-        net = asNetwork(toycon_graph)
+        net = asNetwork(toycon_graph)        
+        #Set the type of the node depending on its name
         net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+        #Assign proper names
         reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                             "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                        "vertex.names")]))])
+        #transform the data to visNetwork format
         toycon_graph = igraph.from.graphNEL(data)
         visdata_ori <- toVisNetworkData(toycon_graph)
+        #preserve the original model
         visdata = visdata_ori
         visdata_ori$nodes$group = rep("Metabolite", length(visdata_ori$nodes$id))
         visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
@@ -948,21 +956,21 @@ shinyServer(function(input, output, session) {
         visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
         visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
         
-        
+        #Get the weights from the net object
         weights_edges = c()
         for (i in seq(1, length(net$mel))) {
           weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
         }
+        #calculate the thickness of each edge
         edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
+        #assign the thickness values to the slot
         visdata$edges$width = edgesize
-        #visdata = transfer_visdata_weights(visdata,visdata_ori)
-        
-        
+        #dash the edges of the graph that carry 0 flux
         dashed = rep(FALSE, dim(visdata$edges)[1])
         dashed[which(visdata$edges$weight == 0)] = TRUE
         visdata$edges$dashes = dashed
+        #Add data for the popup titles for the edges
         visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
-        #visdata$edges$arrows = c("from", "to")
         net = asNetwork(toycon_graph)
         names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
         
@@ -1004,6 +1012,7 @@ shinyServer(function(input, output, session) {
           path = gsub("\\\\", "/", path)
         }
         coords = read.csv(path)
+        #Empasise the main reactions
         visdata$nodes = cbind(visdata$nodes, coords)
         visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
         visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
@@ -1032,7 +1041,7 @@ shinyServer(function(input, output, session) {
             ) %>%
             visLayout(randomSeed = 1)
         })
-      } else{
+      } else{ #Ifthe lower bound is not lower thn te upper one - display a poper notification
         showNotification(
           HTML("Wrong bounds values"),
           duration = 2,
@@ -1077,25 +1086,26 @@ shinyServer(function(input, output, session) {
     
     # KO RESET ----------------------------------------------------------------
     observeEvent(input$reset, {
-      reaction_ID = "Reset"
-      python.assign("reaction_ID", reaction_ID)
+      #assign R variable to python variable
       python.assign("model_file_path", model_file_path)
-      path = "/scripts/ko_rxn.py"
+      path = "/scripts/reset_ko.py"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
+      #run the script resetting the model
       python.load(paste(working_dir, path, sep = ""))
+      #Get the resulting flux and fluxes
       flux = python.get(var.name = "flux")
-      path_removed = python.get(var.name = "path_removed")
-      path_ko = path_removed
       fluxes = python.get(var.name = "fluxes")
+      #Transform result for the presentation
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
       fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
       rownames(fluxes_output) = c()
       colnames(fluxes_output) = c("Reaction", "Flux")
-      
+      #Read the sbml model
       data = rsbml_graph((sbml_model))
       ndata = names(data@edgeData)
+      #Write the fluxes to the data structure for the later use
       for (i in seq(1, dim(fluxes_output)[1])) {
         hits = which(grepl(fluxes_output[i, 1], ndata))
         for (j in hits) {
@@ -1103,12 +1113,12 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      
       for (i in seq(1, dim(names_dict)[2], by = 1)) {
         #Mapping nodes IDs to names for table displaying purposes
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
+      #render the objective flux text output for UI
       output$text_flux_media = renderText({
         paste("<br/>",
               "<b>Objective value: ",
@@ -1116,6 +1126,7 @@ shinyServer(function(input, output, session) {
               "</b>",
               "<br/>")
       })
+      #render the fluxes table for the UI
       output$fluxes_ko = renderTable({
         fluxes_output
       }, width = "250", caption = "Fluxes without any KOs",
@@ -1133,37 +1144,35 @@ shinyServer(function(input, output, session) {
       toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
       path = "/data/model_var.RData"
       load(paste(working_dir, path, sep = ""))
-      data = rsbml_graph((sbml_model))
-      ndata = names(data@edgeData)
-      
       toycon_graph = igraph.from.graphNEL(data)
+      #transform the data to visNetwork format
       visdata <- toVisNetworkData(toycon_graph)
       net = asNetwork(toycon_graph)
+      #Set the type of the node depending on its name
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      #Assign proper names
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
       #Adding duplicate metabolites/reactions
       visdata = add_dups_new_layout(visdata)
-      
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      
-      
+      #Get the weights from the net object
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
       }
+      #calculate the thickness of each edge
       edgesize = log(abs(as.numeric(visdata$edges$weight))) + 1
+      #assign the thickness values to the slot
       visdata$edges$width = edgesize
-      #visdata = transfer_visdata_weights(visdata,visdata_ori)
-      
-      
+      #dash the edges of the graph that carry 0 flux
       dashed = rep(FALSE, dim(visdata$edges)[1])
       dashed[which(visdata$edges$weight == 0)] = TRUE
       visdata$edges$dashes = dashed
+      #Add data for the popup titles for the edges
       visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
-      #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       
@@ -1206,6 +1215,7 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
+      #Empasise the main reactions
       visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
       visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
       visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
