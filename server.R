@@ -35,25 +35,27 @@ fill_blank <- function(x, len) {
 }
 
 add_dups_new_layout <- function(visdata) {
-  visdata$nodes[23, ] = c("M_m01c1", "M_m01c1")
-  visdata$nodes[22, ] = c("M_m02c1", "M_m02c1")
-  visdata$nodes[21, ] = c("M_m06c1", "M_m06c1")
-  visdata$nodes[20, ] = c("M_m09c1", "M_m09c1")
-  visdata$nodes[24, ] = c("R_E41", "R_E41")
-  visdata$nodes[25, ] = c("M_m05c1", "M_m05c1")
-  visdata$nodes[26, ] = c("M_m05m1", "M_m05m1")
+  visdata$nodes[23, ] = c("M_m01c1", "M_m01c1")#ADP
+  visdata$nodes[28, ] = c("M_m01c2", "M_m01c2")#ADP
+  visdata$nodes[22, ] = c("M_m02c1", "M_m02c1")#ATP
+  visdata$nodes[21, ] = c("M_m06c1", "M_m06c1")#H2O
+  visdata$nodes[20, ] = c("M_m09c1", "M_m09c1")#Pi
+  visdata$nodes[24, ] = c("R_E41", "R_E41")#H2O exchange
+  visdata$nodes[25, ] = c("M_m05c1", "M_m05c1")#H
+  visdata$nodes[26, ] = c("M_m05m1", "M_m05m1")#H
+  visdata$nodes[27, ] = c("M_m09c2", "M_m09c2")#Pi
   
   rownames(visdata$nodes) = visdata$nodes[, 1]
   
   visdata$edges[15, 1] = "M_m09c1"
-  visdata$edges[30, 2] = "M_m09c1"
+  visdata$edges[30, 2] = "M_m09c2"
   visdata$edges[8, 1] = "M_m06c1"
   visdata$edges[28, 2] = "M_m06c1"
   visdata$edges[31, ] = c("M_m06c1", "R_E41", "1")
   visdata$edges[16, 1] = "M_m02c1"
   visdata$edges[26, 2] = "M_m02c1"
   visdata$edges[12, 1] = "M_m01c1"
-  visdata$edges[29, 2] = "M_m01c1"
+  visdata$edges[29, 2] = "M_m01c2"
   visdata$edges[17, 1] = "M_m05c1"
   visdata$edges[27, 2] = "M_m05m1"
   return(visdata)
