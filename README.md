@@ -45,7 +45,7 @@ After installation the docker image can pulled from the repository with a follow
 
 e.g
 
-``` docker pull mstolarczyk/toyconapp ```
+``` sudo docker pull mstolarczyk/toyconapp ```
 
 Check the image status:
 
@@ -59,7 +59,7 @@ e.g
 
 ```cd "path/to/the/Dockerfile/directory" ```
 
-```sudo docker build -t toyconApp . ``` *Mind the dot at the end of the line!*
+```sudo docker build -t toyconapp . ``` *Mind the dot at the end of the line!*
 
 Check the image status:
 
