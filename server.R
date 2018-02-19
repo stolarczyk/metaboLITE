@@ -242,7 +242,7 @@ shinyServer(function(input, output, session) {
           edgesize = log(abs(weights_edges)) + 1
           visdata$edges$width = edgesize
           visdata$edges$title = paste("Stoichiometric coefficient: ",
-                                      ceiling(weights_edges))
+                                      round(weights_edges))
         }
       }
       #Read the saved coordinates for the graph dispalying purpose
@@ -527,10 +527,10 @@ shinyServer(function(input, output, session) {
       visdata$edges$width = edgesize
       #dash the edges of the graph that carry 0 flux
       dashed = rep(FALSE, dim(visdata$edges)[1])
-      dashed[which(visdata$edges$weight == 0)] = TRUE
+      dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
       #Add data for the popup titles for the edges
-      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+      visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       
       #Setting colors according to the node class
@@ -670,9 +670,9 @@ shinyServer(function(input, output, session) {
       
       
       dashed = rep(FALSE, dim(visdata$edges)[1])
-      dashed[which(visdata$edges$weight == 0)] = TRUE
+      dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
-      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+      visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       
@@ -812,9 +812,9 @@ shinyServer(function(input, output, session) {
       
       
       dashed = rep(FALSE, dim(visdata$edges)[1])
-      dashed[which(visdata$edges$weight == 0)] = TRUE
+      dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
-      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+      visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
       #visdata$edges$arrows = c("from", "to")
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
@@ -968,10 +968,10 @@ shinyServer(function(input, output, session) {
         visdata$edges$width = edgesize
         #dash the edges of the graph that carry 0 flux
         dashed = rep(FALSE, dim(visdata$edges)[1])
-        dashed[which(visdata$edges$weight == 0)] = TRUE
+        dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
         visdata$edges$dashes = dashed
         #Add data for the popup titles for the edges
-        visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+        visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
         net = asNetwork(toycon_graph)
         names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
         
@@ -1170,10 +1170,10 @@ shinyServer(function(input, output, session) {
       visdata$edges$width = edgesize
       #dash the edges of the graph that carry 0 flux
       dashed = rep(FALSE, dim(visdata$edges)[1])
-      dashed[which(visdata$edges$weight == 0)] = TRUE
+      dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
       #Add data for the popup titles for the edges
-      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+      visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       
@@ -1400,9 +1400,9 @@ shinyServer(function(input, output, session) {
         edgesize = log(abs(weights_edges)) + 1
         visdata$edges$width = edgesize
         visdata$edges$title = paste("Flux: ",
-                                    ceiling(weights_edges))
+                                    round(weights_edges))
         dashed = rep(FALSE, dim(visdata$edges)[1])
-        dashed[which(visdata$edges$weight == 0)] = TRUE
+        dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
         visdata$edges$dashes = dashed
         #Emphasize main reactions
         visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
@@ -1513,10 +1513,10 @@ shinyServer(function(input, output, session) {
       visdata$edges$width = edgesize
       #dash the edges of the graph that carry 0 flux
       dashed = rep(FALSE, dim(visdata$edges)[1])
-      dashed[which(visdata$edges$weight == 0)] = TRUE
+      dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
       #Add data for the popup titles for the edges
-      visdata$edges$title = paste("Flux: ", ceiling(as.numeric(visdata$edges$weight)))
+      visdata$edges$title = paste("Flux: ", round(as.numeric(visdata$edges$weight)))
       net = asNetwork(toycon_graph)
       names = unlist(net$val)[seq(2, length(unlist(net$val)), 2)]
       
