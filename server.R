@@ -62,9 +62,9 @@ add_dups_new_layout <- function(visdata) {
 }
 
 shinyServer(function(input, output, session) {
-  hideTab(inputId = "tabs", target = "Change media")
-  hideTab(inputId = "tabs", target = "KO reactions")
-  hideTab(inputId = "tabs", target = "Simulate expression changes")
+  hideTab(inputId = "tabs", target = "change_media")
+  hideTab(inputId = "tabs", target = "ko_reactions")
+  hideTab(inputId = "tabs", target = "simulate_expression_changes")
   working_dir = getwd()
   path = "/data/toycon.xml"
   if (.Platform$OS.type == "windows") {
@@ -330,10 +330,12 @@ shinyServer(function(input, output, session) {
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
     observeEvent(input$change_media, {
       #Prepare the list of reactions to constrain
-      showTab(inputId = "tabs", target = "Change media")
+      showTab(inputId = "tabs", target = "change_media")
+      updateNavbarPage(session = session,inputId = "tabs",selected = "change_media")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
         names_dict[1, which(names_dict[2,] == x)[1]])
+      
       #render the UI select component 
       output$pick_rxn = renderUI(
         selectInput(
@@ -416,7 +418,9 @@ shinyServer(function(input, output, session) {
     
     observeEvent(input$simulate_expr, {
       #Show the tab in the app
-      showTab(inputId = "tabs", target = "Simulate expression changes")
+      showTab(inputId = "tabs", target = "simulate_expression_changes")
+      updateNavbarPage(session = session,inputId = "tabs",selected = "simulate_expression_changes")
+      
       #Prepare the choices list of the reactions/genes which expression can be adjusted
       choices_list_expr = as.list(toycon@react_name)
       names(choices_list_expr) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
@@ -1083,7 +1087,8 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$ko_rxn, {
-      showTab(inputId = "tabs", target = "KO reactions")
+      showTab(inputId = "tabs", target = "ko_reactions")
+      updateNavbarPage(session = session,inputId = "tabs",selected = "ko_reactions")
       updateTabsetPanel(session, "tabs",
                         selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])

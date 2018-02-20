@@ -53,6 +53,7 @@ shinyUI(
     ),
     tabPanel(
       "Change media",
+      value = "change_media",
       sidebarPanel(        
         div(style = "vertical-align:top; width: 50%;height: 30px", htmlOutput("text_media")),
         div(style = "vertical-align:top; width: 45%;height: 60px", uiOutput("media1")),
@@ -72,6 +73,7 @@ shinyUI(
     ),
     tabPanel(
       "KO reactions",
+      value = "ko_reactions",
       sidebarPanel(
         uiOutput("pick_ko_rxn"),
         div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
@@ -85,6 +87,7 @@ shinyUI(
     ),
     tabPanel(
       "Simulate expression changes",
+      value = "simulate_expression_changes",
       sidebarPanel(
         uiOutput("pick_expr_gene"),
         uiOutput("expr"),
