@@ -45,11 +45,11 @@ shinyUI(
         
         htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
-        width = 5
+        width = 4
       ),
       mainPanel(visNetworkOutput(
         "graph", width = "800", height = "600"
-      ), width = 7)
+      ), width = 8)
     ),
     tabPanel(
       "Change media",
@@ -62,8 +62,6 @@ shinyUI(
         uiOutput("pick_rxn"),
         uiOutput("range"),
         bsPopover("range","Technical information", "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.","bottom",trigger = "hover"),
-        # uiOutput("lbound"),
-        # uiOutput("ubound"),
         uiOutput("button_apply_media"),
         htmlOutput("text_flux_media")
 

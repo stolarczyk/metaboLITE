@@ -110,7 +110,7 @@ shinyServer(function(input, output, session) {
     
     #Setting colors according to node class
     color_reaction = "lightblue"
-    color_metabolite = "tomato"
+    color_metabolite = "lightsalmon"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -253,11 +253,16 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
-      
+      visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(stepX = 75,
@@ -535,7 +540,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to the node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       edges_names = names
       #Setting proper names names
@@ -574,10 +579,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -678,7 +688,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -715,10 +725,15 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -821,7 +836,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -858,10 +873,15 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -977,7 +997,7 @@ shinyServer(function(input, output, session) {
         
         #Setting colors according to node class
         color_reaction = "lightblue"
-        color_metabolite = "tomato"
+        color_metabolite = "lightsalmon"
         names = rownames(visdata$nodes)
         net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
         edges_names = names
@@ -1015,10 +1035,15 @@ shinyServer(function(input, output, session) {
         coords = read.csv(path)
         #Empasise the main reactions
         visdata$nodes = cbind(visdata$nodes, coords)
-        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+        #Emphasize main metabolites
+        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1179,7 +1204,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1217,10 +1242,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1344,7 +1374,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1405,11 +1435,15 @@ shinyServer(function(input, output, session) {
         dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
         visdata$edges$dashes = dashed
         #Emphasize main reactions
-        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
-        
+        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+        #Emphasize main metabolites
+        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(stepX = 75,
@@ -1522,7 +1556,7 @@ shinyServer(function(input, output, session) {
       
       #Setting colors according to node class
       color_reaction = "lightblue"
-      color_metabolite = "tomato"
+      color_metabolite = "lightsalmon"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1559,10 +1593,16 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "25px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "25px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      #Emphasize main metabolites
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      
       output$graph_expr = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
