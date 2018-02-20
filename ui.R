@@ -30,7 +30,7 @@ shinyUI(
           label = HTML("Display weights:"),
           choices = c(
             "None" = "none",
-            "log2(stoichiometry)" = "stoichiometry"
+            "Stoichiometry" = "stoichiometry"
           ),width = "50%"
         ),
         
