@@ -14,6 +14,7 @@ library(sna)
 library(shinyBS)
 library(rPython)
 library(shinythemes)
+library(markdown)
 
 # FUNCTIONS ---------------------------------------------------------------
 

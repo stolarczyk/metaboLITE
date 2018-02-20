@@ -10,10 +10,11 @@ library(shiny)
 library(shinythemes)
 library(visNetwork)
 library(shinyBS)
+library(markdown)
 
 shinyUI(
   navbarPage(
-    "Toycon model",
+    "iNRG Model",
     theme = shinytheme("cosmo"),
     id = "tabs",
     tabPanel(
@@ -98,6 +99,13 @@ shinyUI(
       mainPanel(visNetworkOutput(
         "graph_expr", width = "800", height = "600"
       ))
+    ),
+    tabPanel(
+      "Help",
+      value = "help",
+      mainPanel(
+        includeMarkdown(path = "help.md")
+      )
     )
   )
 )
