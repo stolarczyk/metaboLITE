@@ -62,6 +62,7 @@ RUN R CMD INSTALL rsbml.tar.gz
 #Install other R packages
 RUN echo "r <- getOption('repos'); r['CRAN'] <- 'http://cran.us.r-project.org'; options(repos = r);" > ~/.Rprofile
 RUN Rscript -e "install.packages('ggplot2')"
+RUN Rscript -e "install.packages('markdown')"
 RUN Rscript -e "install.packages('igraph')"
 RUN Rscript -e "install.packages('dplyr')"
 RUN Rscript -e "install.packages('shiny')"
