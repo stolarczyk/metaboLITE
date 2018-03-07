@@ -61,7 +61,7 @@ shinyUI(
       "Change media",
       value = "change_media",
       sidebarPanel(
-        fluidRow(class="myRowText", column(10,HTML("<u><b>Use predefined media: </b></u>"))),
+        fluidRow(class="myRowText", column(6,HTML("<u><b>Use predefined media: </b></u>")),column(1,offset = 0,actionLink("apply_media_popover","",icon = icon("question-circle-o")))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media1",label = "Glucose free media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
@@ -81,6 +81,7 @@ shinyUI(
       "KO reactions",
       value = "ko_reactions",
       sidebarPanel(
+        fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a reaction to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
         uiOutput("pick_ko_rxn"),
         div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
         div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),

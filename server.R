@@ -1,7 +1,5 @@
 
 
-
-
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
@@ -37,15 +35,15 @@ fill_blank <- function(x, len) {
 }
 
 add_dups_new_layout <- function(visdata) {
-  visdata$nodes[23,] = c("M_m01c1", "M_m01c1")#ADP
-  visdata$nodes[28,] = c("M_m01c2", "M_m01c2")#ADP
-  visdata$nodes[22,] = c("M_m02c1", "M_m02c1")#ATP
-  visdata$nodes[21,] = c("M_m06c1", "M_m06c1")#H2O
-  visdata$nodes[20,] = c("M_m09c1", "M_m09c1")#Pi
-  visdata$nodes[24,] = c("R_E41", "R_E41")#H2O exchange
-  visdata$nodes[25,] = c("M_m05c1", "M_m05c1")#H
-  visdata$nodes[26,] = c("M_m05m1", "M_m05m1")#H
-  visdata$nodes[27,] = c("M_m09c2", "M_m09c2")#Pi
+  visdata$nodes[23, ] = c("M_m01c1", "M_m01c1")#ADP
+  visdata$nodes[28, ] = c("M_m01c2", "M_m01c2")#ADP
+  visdata$nodes[22, ] = c("M_m02c1", "M_m02c1")#ATP
+  visdata$nodes[21, ] = c("M_m06c1", "M_m06c1")#H2O
+  visdata$nodes[20, ] = c("M_m09c1", "M_m09c1")#Pi
+  visdata$nodes[24, ] = c("R_E41", "R_E41")#H2O exchange
+  visdata$nodes[25, ] = c("M_m05c1", "M_m05c1")#H
+  visdata$nodes[26, ] = c("M_m05m1", "M_m05m1")#H
+  visdata$nodes[27, ] = c("M_m09c2", "M_m09c2")#Pi
   
   rownames(visdata$nodes) = visdata$nodes[, 1]
   
@@ -53,7 +51,7 @@ add_dups_new_layout <- function(visdata) {
   visdata$edges[30, 2] = "M_m09c2"
   visdata$edges[8, 1] = "M_m06c1"
   visdata$edges[28, 2] = "M_m06c1"
-  visdata$edges[31,] = c("M_m06c1", "R_E41", "1")
+  visdata$edges[31, ] = c("M_m06c1", "R_E41", "1")
   visdata$edges[16, 1] = "M_m02c1"
   visdata$edges[26, 2] = "M_m02c1"
   visdata$edges[12, 1] = "M_m01c1"
@@ -200,7 +198,7 @@ shinyServer(function(input, output, session) {
             new_df = merge(new_df, df1, all = T)
           }
           selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-          new_df = new_df[selection, ]
+          new_df = new_df[selection,]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
@@ -210,9 +208,9 @@ shinyServer(function(input, output, session) {
           new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
           new_df[rotate, "metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2, ] == x)[1]])
+            names_dict[1, which(names_dict[2,] == x)[1]])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2, ] == x)[1]])
+            names_dict[1, which(names_dict[2,] == x)[1]])
           new_df = new_df[, c(3, 4, 2)]
           new_df$stoi = as.character(new_df$stoi)
           output$fluxes = renderTable({
@@ -249,15 +247,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -296,8 +294,27 @@ shinyServer(function(input, output, session) {
     })
     output$text_vis = renderText({
       paste("<u><b>Visualize the metabolic network: ", "</b></u>")
-    }) 
+    })
     
+    addPopover(
+      session = session,
+      id = "apply_media_popover",
+      title = "Constrain selected reaction",
+      content = "The media changes are performed by constraining the exchange reactions in the model during the FBA simulation",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+  )
+    
+    addPopover(
+      session = session,
+      id = "pick_rxn_ko_popover",
+      title = "Knocksout the reaction picked above",
+      content = "The reaction knockout can correspond to complete enzyme inhibition that catalyzes the reaction in question",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+  )
     
     addPopover(
       session = session,
@@ -348,17 +365,17 @@ shinyServer(function(input, output, session) {
       options = list(container = "body")
     )
     
-    observeEvent(input$tabs_popover, ignoreInit = T,{
-    updateNavbarPage(session = session,
-                     inputId = "tabs",
-                     selected = "help")
+    observeEvent(input$tabs_popover, ignoreInit = T, {
+      updateNavbarPage(session = session,
+                       inputId = "tabs",
+                       selected = "help")
     })
     
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
-    observeEvent(input$change_media,ignoreInit = T, {
+    observeEvent(input$change_media, ignoreInit = T, {
       #Prepare the list of reactions to constrain
       showTab(inputId = "tabs", target = "change_media")
       updateNavbarPage(session = session,
@@ -366,7 +383,7 @@ shinyServer(function(input, output, session) {
                        selected = "change_media")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2, ] == x)[1]])
+        names_dict[1, which(names_dict[2,] == x)[1]])
       
       #render the UI select component
       output$pick_rxn = renderUI(
@@ -397,28 +414,7 @@ shinyServer(function(input, output, session) {
           trigger = "hover"
         )
       })
-      # #render the button to apply 2nd predefined media
-      # output$media2 = renderUI({
-      #   popify(
-      #     bsButton(inputId = "media2",
-      #              label = "Microaerophilic media"),
-      #     title = "Apply microaerophilic media",
-      #     content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-      #     placement = "right",
-      #     trigger = "hover"
-      #   )
-      # })
-      # #render the button to apply 3rd predefined media
-      # output$media3 = renderUI({
-      #   popify(
-      #     bsButton(inputId = "media3",
-      #              label = "Lactate rich media"),
-      #     title = "Apply lactate rich media",
-      #     content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
-      #     placement = "right",
-      #     trigger = "hover"
-      #   )
-      # })
+      
       #render the flux range limiting slider for the UI
       output$range = renderUI(
         sliderInput(
@@ -435,20 +431,14 @@ shinyServer(function(input, output, session) {
       )
       #render the button applying the changes
       output$button_apply_media = renderUI(
-        popify(
           bsButton(inputId = "apply_media",
-                   label = "Constrain"),
-          title = "Constrain selected reaction",
-          content = "The media changes are performed by constraining the exchange reactions in the model during the FBA simulation",
-          placement = "right",
-          trigger = "hover"
-        )
+                   label = "Constrain")
       )
     })
     
     # SHOW SIMULATE EXPR TAB --------------------------------------------------
     
-    observeEvent(input$simulate_expr,ignoreInit = T,{
+    observeEvent(input$simulate_expr, ignoreInit = T, {
       #Show the tab in the app
       showTab(inputId = "tabs", target = "simulate_expression_changes")
       updateNavbarPage(session = session,
@@ -487,7 +477,7 @@ shinyServer(function(input, output, session) {
         )
       )
     })
-
+    
     # APPLY MEDIA1 ------------------------------------------------------------
     observeEvent(input$media1, {
       #Define the type of media and assigne to the python variable
@@ -611,15 +601,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -757,15 +747,15 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -905,15 +895,15 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1067,15 +1057,15 @@ shinyServer(function(input, output, session) {
         coords = read.csv(path)
         #Empasise the main reactions
         visdata$nodes = cbind(visdata$nodes, coords)
-        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
         #Emphasize main metabolites
-        visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1114,10 +1104,10 @@ shinyServer(function(input, output, session) {
         )
       }
     })
-
-# SHOW KO REACTION TAB ----------------------------------------------------
-
-    observeEvent(input$ko_rxn,ignoreInit = T, {
+    
+    # SHOW KO REACTION TAB ----------------------------------------------------
+    
+    observeEvent(input$ko_rxn, ignoreInit = T, {
       showTab(inputId = "tabs", target = "ko_reactions")
       updateNavbarPage(session = session,
                        inputId = "tabs",
@@ -1126,24 +1116,18 @@ shinyServer(function(input, output, session) {
                         selected = "ko")
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2, ] == x)[1]])
+        names_dict[1, which(names_dict[2,] == x)[1]])
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
-          label = "Pick a reaction to KO:",
+          label = NULL,
           choices = choices_list,
           width = "200px"
         )
       )
       output$button_apply_ko = renderUI({
-        popify(
           bsButton(inputId = "apply_ko",
-                   label = "Knockout"),
-          title = "Knocksout the reaction picked above",
-          content = "The reaction knockout can correspond to complete enzyme inhibition that catalyzes the reaction in question",
-          placement = "right",
-          trigger = "hover"
-        )
+                   label = "Knockout")
       })
     })
     
@@ -1280,15 +1264,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
@@ -1355,18 +1339,16 @@ shinyServer(function(input, output, session) {
       #render UI table to display the fluxes in the model with missing reaction
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = paste("Fluxes after the KO of", names_dict[1, which(names_dict[2,] == paste("R_", reaction_ID, sep = ""))]),
+      }, width = "250", caption = paste("Fluxes after the KO of", names_dict[1, which(names_dict[2, ] == paste("R_", reaction_ID, sep = ""))]),
       caption.placement = getOption("xtable.caption.placement", "top"),
       caption.width = getOption("xtable.caption.width", NULL))
       #render text with objective value
       output$text_flux_ko = renderText({
         paste(
           "<br/>",
-          "<br/>",
           "<b>Objective value: ",
           as.character(flux),
           "</b>",
-          "<br/>",
           "<br/>"
         )
       })
@@ -1374,20 +1356,14 @@ shinyServer(function(input, output, session) {
       working_dir = getwd()
       path = "/data/toycon.xml"
       if (.Platform$OS.type == "windows") {
-        path = gsub("\\\\", "/", path)
+        path = gsub("\\\\", "/x`", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
       path = "/data/model_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      # output$text_main = renderText({
-      #   paste("<u><b>Launch tabs with following functionalities: ",
-      #         "</b></u>")
-      # })
-      # output$text_vis = renderText({
-      #   paste("<u><b>Visualize the metabolic network: ", "</b></u>")
-      # })
+      
       #read the model in
       load(paste(working_dir, path, sep = ""))
       toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
@@ -1401,9 +1377,9 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       
       #delete the KOed reactions
-      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction),]
+      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction), ]
       visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
-                                             visdata$edges$to == reaction),]
+                                             visdata$edges$to == reaction), ]
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
@@ -1451,7 +1427,7 @@ shinyServer(function(input, output, session) {
         }
         #Read the saved coordinates for the graph dispalying purpose
         coords = read.csv(path)
-        coords = coords[-which(rownames(coords) == reaction),]
+        coords = coords[-which(rownames(coords) == reaction), ]
         visdata$nodes = cbind(visdata$nodes, coords)
         #Adjust the coorfinates of the network after the deaction KO
         for (i in seq(1, dim(fluxes)[1])) {
@@ -1473,15 +1449,15 @@ shinyServer(function(input, output, session) {
         dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
         visdata$edges$dashes = dashed
         #Emphasize main reactions
-        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
         #Emphasize main metabolites
-        visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(stepX = 75,
@@ -1516,7 +1492,7 @@ shinyServer(function(input, output, session) {
     
     
     # APPLY GENE EXPRESSION ---------------------------------------------------
-    observeEvent(input$apply_expr,{
+    observeEvent(input$apply_expr, {
       #get the gene/reaction expression of which will be adjusted
       reaction_name = (input$pick_expr_gene)
       reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
@@ -1631,15 +1607,15 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
       output$graph_expr = renderVisNetwork({
         #Plotting graph
