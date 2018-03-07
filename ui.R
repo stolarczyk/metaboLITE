@@ -20,11 +20,19 @@ shinyUI(
     tabPanel(
       "Visualize",
       sidebarPanel(
-        div(style = "vertical-align:top; width: 100%;height: 30px", htmlOutput("text_main")),
-        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("change_media")),
-        div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("ko_rxn")),
-        div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("simulate_expr")),
-        div(style = "vertical-align:top; width: 100%;height: 30px", htmlOutput("text_vis")),
+        fluidRow(class="myRowText",column(10,HTML("<u><b>Launch tabs with following functionalities:</b></u>"))),
+        fluidRow(class="myRowButton",
+                 column(2, bsButton(inputId = "change_media",label = "Change media")),
+                 column(1,offset = 3,actionLink("change_media_popover","",icon=icon("question-circle-o")))
+                 ),
+        fluidRow(class="myRowButton",
+                 column(2,bsButton(inputId = "ko_rxn",label = "KO reaction")),
+                 column(1,offset = 2,actionLink("ko_rxn_popover","",icon=icon("question-circle-o")))
+                 ),
+        fluidRow(class="myRowButton",
+                 column(3,bsButton(inputId = "simulate_expr",label = "Simulate expression changes")),
+                 column(1,offset = 4,actionLink("simulate_expr_popover","",icon=icon("question-circle-o")))),
+        fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:30px}")),
         radioButtons(
           inputId = "weighting",
           label = HTML("Display weights:"),

@@ -75,6 +75,7 @@ shinyServer(function(input, output, session) {
   
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
+  
   observeEvent(input$update, ignoreNULL = F , {
     working_dir = getwd()
     path = "/data/toycon.xml"
@@ -294,38 +295,33 @@ shinyServer(function(input, output, session) {
         ))
     })
     
-    output$change_media = renderUI(
-      popify(
-        bsButton(inputId = "change_media",
-                 label = "Change media"),
-        title = "Creates the \"Change media\" tab",
-        content = "Simulate model growth media changes by manipulating the exchange reactions bounds",
-        placement = "right",
-        trigger = "hover"
-      )
-    )
     
-    output$ko_rxn = renderUI(
-      popify(
-        bsButton(inputId = "ko_rxn",
-                 label = "KO reaction"),
-        title = "Creates the \"Reaction KO\" tab",
-        content = "Simulate reaction Knockouts (KOs) and visualize the model",
-        placement = "right",
-        trigger = "hover"
-      )
-    )
+    addPopover(session=session, 
+               id="change_media_popover", 
+               title="Creates the \"Change media\" tab", 
+               content="Simulate model growth media changes by manipulating the exchange reactions bounds", 
+               placement = "right",
+               trigger = "click", 
+               options = list(container = "body"))
     
-    output$simulate_expr = renderUI(
-      popify(
-        bsButton(inputId = "simulate_expr",
-                 label = "Simulate expression changes"),
-        title = "Creates the \"Simulate expression changes\" tab",
-        content = "Simulate gene expression changes and visualize the model",
-        placement = "right",
-        trigger = "hover"
-      )
-    )
+    
+    addPopover(session=session, 
+               id="ko_rxn_popover", 
+               title="Creates the \"Reaction KO\" tab", 
+               content="imulate reaction Knockouts (KOs) and visualize the model", 
+               placement = "right",
+               trigger = "click", 
+               options = list(container = "body"))
+    
+    
+    addPopover(session=session, 
+               id="simulate_expr_popover", 
+               title="Creates the \"Simulate expression changes\" tab", 
+               content="Simulate gene expression changes and visualize the model", 
+               placement = "right",
+               trigger = "click", 
+               options = list(container = "body"))
+
     
 
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
@@ -1349,13 +1345,13 @@ shinyServer(function(input, output, session) {
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      output$text_main = renderText({
-        paste("<u><b>Launch tabs with following functionalities: ",
-              "</b></u>")
-      })
-      output$text_vis = renderText({
-        paste("<u><b>Visualize the metabolic network: ", "</b></u>")
-      })
+      # output$text_main = renderText({
+      #   paste("<u><b>Launch tabs with following functionalities: ",
+      #         "</b></u>")
+      # })
+      # output$text_vis = renderText({
+      #   paste("<u><b>Visualize the metabolic network: ", "</b></u>")
+      # })
       #read the model in
       load(paste(working_dir, path, sep = ""))
       toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
