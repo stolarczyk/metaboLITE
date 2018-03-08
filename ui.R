@@ -17,21 +17,23 @@ shinyUI(
     "iNRG Model",
     theme = shinytheme("cosmo"),
     id = "tabs",
+    fluid = T,
+    collapsible = T,
     tabPanel(
       "Visualize",
       value="visualize",
       sidebarPanel(
-        fluidRow(class="myRowText",column(10,HTML("<u><b>Launch tabs with following functionalities:</b></u>")),column(2,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
+        fluidRow(class="myRowText",column(6,HTML("<u><b>Launch tabs:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
-                 column(6, bsButton(inputId = "change_media",label = "Change media",block = T))
+                 column(6, bsButton(inputId = "change_media",label = "Change media"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "ko_rxn",label = "KO reaction",block = T))
+                 column(6,bsButton(inputId = "ko_rxn",label = "KO reaction"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "simulate_expr",label = "Change expression",block = T))
+                 column(6,bsButton(inputId = "simulate_expr",label = "Change expression"))
                  ),
-        fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:30px}")),
+        fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
         radioButtons(
           inputId = "weighting",
           label = HTML("Display weights:"),
@@ -61,21 +63,21 @@ shinyUI(
       "Change media",
       value = "change_media",
       sidebarPanel(
-        fluidRow(class="myRowText", column(6,HTML("<u><b>Use predefined media: </b></u>")),column(1,offset = 0,actionLink("apply_media_popover","",icon = icon("question-circle-o")))),
+        fluidRow(class="myRowText", column(8,HTML("<u><b>Use predefined media: </b></u>")),column(1,offset = 0,actionLink("apply_media_popover","",icon = icon("question-circle-o")))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media1",label = "Glucose free media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
-        div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+        # div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+        fluidRow(class="myRowText", column(10,HTML("<u><b>Or adjust the allowable flux range yourself:</b></u>"))),
         uiOutput("pick_rxn"),
         fluidRow(class="myRowButton",
                  column(10,uiOutput("range")),column(1,offset = 0,actionLink("range_popover","",icon=icon("question-circle-o")) )),
-        fluidRow(column(4,uiOutput("button_apply_media"))),
-        htmlOutput("text_flux_media")
-
+        uiOutput("button_apply_media"),
+        htmlOutput("text_flux_media"),width = 4
       ),
       mainPanel(visNetworkOutput(
         "graph_media", width = "800", height = "600"
-      ))
+      ),width = 8)
     ),
     tabPanel(
       "KO reactions",
@@ -101,11 +103,11 @@ shinyUI(
         HTML("<b>Select the gene expression level:</b>"),
         uiOutput("expr"),
         uiOutput("button_apply_expr"),
-        tableOutput(outputId = 'fluxes_expr')
+        tableOutput(outputId = 'fluxes_expr'),width = 4
       ),
       mainPanel(visNetworkOutput(
         "graph_expr", width = "800", height = "600"
-      ))
+      ),width = 8)
     ),
     tabPanel(
       "Help",
