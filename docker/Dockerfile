@@ -79,7 +79,7 @@ RUN Rscript -e "install.packages('rPython')"
 RUN pip install python-libsbml cobra
 
 #Clone the R shinyapp git repository
-RUN git clone https://github.com/michaelllo1993/shinyapp.git
+RUN git clone https://github.com/michalstolarczyk/shinyapp.git
 
 #Expose the port that the app will be listening on
 EXPOSE 8080
