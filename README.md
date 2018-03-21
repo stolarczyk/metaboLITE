@@ -223,4 +223,4 @@ To launch the app just run the following line of code in your favourite R IDE, e
 
 or in the command line:<a name="launch_commandline"></a>
 
-```R -e "shiny::runApp(appDir = "path/to/the/shinyapp/directory", launch.browser=TRUE)"```
+```R -e "shiny::runApp(appDir = 'path/to/the/shinyapp/directory', launch.browser=TRUE)"```
