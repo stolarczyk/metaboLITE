@@ -12,6 +12,7 @@ library(visNetwork)
 library(shinyBS)
 library(markdown)
 
+
 shinyUI(
   navbarPage(
     "iNRG Model",
@@ -67,11 +68,11 @@ shinyUI(
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media1",label = "Glucose free media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
-        # div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
-        fluidRow(class="myRowText", column(10,HTML("<u><b>Or adjust the allowable flux range yourself:</b></u>"))),
+        fluidRow(class="myRowButton", column(6,bsButton(inputId = "media_custom",label = "Custom media"))),
+        div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
         uiOutput("pick_rxn"),
         fluidRow(class="myRowButton",
-                 column(10,uiOutput("range")),column(1,offset = 0,actionLink("range_popover","",icon=icon("question-circle-o")) )),
+                 column(10,uiOutput("range")),column(1,offset = 0,uiOutput("range_help") )),
         uiOutput("button_apply_media"),
         htmlOutput("text_flux_media"),width = 4
       ),

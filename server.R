@@ -17,7 +17,6 @@ library(markdown)
 
 # FUNCTIONS ---------------------------------------------------------------
 
-
 fill_blank <- function(x, len) {
   if (nchar(x) > len) {
     result = x
@@ -72,6 +71,7 @@ shinyServer(function(input, output, session) {
   }
   model_file_path = paste(working_dir, path, sep = "")
   
+
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
@@ -86,6 +86,7 @@ shinyServer(function(input, output, session) {
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
+    
     load(paste(working_dir, path, sep = ""))
     toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
     data = rsbml_graph((sbml_model))
@@ -286,8 +287,7 @@ shinyServer(function(input, output, session) {
           gravitationalConstant = 0
         ))
     })
-    
-    
+
     output$text_main = renderText({
       paste("<u><b>Launch tabs with following functionalities: ",
             "</b></u>")
@@ -344,16 +344,7 @@ shinyServer(function(input, output, session) {
       trigger = "hover",
       options = list(container = "body")
     )
-    
-    addPopover(
-      session = session,
-      id = "range_popover",
-      title = "Technical information",
-      content = "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
+
     
     addPopover(
       session = session,
@@ -374,6 +365,9 @@ shinyServer(function(input, output, session) {
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
+    
+    
+    
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
     observeEvent(input$change_media, ignoreInit = T, {
       #Prepare the list of reactions to constrain
@@ -381,59 +375,17 @@ shinyServer(function(input, output, session) {
       updateNavbarPage(session = session,
                        inputId = "tabs",
                        selected = "change_media")
-      choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
-      names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)[1]])
+      # choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
+      # names(choices_list) = sapply(choices_list, function(x)
+      #   names_dict[1, which(names_dict[2,] == x)[1]])
       
-      #render the UI select component
-      output$pick_rxn = renderUI(
-        selectInput(
-          inputId = "pick_rxn",
-          label = "Pick reaction:",
-          choices = choices_list,
-          width = "200px"
-        )
-      )
+
       #render th text to display in the UI
       output$text_media = renderText({
         paste("<u><b>Use predefined media: ", "</b></u>")
       })
-      #render th text to display in the UI
-      output$text_own = renderText({
-        paste("<u><b>Or adjust the exchange limits yourself: ",
-              "</b></u>")
-      })
-      #render the button to apply 1st predefined media
-      output$media1 = renderUI({
-        popify(
-          bsButton(inputId = "media1",
-                   label = "Glucose free media"),
-          title = "Apply glucose free media",
-          content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
-          placement = "right",
-          trigger = "hover"
-        )
-      })
-      
-      #render the flux range limiting slider for the UI
-      output$range = renderUI(
-        sliderInput(
-          inputId = "range",
-          min = -1000,
-          max = 1000,
-          label = "Select the exchange limts:",
-          value = c(-1000, 1000),
-          step = 10,
-          round = TRUE,
-          ticks = TRUE,
-          width = "300px"
-        )
-      )
-      #render the button applying the changes
-      output$button_apply_media = renderUI(
-          bsButton(inputId = "apply_media",
-                   label = "Constrain")
-      )
+
+
     })
     
     # SHOW SIMULATE EXPR TAB --------------------------------------------------
@@ -927,6 +879,66 @@ shinyServer(function(input, output, session) {
       })
     })
     
+    observeEvent(input$media_custom, {
+      
+      choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
+      names(choices_list) = sapply(choices_list, function(x)
+        names_dict[1, which(names_dict[2,] == x)[1]])
+      
+      #render the UI select component
+      output$pick_rxn = renderUI(
+        selectInput(
+          inputId = "pick_rxn",
+          label = "Pick reaction:",
+          choices = choices_list,
+          width = "200px"
+        )
+      )
+      
+      #render th text to display in the UI
+      output$text_own = renderText({
+        paste("<u><b>Adjust the exchange limits yourself: ",
+              "</b></u>")
+      })
+      
+      
+      #render the flux range limiting slider for the UI
+      output$range = renderUI(
+        sliderInput(
+          inputId = "range",
+          min = -1000,
+          max = 1000,
+          label = "Select the exchange limts:",
+          value = c(-1000, 1000),
+          step = 10,
+          round = TRUE,
+          ticks = TRUE,
+          width = "300px"
+        )
+      )
+      
+      
+      output$range_help = renderUI(
+        actionLink(inputId = "range_popover","",icon=icon("question-circle-o"))
+      )
+
+      #render the button applying the changes
+      output$button_apply_media = renderUI(
+        bsButton(inputId = "apply_media",
+                 label = "Constrain")
+      )
+
+      addPopover(
+        session = session,
+        id = "range_help",
+        title = "Technical information",
+        content = "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.",
+        placement = "right",
+        trigger = "click",
+        options = list(container = "body")
+      )
+    }
+    )
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
       #get the bouds to be applied
