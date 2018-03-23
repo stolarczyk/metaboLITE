@@ -1542,7 +1542,7 @@ shinyServer(function(input, output, session) {
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
-      output$text_flux_media = renderText({
+      output$text_flux_expr = renderText({
         paste("<br/>",
               "<b>Objective value: ",
               as.character(flux),

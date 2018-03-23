@@ -29,10 +29,10 @@ shinyUI(
                  column(6, bsButton(inputId = "change_media",label = "Change media"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "ko_rxn",label = "KO reaction"))
+                 column(6,bsButton(inputId = "ko_rxn",label = "Knockout reaction"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "simulate_expr",label = "Change expression"))
+                 column(6,bsButton(inputId = "simulate_expr",label = "Transcriptomics experiment"))
                  ),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
         radioButtons(
@@ -81,7 +81,7 @@ shinyUI(
       ),width = 8)
     ),
     tabPanel(
-      "KO reactions",
+      "Knockout reaction",
       value = "ko_reactions",
       sidebarPanel(
         fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a reaction to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
@@ -96,7 +96,7 @@ shinyUI(
       ))
     ),
     tabPanel(
-      "Simulate expression changes",
+      "Transcriptomics experiment",
       value = "simulate_expression_changes",
       sidebarPanel(
         fluidRow(class="myRowText",column(9,HTML("<b>Pick a gene for expression adjustment:</b>")),column(1,offset = 0,actionLink("expression_popover","",icon=icon("question-circle-o")))),
@@ -104,6 +104,7 @@ shinyUI(
         HTML("<b>Select the gene expression level:</b>"),
         uiOutput("expr"),
         uiOutput("button_apply_expr"),
+        htmlOutput("text_flux_expr"),
         tableOutput(outputId = 'fluxes_expr'),width = 4
       ),
       mainPanel(visNetworkOutput(
