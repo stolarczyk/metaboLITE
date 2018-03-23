@@ -1542,6 +1542,14 @@ shinyServer(function(input, output, session) {
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
+      
+      #render the fluxes table for the UI
+      output$fluxes_expr = renderTable({
+        fluxes_output
+      }, width = "250", caption = "Fluxes after gene expression adjustment",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", NULL))
+      
       output$text_flux_expr = renderText({
         paste("<br/>",
               "<b>Objective value: ",
