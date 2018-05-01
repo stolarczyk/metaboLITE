@@ -34,7 +34,8 @@ shinyUI(
         fluidRow(class="myRowButton",
                  column(6,bsButton(inputId = "simulate_expr",label = "Transcriptomics experiment"))
                  ),
-        fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
+        fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
+        tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
         radioButtons(
           inputId = "weighting",
           label = HTML("Display weights:"),
@@ -52,7 +53,9 @@ shinyUI(
           placement = "right",
           trigger = "hover"
         ),
-        htmlOutput("text_flux"),
+        br(),br(),
+        fluidRow(class="myRowText",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux")),column(1,offset = 1,actionLink("flux_popover","",icon=icon("question-circle-o")))),
+        #htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
         width = 4
       ),
@@ -69,12 +72,14 @@ shinyUI(
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
         fluidRow(class="myRowButton", column(6,bsButton(inputId = "media_custom",label = "Custom media"))),
+        br(),
+        fluidRow(class="myRowButton",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux_media")),column(1,offset = 1,actionLink("flux_popover_media","",icon=icon("question-circle-o")))),
+        br(),
         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
         uiOutput("pick_rxn"),
         fluidRow(class="myRowButton",
                  column(10,uiOutput("range")),column(1,offset = 0,uiOutput("range_help") )),
-        uiOutput("button_apply_media"),
-        htmlOutput("text_flux_media"),width = 4
+        uiOutput("button_apply_media")
       ),
       mainPanel(visNetworkOutput(
         "graph_media", width = "800", height = "600"
@@ -88,7 +93,8 @@ shinyUI(
         uiOutput("pick_ko_rxn"),
         div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
         div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
-        htmlOutput("text_flux_ko"),
+        br(),
+        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_ko")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),
         tableOutput(outputId = 'fluxes_ko')
       ),
       mainPanel(visNetworkOutput(
@@ -104,8 +110,8 @@ shinyUI(
         HTML("<b>Select the gene expression level:</b>"),
         uiOutput("expr"),
         uiOutput("button_apply_expr"),
-        htmlOutput("text_flux_expr"),
-        tableOutput(outputId = 'fluxes_expr'),width = 4
+        br(),br(),
+        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),        tableOutput(outputId = 'fluxes_expr'),width = 4
       ),
       mainPanel(visNetworkOutput(
         "graph_expr", width = "800", height = "600"

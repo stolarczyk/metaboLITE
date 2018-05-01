@@ -155,7 +155,8 @@ shinyServer(function(input, output, session) {
         #gets the python variable after the script execution
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
-          paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+          # paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
+          paste("<b>", flux, "</b>")
         })
       }
       #Weighting edges
@@ -168,13 +169,7 @@ shinyServer(function(input, output, session) {
         python.load(paste(working_dir, path, sep = ""))
         flux = python.get(var.name = "flux")
         output$text_flux = renderText({
-          paste("<br/>",
-                "<br/>",
-                "<b>Objective value: ",
-                flux,
-                "</b>",
-                "<br/>",
-                "<br/>")
+          paste("<b>", flux, "</b>")
         })
         
         test = unlist(net$val)
@@ -305,7 +300,45 @@ shinyServer(function(input, output, session) {
       trigger = "click",
       options = list(container = "body")
   )
+    addPopover(
+      session = session,
+      id = "flux_popover",
+      title = "Objective value",
+      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+    )
     
+    addPopover(
+      session = session,
+      id = "flux_popover_media",
+      title = "Objective value",
+      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+    )
+    
+    addPopover(
+      session = session,
+      id = "flux_popover_ko",
+      title = "Objective value",
+      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+    )
+    
+    addPopover(
+      session = session,
+      id = "flux_popover_expr",
+      title = "Objective value",
+      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
+      placement = "right",
+      trigger = "click",
+      options = list(container = "body")
+    )
     addPopover(
       session = session,
       id = "pick_rxn_ko_popover",
@@ -362,6 +395,7 @@ shinyServer(function(input, output, session) {
                        selected = "help")
     })
     
+
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
@@ -468,11 +502,7 @@ shinyServer(function(input, output, session) {
       }
       #render the tex for UI
       output$text_flux_media = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
-              as.character(flux),
-              "</b>",
-              "<br/>")
+        paste("<b>", as.character(flux), "</b>")
       })
       
       toycon_graph = igraph.from.graphNEL(data)
@@ -618,11 +648,9 @@ shinyServer(function(input, output, session) {
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
       output$text_flux_media = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
+        paste("<b>",
               as.character(flux),
-              "</b>",
-              "<br/>")
+              "</b>")
       })
       
       toycon_graph = igraph.from.graphNEL(data)
@@ -765,11 +793,9 @@ shinyServer(function(input, output, session) {
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
       output$text_flux_media = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
+        paste("<b>",
               as.character(flux),
-              "</b>",
-              "<br/>")
+              "</b>")
       })
       
       toycon_graph = igraph.from.graphNEL(data)
@@ -982,11 +1008,9 @@ shinyServer(function(input, output, session) {
         }
         #Render UI text
         output$text_flux_media = renderText({
-          paste("<br/>",
-                "<b>Objective value: ",
+          paste("<b>",
                 as.character(flux),
-                "</b>",
-                "<br/>")
+                "</b>")
         })
         
         toycon_graph = igraph.from.graphNEL(data)
@@ -1180,11 +1204,9 @@ shinyServer(function(input, output, session) {
       }
       #render the objective flux text output for UI
       output$text_flux_media = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
+        paste("<b>",
               as.character(flux),
-              "</b>",
-              "<br/>")
+              "</b>")
       })
       #render the fluxes table for the UI
       output$fluxes_ko = renderTable({
@@ -1195,11 +1217,9 @@ shinyServer(function(input, output, session) {
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
       output$text_flux_media = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
+        paste("<b>",
               as.character(flux),
-              "</b>",
-              "<br/>")
+              "</b>")
       })
       toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
       path = "/data/model_var.RData"
@@ -1356,13 +1376,9 @@ shinyServer(function(input, output, session) {
       caption.width = getOption("xtable.caption.width", NULL))
       #render text with objective value
       output$text_flux_ko = renderText({
-        paste(
-          "<br/>",
-          "<b>Objective value: ",
+        paste("<b>",
           as.character(flux),
-          "</b>",
-          "<br/>"
-        )
+          "</b>")
       })
       
       working_dir = getwd()
@@ -1551,11 +1567,9 @@ shinyServer(function(input, output, session) {
       caption.width = getOption("xtable.caption.width", NULL))
       
       output$text_flux_expr = renderText({
-        paste("<br/>",
-              "<b>Objective value: ",
+        paste("<b>",
               as.character(flux),
-              "</b>",
-              "<br/>")
+              "</b>")
       })
       
       toycon_graph = igraph.from.graphNEL(data)
