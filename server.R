@@ -1444,7 +1444,7 @@ shinyServer(function(input, output, session) {
       #render UI table to display the fluxes in the model with missing reaction
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = paste("Fluxes after the KO of", names_dict[1, which(names_dict[2, ] == paste("R_", reaction_ID, sep = ""))]),
+      }, width = "250", caption = paste("Fluxes after the KO of gene coding for enzyme that catalyzes", names_dict[1, which(names_dict[2, ] == paste("R_", reaction_ID, sep = ""))],"reaction"),
       caption.placement = getOption("xtable.caption.placement", "top"),
       caption.width = getOption("xtable.caption.width", NULL))
       #render text with objective value
