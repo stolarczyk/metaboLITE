@@ -99,6 +99,7 @@ shinyServer(function(input, output, session) {
     
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+    visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -106,6 +107,7 @@ shinyServer(function(input, output, session) {
     #Setting colors according to node class
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
+    color_metabolite_mitochondria = "red"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -253,11 +255,15 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
+      
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-        visLegend(stepX = 75,
-                  stepY = 100,
-                  width = 0.1) %>%
+        visLegend(position = "right",stepX = 100,
+                  stepY = 75,
+                  width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
         visOptions(highlightNearest = TRUE) %>%
         visEdges(
           color = "black",
@@ -275,6 +281,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Reaction",
                   color = color_reaction,
                   shape = "box") %>%
+        visGroups(groupname = "Metabolite mitochondria",
+                  color = color_metabolite_mitochondria,
+                  shape = "circle") %>%
         visLayout(randomSeed = 1) %>%
         visPhysics(barnesHut = list(
           springLength = 200,
@@ -525,6 +534,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       #Get the weights from the net object
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -545,6 +555,7 @@ shinyServer(function(input, output, session) {
       #Setting colors according to the node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       edges_names = names
       #Setting proper names names
@@ -592,12 +603,17 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
+      
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -606,6 +622,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
@@ -670,7 +689,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -691,6 +710,7 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -736,12 +756,15 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -750,6 +773,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
@@ -815,6 +841,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       
       
       weights_edges = c()
@@ -837,6 +864,7 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -882,12 +910,15 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -896,6 +927,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
@@ -1034,6 +1068,7 @@ shinyServer(function(input, output, session) {
         
         visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
         visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+        visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
         
         #Get the weights from the net object
         weights_edges = c()
@@ -1056,6 +1091,7 @@ shinyServer(function(input, output, session) {
         #Setting colors according to node class
         color_reaction = "lightblue"
         color_metabolite = "lightsalmon"
+        color_metabolite_mitochondria = "red"
         names = rownames(visdata$nodes)
         net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
         edges_names = names
@@ -1102,12 +1138,15 @@ shinyServer(function(input, output, session) {
         visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+        lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                             shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                             title = "Informations")
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-            visLegend(stepX = 75,
-                      stepY = 100,
-                      width = 0.1) %>%
+            visLegend(position = "right",stepX = 100,
+                      stepY = 75,
+                      width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
             visOptions(highlightNearest = TRUE) %>%
             visEdges(color = "black", arrows = "to") %>%
             visGroups(groupname = "Metabolite",
@@ -1116,6 +1155,9 @@ shinyServer(function(input, output, session) {
             visGroups(groupname = "Reaction",
                       color = color_reaction,
                       shape = "box") %>%
+            visGroups(groupname = "Metabolite mitochondria",
+                      color = color_metabolite_mitochondria,
+                      shape = "circle") %>%
             visPhysics(
               barnesHut = list(
                 springLength = 200,
@@ -1242,6 +1284,7 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       #Get the weights from the net object
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -1263,6 +1306,7 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1309,12 +1353,15 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -1323,6 +1370,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
@@ -1348,7 +1398,6 @@ shinyServer(function(input, output, session) {
       #get the reaction name to be KOed and assign its ID to the Python variable
       reaction_name = (input$pick_ko_rxn)
       reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
-      print(reaction_ID)
       #reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)
@@ -1418,12 +1467,14 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       visdata$edges$length = 150
       net = asNetwork(toycon_graph)
       
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1493,11 +1544,14 @@ shinyServer(function(input, output, session) {
         visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+        lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                             shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                             title = "Informations")
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(
             color = "black",
@@ -1515,6 +1569,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visLayout(randomSeed = 1) %>%
           visPhysics(barnesHut = list(
             springLength = 200,
@@ -1592,7 +1649,7 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      
+      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
@@ -1612,6 +1669,7 @@ shinyServer(function(input, output, session) {
       #Setting colors according to node class
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
+      color_metabolite_mitochondria = "red"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -1658,12 +1716,16 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
+      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
+                           title = "Informations")
+      
       output$graph_expr = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(stepX = 75,
-                    stepY = 100,
-                    width = 0.1) %>%
+          visLegend(position = "right",stepX = 100,
+                    stepY = 75,
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -1672,6 +1734,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Reaction",
                     color = color_reaction,
                     shape = "box") %>%
+          visGroups(groupname = "Metabolite mitochondria",
+                    color = color_metabolite_mitochondria,
+                    shape = "circle") %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
