@@ -24,15 +24,25 @@ In order to simulate the model growth a <a href="https://www.ncbi.nlm.nih.gov/pm
 #### Simulate expression changes tab
 - **Gene expression influenece visualization**, which is intended to depict the impact of the pseudo-gene expression changes in the model, which directly influences the flux that is carried by the reaction catalyzed by the enzyme encoded by the gene in question. It is indented to give the user an idea of how the algorithms for gene expression integration influence the fluxes in in the model.
 
-## How to cite
 
-## 
+## Model representation
+The model is represented as a graph here. The nodes of the graph serve as metabolites and reactions in the form of orange/red circles and blue rectangles, whereas the edges of the graph define the relationship between them.
+
+![iNRG model representation](toycon_transform.png)
+
+
+## How to cite
+TBD
+
 ## References
 1. Thiele, I. & Palsson, B. Ø. A protocol for generating a high-quality genome-scale metabolic reconstruction. Nature Protocols 5, 93–121 (2010).
 
 2. Orth, J. D., Thiele, I. & Palsson, B. Ø. What is flux balance analysis? Nat Biotechnol 28, 245–248 (2010).
 
 3. García Sánchez, C. E. & Torres Sáez, R. G. Comparison and analysis of objective functions in flux balance analysis. Biotechnol Progress 30, 985–991 (2014).
+
+
+
 
 
 
