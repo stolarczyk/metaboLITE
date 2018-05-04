@@ -343,7 +343,7 @@ shinyServer(function(input, output, session) {
       session = session,
       id = "pick_rxn_ko_popover",
       title = "Knocksout the reaction picked above",
-      content = "The reaction knockout can correspond to complete enzyme inhibition that catalyzes the reaction in question",
+      content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
       placement = "right",
       trigger = "click",
       options = list(container = "body")
@@ -1150,14 +1150,18 @@ shinyServer(function(input, output, session) {
                        selected = "ko_reactions")
       updateTabsetPanel(session, "tabs",
                         selected = "ko")
-      choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
-      names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)[1]])
+      
+      # choices_list_ko = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
+      # names(choices_list_ko) = sapply(choices_list_ko, function(x)
+      #   names_dict[1, which(names_dict[2,] == x)[1]])
+      
+      choices_list_ko = as.list(toycon@react_name)
+      names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
           label = NULL,
-          choices = choices_list,
+          choices = choices_list_ko,
           width = "200px"
         )
       )
@@ -1342,8 +1346,10 @@ shinyServer(function(input, output, session) {
         )
       )
       #get the reaction name to be KOed and assign its ID to the Python variable
-      reaction = (input$pick_ko_rxn)
-      reaction_ID = strsplit(reaction, split = "_")[[1]][2]
+      reaction_name = (input$pick_ko_rxn)
+      reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
+      print(reaction_ID)
+      #reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)
       path = "/scripts/ko_rxn.py"
@@ -1405,6 +1411,7 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       
       #delete the KOed reactions
+      reaction = paste("R_",reaction_ID,sep = "")
       visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction), ]
       visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
                                              visdata$edges$to == reaction), ]
@@ -1524,7 +1531,7 @@ shinyServer(function(input, output, session) {
       #get the gene/reaction expression of which will be adjusted
       reaction_name = (input$pick_expr_gene)
       reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
-      #get the bounds of the expression level and sssign to the Python variable
+      #get the bounds of the expression level and assign to the Python variable
       bound = input$expr
       python.assign("bound", bound)
       python.assign("reaction_ID", reaction_ID)

@@ -29,7 +29,7 @@ shinyUI(
                  column(6, bsButton(inputId = "change_media",label = "Change media"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "ko_rxn",label = "Knockout reaction"))
+                 column(6,bsButton(inputId = "ko_rxn",label = "Gene knockout"))
                  ),
         fluidRow(class="myRowButton",
                  column(6,bsButton(inputId = "simulate_expr",label = "Transcriptomics experiment"))
@@ -86,7 +86,7 @@ shinyUI(
       ),width = 8)
     ),
     tabPanel(
-      "Knockout reaction",
+      "Gene knockout",
       value = "ko_reactions",
       sidebarPanel(
         fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a reaction to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
