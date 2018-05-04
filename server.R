@@ -259,11 +259,14 @@ shinyServer(function(input, output, session) {
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(position = "right",stepX = 100,
                   stepY = 75,
-                  width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                  width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
         visOptions(highlightNearest = TRUE) %>%
         visEdges(
           color = "black",
@@ -608,12 +611,15 @@ shinyServer(function(input, output, session) {
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -759,12 +765,15 @@ shinyServer(function(input, output, session) {
       lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
+      
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -913,12 +922,15 @@ shinyServer(function(input, output, session) {
       lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
+      
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -1141,12 +1153,15 @@ shinyServer(function(input, output, session) {
         lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
                              shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                              title = "Informations")
+        
+        ledges <- data.frame(color = c("black", "black"),
+                             label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
             visLegend(position = "right",stepX = 100,
                       stepY = 75,
-                      width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                      width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
             visOptions(highlightNearest = TRUE) %>%
             visEdges(color = "black", arrows = "to") %>%
             visGroups(groupname = "Metabolite",
@@ -1356,12 +1371,15 @@ shinyServer(function(input, output, session) {
       lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
+      
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -1547,11 +1565,14 @@ shinyServer(function(input, output, session) {
         lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
                              shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                              title = "Informations")
+        
+        ledges <- data.frame(color = c("black", "black"),
+                             label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(
             color = "black",
@@ -1720,12 +1741,15 @@ shinyServer(function(input, output, session) {
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
+      ledges <- data.frame(color = c("black", "black"),
+                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      
       output$graph_expr = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
           visLegend(position = "right",stepX = 100,
                     stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T) %>%
+                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
