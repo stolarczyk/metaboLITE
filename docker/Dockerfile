@@ -51,9 +51,9 @@ RUN make
 RUN make install
 
 #Install rsbml package and its dependencies
-RUN wget -O /tmp/rsbml.tar.gz 'https://www.bioconductor.org/packages/release/bioc/src/contrib/rsbml_2.36.0.tar.gz'
-RUN wget -O /tmp/BiocGenerics.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/BiocGenerics_0.24.0.tar.gz'
-RUN wget -O /tmp/graph.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/graph_1.56.0.tar.gz'
+RUN wget -O /tmp/rsbml.tar.gz 'https://www.bioconductor.org/packages/release/bioc/src/contrib/rsbml_2.38.0.tar.gz'
+RUN wget -O /tmp/BiocGenerics.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/BiocGenerics_0.26.0.tar.gz'
+RUN wget -O /tmp/graph.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/graph_1.58.0.tar.gz'
 WORKDIR /tmp
 RUN R CMD INSTALL BiocGenerics.tar.gz
 RUN R CMD INSTALL graph.tar.gz
@@ -73,7 +73,6 @@ RUN Rscript -e "install.packages('visNetwork')"
 RUN Rscript -e "install.packages('xtable')"
 RUN Rscript -e "install.packages('sna')"
 RUN Rscript -e "install.packages('rPython')"
-
 
 # Installing python-libsbml and cobra
 RUN pip install python-libsbml cobra

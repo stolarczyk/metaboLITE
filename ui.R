@@ -11,6 +11,7 @@ library(shinythemes)
 library(visNetwork)
 library(shinyBS)
 library(markdown)
+library(htmlwidgets)
 
 
 shinyUI(
@@ -59,8 +60,11 @@ shinyUI(
         tableOutput(outputId = 'fluxes'),
         width = 4
       ),
+      # mainPanel(visNetworkOutput(
+      #   "graph", width = "800", height = "600"
+      # ), width = 8)
       mainPanel(visNetworkOutput(
-        "graph", width = "800", height = "600"
+        "graph",height = "700"
       ), width = 8)
     ),
     tabPanel(
@@ -82,8 +86,8 @@ shinyUI(
         uiOutput("button_apply_media")
       ),
       mainPanel(visNetworkOutput(
-        "graph_media", width = "800", height = "600"
-      ),width = 8)
+        "graph_media",height = "700"
+      ), width = 8)
     ),
     tabPanel(
       "Gene knockout",
@@ -98,8 +102,8 @@ shinyUI(
         tableOutput(outputId = 'fluxes_ko')
       ),
       mainPanel(visNetworkOutput(
-        "graph_ko", width = "800", height = "600"
-      ))
+        "graph_ko",height = "700"
+      ), width = 8)
     ),
     tabPanel(
       "Transcriptomics experiment",
@@ -114,8 +118,8 @@ shinyUI(
         fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),        tableOutput(outputId = 'fluxes_expr'),width = 4
       ),
       mainPanel(visNetworkOutput(
-        "graph_expr", width = "800", height = "600"
-      ),width = 8)
+        "graph_expr",height = "700"
+      ), width = 8)
     ),
     tabPanel(
       "Help",

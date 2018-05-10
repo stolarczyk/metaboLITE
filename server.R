@@ -14,6 +14,7 @@ library(shinyBS)
 library(rPython)
 library(shinythemes)
 library(markdown)
+library(htmlwidgets)
 
 # FUNCTIONS ---------------------------------------------------------------
 
@@ -294,6 +295,7 @@ shinyServer(function(input, output, session) {
           gravitationalConstant = 0
         ))
     })
+
 
     output$text_main = renderText({
       paste("<u><b>Launch tabs with following functionalities: ",
