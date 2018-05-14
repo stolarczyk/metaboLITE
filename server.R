@@ -1,6 +1,8 @@
 
 
 
+
+
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
@@ -20,6 +22,7 @@ library(htmlwidgets)
 # FUNCTIONS ---------------------------------------------------------------
 
 fill_blank <- function(x, len) {
+  #This function is used to make the metabolite name strings the same length. It fills the strings with spaces so the final lengths of each metabolite equals the length of the longest one
   if (nchar(x) > len) {
     result = x
   } else{
@@ -36,6 +39,7 @@ fill_blank <- function(x, len) {
 }
 
 add_dups_new_layout <- function(visdata) {
+  #This function is used to duplicate the metabolites in order to acheve the textbooky look of the network
   visdata$nodes[23,] = c("M_m01c1", "M_m01c1")#ADP
   visdata$nodes[28,] = c("M_m01c2", "M_m01c2")#ADP
   visdata$nodes[22,] = c("M_m02c1", "M_m02c1")#ATP
@@ -62,10 +66,161 @@ add_dups_new_layout <- function(visdata) {
   return(visdata)
 }
 
+show_basic_network <- function() {
+  #This function is used to show a basic network when the tabs are first launched in order to help the user to decide what to do
+  working_dir = getwd()
+  path = "/data/toycon.xml"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  model_file_path = paste(working_dir, path, sep = "")
+  path = "/data/model_var.RData"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  
+  load(paste(working_dir, path, sep = ""))
+  toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+  data = rsbml_graph((sbml_model))
+  toycon_graph = igraph.from.graphNEL(data)
+  visdata <- toVisNetworkData(toycon_graph)
+  visdata_ori = visdata
+  
+  #Adding duplicate metabolites/reactions
+  visdata = add_dups_new_layout(visdata)
+  
+  visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
+  visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+  visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+  visdata$edges$width = 2
+  visdata$edges$length = 150
+  net = asNetwork(toycon_graph)
+  
+  #Setting colors according to node class
+  color_reaction = "lightblue"
+  color_metabolite = "lightsalmon"
+  color_metabolite_mitochondria = "red"
+  names = rownames(visdata$nodes)
+  net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+  edges_names = names
+  
+  #Setting proper nodes names
+  for (i in seq(1, length(names))) {
+    if (nchar(names[i]) < 6) {
+      names[i] = substr(names[i], 1, 4)
+    } else{
+      names[i] = substr(names[i], 1, 6)
+    }
+    if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+      metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+      edges_names[i] = metabolite
+    }
+    else{
+      if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+        reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+        edges_names[i] = reaction_name
+      }
+      else{
+        edges_names[i] = "NoName"
+      }
+    }
+  }
+  
+  #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
+  edges_names = sapply(edges_names, function(x)
+    fill_blank(x, 7))
+  names_dict = rbind(edges_names, names) #Names and IDs dictionary
+  visdata$nodes$label = as.vector(edges_names)
+  
+  edgesize = 0.75
+  
+  python.assign("model_file_path", model_file_path)
+  path = "/scripts/check_flux.py"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  #runs the script specified by the path variable
+  python.load(paste(working_dir, path, sep = ""))
+  #gets the python variable after the script execution
+  flux = python.get(var.name = "flux")
+  #Read the saved coordinates for the graph dispalying purpose
+  path = "data/textbooky_coords.csv"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  coords = read.csv(path)
+  visdata$nodes = cbind(visdata$nodes, coords)
+  #Emphasize main reactions
+  visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+  #Emphasize main metabolites
+  visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+  visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+  
+  lnodes <-
+    data.frame(
+      label = c(
+        "Cytosolic metabolite",
+        "Mitochondrial metabolite",
+        "Reaction"
+      ),
+      shape = c("dot", "dot", "box"),
+      color = c("lightsalmon", "red", "lightblue"),
+      title = "Informations"
+    )
+  
+  ledges <- data.frame(
+    color = c("black", "black"),
+    label = c("flux", "no flux"),
+    arrows = c("to", "to"),
+    dashes = c(F, T)
+  )
+  
+  #Plotting graph
+  visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
+    visLegend(
+      position = "right",
+      stepX = 100,
+      stepY = 75,
+      width = 0.2,
+      useGroups = F,
+      addNodes = lnodes,
+      zoom = T,
+      addEdges = ledges
+    ) %>%
+    visOptions(highlightNearest = TRUE) %>%
+    visEdges(
+      color = "black",
+      arrows = "to",
+      smooth = list(
+        enabled = TRUE,
+        type = "vertical",
+        roundness = 0.1,
+        forceDirection = "vertical"
+      )
+    ) %>%
+    visGroups(groupname = "Metabolite",
+              color = color_metabolite,
+              shape = "circle") %>%
+    visGroups(groupname = "Reaction",
+              color = color_reaction,
+              shape = "box") %>%
+    visGroups(groupname = "Metabolite mitochondria",
+              color = color_metabolite_mitochondria,
+              shape = "circle") %>%
+    visLayout(randomSeed = 1) %>%
+    visPhysics(barnesHut = list(
+      springLength = 200,
+      springConstant = 0,
+      gravitationalConstant = 0
+    ))
+}
+
 shinyServer(function(input, output, session) {
-  # hideTab(inputId = "tabs", target = "change_media")
-  # hideTab(inputId = "tabs", target = "ko_reactions")
-  # hideTab(inputId = "tabs", target = "simulate_expression_changes")
   working_dir = getwd()
   path = "/data/toycon.xml"
   if (.Platform$OS.type == "windows") {
@@ -437,162 +592,171 @@ shinyServer(function(input, output, session) {
     
     
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
-    observeEvent(input$change_media,once = T, ignoreInit = T, {
-      #Prepare the list of reactions to constrain
-      insertTab(
-        inputId = "tabs",
-        target = "help",
-        tabPanel(
-          "Change media",
-          value = "change_media",
-          sidebarPanel(
-            fluidRow(
-              class = "myRowText",
-              column(8, HTML(
-                "<u><b>Use predefined media: </b></u>"
-              )),
-              column(
-                1,
-                offset = 0,
-                actionLink("apply_media_popover", "", icon = icon("question-circle-o"))
-              )
-            ),
-            fluidRow(class = "myRowButton", column(
-              6,
-              bsButton(inputId = "media1", label = "Glucose free media")
-            )),
-            fluidRow(class = "myRowButton", column(
-              6,
-              bsButton(inputId = "media2", label = "Microaerophilic media")
-            )),
-            fluidRow(class = "myRowButton", column(
-              6,
-              bsButton(inputId = "media3", label = "Lactate rich media")
-            )),
-            fluidRow(class = "myRowButton", column(
-              6,
-              bsButton(inputId = "media_custom", label = "Custom media")
-            )),
-            br(),
-            fluidRow(
-              class = "myRowButton",
-              column(5, HTML("<b>Objective value: </b>")),
-              column(1, offset = 0, htmlOutput("text_flux_media")),
-              column(
-                1,
-                offset = 1,
-                actionLink("flux_popover_media", "", icon = icon("question-circle-o"))
-              )
-            ),
-            br(),
-            div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
-            uiOutput("pick_rxn"),
-            fluidRow(
-              class = "myRowButton",
-              column(10, uiOutput("range")),
-              column(1, offset = 0, uiOutput("range_help"))
-            ),
-            uiOutput("button_apply_media")
-          ),
-          mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
-        )
-      )
-      updateNavbarPage(session = session,
-                       inputId = "tabs",
-                       selected = "change_media")
-      # choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
-      # names(choices_list) = sapply(choices_list, function(x)
-      #   names_dict[1, which(names_dict[2,] == x)[1]])
-      
-      
-      #render th text to display in the UI
-      output$text_media = renderText({
-        paste("<u><b>Use predefined media: ", "</b></u>")
-      })
-      
-      
-    })
+    observeEvent(input$change_media,
+                 once = T,
+                 ignoreInit = T,
+                 {
+                   #Prepare the list of reactions to constrain
+                   insertTab(
+                     inputId = "tabs",
+                     target = "help",
+                     tabPanel(
+                       "Change media",
+                       value = "change_media",
+                       sidebarPanel(
+                         fluidRow(
+                           class = "myRowText",
+                           column(8, HTML(
+                             "<u><b>Use predefined media: </b></u>"
+                           )),
+                           column(
+                             1,
+                             offset = 0,
+                             actionLink("apply_media_popover", "", icon = icon("question-circle-o"))
+                           )
+                         ),
+                         fluidRow(class = "myRowButton", column(
+                           6,
+                           bsButton(inputId = "media1", label = "Glucose free media")
+                         )),
+                         fluidRow(class = "myRowButton", column(
+                           6,
+                           bsButton(inputId = "media2", label = "Microaerophilic media")
+                         )),
+                         fluidRow(class = "myRowButton", column(
+                           6,
+                           bsButton(inputId = "media3", label = "Lactate rich media")
+                         )),
+                         fluidRow(class = "myRowButton", column(
+                           6,
+                           bsButton(inputId = "media_custom", label = "Custom media")
+                         )),
+                         br(),
+                         fluidRow(
+                           class = "myRowButton",
+                           column(5, HTML("<b>Objective value: </b>")),
+                           column(1, offset = 0, htmlOutput("text_flux_media")),
+                           column(
+                             1,
+                             offset = 1,
+                             actionLink("flux_popover_media", "", icon = icon("question-circle-o"))
+                           )
+                         ),
+                         br(),
+                         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+                         uiOutput("pick_rxn"),
+                         fluidRow(
+                           class = "myRowButton",
+                           column(10, uiOutput("range")),
+                           column(1, offset = 0, uiOutput("range_help"))
+                         ),
+                         uiOutput("button_apply_media")
+                       ),
+                       mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
+                     )
+                   )
+                   updateNavbarPage(session = session,
+                                    inputId = "tabs",
+                                    selected = "change_media")
+                   
+                   output$graph_media = renderVisNetwork({
+                     show_basic_network()
+                   })
+                   
+                   #render th text to display in the UI
+                   output$text_media = renderText({
+                     paste("<u><b>Use predefined media: ", "</b></u>")
+                   })
+                   
+                   
+                 })
     
     # SHOW SIMULATE EXPR TAB --------------------------------------------------
     
-    observeEvent(input$simulate_expr,once = T, ignoreInit = T, {
-      #Show the tab in the app
-      insertTab(
-        inputId = "tabs",
-        target = "help",
-        tabPanel(
-          "Transcriptomics experiment",
-          value = "simulate_expression_changes",
-          sidebarPanel(
-            fluidRow(
-              class = "myRowText",
-              column(9, HTML(
-                "<b>Pick a gene for expression adjustment:</b>"
-              )),
-              column(
-                1,
-                offset = 0,
-                actionLink("expression_popover", "", icon = icon("question-circle-o"))
-              )
-            ),
-            uiOutput("pick_expr_gene"),
-            HTML("<b>Select the gene expression level:</b>"),
-            uiOutput("expr"),
-            uiOutput("button_apply_expr"),
-            br(),
-            br(),
-            fluidRow(
-              class = "myRowButton",
-              column(5, HTML("<b>Objective value: </b>")),
-              column(1, htmlOutput("text_flux_expr")),
-              column(
-                1,
-                offset = 1,
-                actionLink("flux_popover_expr", "", icon = icon("question-circle-o"))
-              )
-            ),
-            tableOutput(outputId = 'fluxes_expr'),
-            width = 4
-          ),
-          mainPanel(visNetworkOutput("graph_expr", height = "700"), width = 8)
-        )
-      )
-      updateNavbarPage(session = session,
-                       inputId = "tabs",
-                       selected = "simulate_expression_changes")
-      
-      #Prepare the choices list of the reactions/genes which expression can be adjusted
-      choices_list_expr = as.list(toycon@react_name)
-      names(choices_list_expr) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
-      #render the selection list for the UI
-      output$pick_expr_gene = renderUI(
-        selectInput(
-          inputId = "pick_expr_gene",
-          label = NULL,
-          choices = choices_list_expr,
-          width = "200px"
-        )
-      )
-      #render the apply button for the UI
-      output$button_apply_expr = renderUI({
-        bsButton(inputId = "apply_expr",
-                 label = "Adjust")
-      })
-      #Render the selection slider for the expression level adjustment
-      output$expr = renderUI(
-        sliderInput(
-          inputId = "expr",
-          min = 0,
-          max = 1,
-          label = NULL,
-          value = 0.5,
-          step = 0.1,
-          round = TRUE,
-          ticks = F,
-          width = "300px"
-        )
-      )
-    })
+    observeEvent(input$simulate_expr,
+                 once = T,
+                 ignoreInit = T,
+                 {
+                   #Show the tab in the app
+                   insertTab(
+                     inputId = "tabs",
+                     target = "help",
+                     tabPanel(
+                       "Transcriptomics experiment",
+                       value = "simulate_expression_changes",
+                       sidebarPanel(
+                         fluidRow(
+                           class = "myRowText",
+                           column(9, HTML(
+                             "<b>Pick a gene for expression adjustment:</b>"
+                           )),
+                           column(
+                             1,
+                             offset = 0,
+                             actionLink("expression_popover", "", icon = icon("question-circle-o"))
+                           )
+                         ),
+                         uiOutput("pick_expr_gene"),
+                         HTML("<b>Select the gene expression level:</b>"),
+                         uiOutput("expr"),
+                         uiOutput("button_apply_expr"),
+                         br(),
+                         br(),
+                         fluidRow(
+                           class = "myRowButton",
+                           column(5, HTML("<b>Objective value: </b>")),
+                           column(1, htmlOutput("text_flux_expr")),
+                           column(
+                             1,
+                             offset = 1,
+                             actionLink("flux_popover_expr", "", icon = icon("question-circle-o"))
+                           )
+                         ),
+                         tableOutput(outputId = 'fluxes_expr'),
+                         width = 4
+                       ),
+                       mainPanel(visNetworkOutput("graph_expr", height = "700"), width = 8)
+                     )
+                   )
+                   updateNavbarPage(session = session,
+                                    inputId = "tabs",
+                                    selected = "simulate_expression_changes")
+                   
+                   output$graph_expr = renderVisNetwork({
+                     show_basic_network()
+                   })
+                   #Prepare the choices list of the reactions/genes which expression can be adjusted
+                   choices_list_expr = as.list(toycon@react_name)
+                   names(choices_list_expr) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
+                   #render the selection list for the UI
+                   output$pick_expr_gene = renderUI(
+                     selectInput(
+                       inputId = "pick_expr_gene",
+                       label = NULL,
+                       choices = choices_list_expr,
+                       width = "200px"
+                     )
+                   )
+                   #render the apply button for the UI
+                   output$button_apply_expr = renderUI({
+                     bsButton(inputId = "apply_expr",
+                              label = "Adjust")
+                   })
+                   #Render the selection slider for the expression level adjustment
+                   output$expr = renderUI(
+                     sliderInput(
+                       inputId = "expr",
+                       min = 0,
+                       max = 1,
+                       label = NULL,
+                       value = 0.5,
+                       step = 0.1,
+                       round = TRUE,
+                       ticks = F,
+                       width = "300px"
+                     )
+                   )
+                 })
     
     # APPLY MEDIA1 ------------------------------------------------------------
     observeEvent(input$media1, {
@@ -1392,7 +1556,7 @@ shinyServer(function(input, output, session) {
     
     # SHOW KO REACTION TAB ----------------------------------------------------
     
-    observeEvent(input$ko_rxn,once = T, ignoreInit = T, {
+    observeEvent(input$ko_rxn, once = T, ignoreInit = T, {
       insertTab(
         inputId = "tabs",
         target = "help",
@@ -1436,9 +1600,9 @@ shinyServer(function(input, output, session) {
       updateTabsetPanel(session, "tabs",
                         selected = "ko")
       
-      # choices_list_ko = as.list(names(sbml_model@model@reactions)[which(grepl("^R_", names(sbml_model@model@reactions)))])
-      # names(choices_list_ko) = sapply(choices_list_ko, function(x)
-      #   names_dict[1, which(names_dict[2,] == x)[1]])
+      output$graph_ko = renderVisNetwork({
+        show_basic_network()
+      })
       
       choices_list_ko = as.list(toycon@react_name)
       names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
