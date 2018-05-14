@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
     
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-    visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -256,7 +256,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
@@ -539,7 +539,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       #Get the weights from the net object
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -609,7 +609,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
@@ -697,7 +697,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -764,7 +764,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
@@ -852,7 +852,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       
       
       weights_edges = c()
@@ -921,7 +921,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
@@ -1082,7 +1082,7 @@ shinyServer(function(input, output, session) {
         
         visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
         visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-        visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+        visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
         
         #Get the weights from the net object
         weights_edges = c()
@@ -1152,7 +1152,7 @@ shinyServer(function(input, output, session) {
         visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-        lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+        lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                              shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                              title = "Informations")
         
@@ -1301,7 +1301,7 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       #Get the weights from the net object
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
@@ -1370,7 +1370,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       
@@ -1487,7 +1487,7 @@ shinyServer(function(input, output, session) {
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       visdata$edges$length = 150
       net = asNetwork(toycon_graph)
       
@@ -1564,7 +1564,7 @@ shinyServer(function(input, output, session) {
         visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-        lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+        lnodes <- data.frame(label = c("Cytoslic metabolite","Mitochondrial metabolite","Reaction"),
                              shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                              title = "Informations")
         
@@ -1672,7 +1672,7 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-      visdata$nodes$group[which(grepl("m$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
       weights_edges = c()
       for (i in seq(1, length(net$mel))) {
         weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
@@ -1739,7 +1739,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Metabolite cytosol","Metabolite mitochondria","Reaction"),
+      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
                            shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
                            title = "Informations")
       

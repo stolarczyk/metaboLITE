@@ -93,7 +93,7 @@ shinyUI(
       "Gene knockout",
       value = "ko_reactions",
       sidebarPanel(
-        fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a reaction to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
+        fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a gene to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
         uiOutput("pick_ko_rxn"),
         div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
         div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
@@ -115,7 +115,8 @@ shinyUI(
         uiOutput("expr"),
         uiOutput("button_apply_expr"),
         br(),br(),
-        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),        tableOutput(outputId = 'fluxes_expr'),width = 4
+        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_expr","",icon=icon("question-circle-o")))),
+        tableOutput(outputId = 'fluxes_expr'),width = 4
       ),
       mainPanel(visNetworkOutput(
         "graph_expr",height = "700"
