@@ -60,68 +60,68 @@ shinyUI(
         tableOutput(outputId = 'fluxes'),
         width = 4
       ),
-      # mainPanel(visNetworkOutput(
-      #   "graph", width = "800", height = "600"
-      # ), width = 8)
       mainPanel(visNetworkOutput(
         "graph",height = "700"
       ), width = 8)
     ),
-    tabPanel(
-      "Change media",
-      value = "change_media",
-      sidebarPanel(
-        fluidRow(class="myRowText", column(8,HTML("<u><b>Use predefined media: </b></u>")),column(1,offset = 0,actionLink("apply_media_popover","",icon = icon("question-circle-o")))),
-        fluidRow(class="myRowButton", column(6,bsButton(inputId = "media1",label = "Glucose free media"))),
-        fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
-        fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
-        fluidRow(class="myRowButton", column(6,bsButton(inputId = "media_custom",label = "Custom media"))),
-        br(),
-        fluidRow(class="myRowButton",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux_media")),column(1,offset = 1,actionLink("flux_popover_media","",icon=icon("question-circle-o")))),
-        br(),
-        div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
-        uiOutput("pick_rxn"),
-        fluidRow(class="myRowButton",
-                 column(10,uiOutput("range")),column(1,offset = 0,uiOutput("range_help") )),
-        uiOutput("button_apply_media")
-      ),
-      mainPanel(visNetworkOutput(
-        "graph_media",height = "700"
-      ), width = 8)
-    ),
-    tabPanel(
-      "Gene knockout",
-      value = "ko_reactions",
-      sidebarPanel(
-        fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a gene to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
-        uiOutput("pick_ko_rxn"),
-        div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
-        div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
-        br(),
-        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_ko")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),
-        tableOutput(outputId = 'fluxes_ko')
-      ),
-      mainPanel(visNetworkOutput(
-        "graph_ko",height = "700"
-      ), width = 8)
-    ),
-    tabPanel(
-      "Transcriptomics experiment",
-      value = "simulate_expression_changes",
-      sidebarPanel(
-        fluidRow(class="myRowText",column(9,HTML("<b>Pick a gene for expression adjustment:</b>")),column(1,offset = 0,actionLink("expression_popover","",icon=icon("question-circle-o")))),
-        uiOutput("pick_expr_gene"),
-        HTML("<b>Select the gene expression level:</b>"),
-        uiOutput("expr"),
-        uiOutput("button_apply_expr"),
-        br(),br(),
-        fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_expr","",icon=icon("question-circle-o")))),
-        tableOutput(outputId = 'fluxes_expr'),width = 4
-      ),
-      mainPanel(visNetworkOutput(
-        "graph_expr",height = "700"
-      ), width = 8)
-    ),
+    
+    ### The code commented out below is dynamically inserted from the server 
+    
+    # tabPanel(
+    #   "Change media",
+    #   value = "change_media",
+    #   sidebarPanel(
+    #     fluidRow(class="myRowText", column(8,HTML("<u><b>Use predefined media: </b></u>")),column(1,offset = 0,actionLink("apply_media_popover","",icon = icon("question-circle-o")))),
+    #     fluidRow(class="myRowButton", column(6,bsButton(inputId = "media1",label = "Glucose free media"))),
+    #     fluidRow(class="myRowButton", column(6,bsButton(inputId = "media2",label = "Microaerophilic media"))),
+    #     fluidRow(class="myRowButton", column(6,bsButton(inputId = "media3",label = "Lactate rich media"))),
+    #     fluidRow(class="myRowButton", column(6,bsButton(inputId = "media_custom",label = "Custom media"))),
+    #     br(),
+    #     fluidRow(class="myRowButton",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux_media")),column(1,offset = 1,actionLink("flux_popover_media","",icon=icon("question-circle-o")))),
+    #     br(),
+    #     div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+    #     uiOutput("pick_rxn"),
+    #     fluidRow(class="myRowButton",
+    #              column(10,uiOutput("range")),column(1,offset = 0,uiOutput("range_help") )),
+    #     uiOutput("button_apply_media")
+    #   ),
+    #   mainPanel(visNetworkOutput(
+    #     "graph_media",height = "700"
+    #   ), width = 8)
+    # ),
+    # tabPanel(
+    #   "Gene knockout",
+    #   value = "ko_reactions",
+    #   sidebarPanel(
+    #     fluidRow(class="myRowText",column(7,HTML("<b><u>Pick a gene to knock out:</u></b>")), column(1,offset = 0,actionLink("pick_rxn_ko_popover","",icon=icon("question-circle-o")))),
+    #     uiOutput("pick_ko_rxn"),
+    #     div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
+    #     div(style = "vertical-align:top; width: 30%;height: 60px",uiOutput("reset_ko")),
+    #     br(),
+    #     fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_ko")),column(1,offset = 1,actionLink("flux_popover_ko","",icon=icon("question-circle-o")))),
+    #     tableOutput(outputId = 'fluxes_ko')
+    #   ),
+    #   mainPanel(visNetworkOutput(
+    #     "graph_ko",height = "700"
+    #   ), width = 8)
+    # ),
+    # tabPanel(
+    #   "Transcriptomics experiment",
+    #   value = "simulate_expression_changes",
+    #   sidebarPanel(
+    #     fluidRow(class="myRowText",column(9,HTML("<b>Pick a gene for expression adjustment:</b>")),column(1,offset = 0,actionLink("expression_popover","",icon=icon("question-circle-o")))),
+    #     uiOutput("pick_expr_gene"),
+    #     HTML("<b>Select the gene expression level:</b>"),
+    #     uiOutput("expr"),
+    #     uiOutput("button_apply_expr"),
+    #     br(),br(),
+    #     fluidRow(class="myRowButton", column(5,HTML("<b>Objective value: </b>")),column(1,htmlOutput("text_flux_expr")),column(1,offset = 1,actionLink("flux_popover_expr","",icon=icon("question-circle-o")))),
+    #     tableOutput(outputId = 'fluxes_expr'),width = 4
+    #   ),
+    #   mainPanel(visNetworkOutput(
+    #     "graph_expr",height = "700"
+    #   ), width = 8)
+    # ),
     tabPanel(
       "Help",
       value = "help",

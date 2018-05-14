@@ -1,5 +1,6 @@
 
 
+
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
@@ -35,15 +36,15 @@ fill_blank <- function(x, len) {
 }
 
 add_dups_new_layout <- function(visdata) {
-  visdata$nodes[23, ] = c("M_m01c1", "M_m01c1")#ADP
-  visdata$nodes[28, ] = c("M_m01c2", "M_m01c2")#ADP
-  visdata$nodes[22, ] = c("M_m02c1", "M_m02c1")#ATP
-  visdata$nodes[21, ] = c("M_m06c1", "M_m06c1")#H2O
-  visdata$nodes[20, ] = c("M_m09c1", "M_m09c1")#Pi
-  visdata$nodes[24, ] = c("R_E41", "R_E41")#H2O exchange
-  visdata$nodes[25, ] = c("M_m05c1", "M_m05c1")#H
-  visdata$nodes[26, ] = c("M_m05m1", "M_m05m1")#H
-  visdata$nodes[27, ] = c("M_m09c2", "M_m09c2")#Pi
+  visdata$nodes[23,] = c("M_m01c1", "M_m01c1")#ADP
+  visdata$nodes[28,] = c("M_m01c2", "M_m01c2")#ADP
+  visdata$nodes[22,] = c("M_m02c1", "M_m02c1")#ATP
+  visdata$nodes[21,] = c("M_m06c1", "M_m06c1")#H2O
+  visdata$nodes[20,] = c("M_m09c1", "M_m09c1")#Pi
+  visdata$nodes[24,] = c("R_E41", "R_E41")#H2O exchange
+  visdata$nodes[25,] = c("M_m05c1", "M_m05c1")#H
+  visdata$nodes[26,] = c("M_m05m1", "M_m05m1")#H
+  visdata$nodes[27,] = c("M_m09c2", "M_m09c2")#Pi
   
   rownames(visdata$nodes) = visdata$nodes[, 1]
   
@@ -51,7 +52,7 @@ add_dups_new_layout <- function(visdata) {
   visdata$edges[30, 2] = "M_m09c2"
   visdata$edges[8, 1] = "M_m06c1"
   visdata$edges[28, 2] = "M_m06c1"
-  visdata$edges[31, ] = c("M_m06c1", "R_E41", "1")
+  visdata$edges[31,] = c("M_m06c1", "R_E41", "1")
   visdata$edges[16, 1] = "M_m02c1"
   visdata$edges[26, 2] = "M_m02c1"
   visdata$edges[12, 1] = "M_m01c1"
@@ -62,9 +63,9 @@ add_dups_new_layout <- function(visdata) {
 }
 
 shinyServer(function(input, output, session) {
-  hideTab(inputId = "tabs", target = "change_media")
-  hideTab(inputId = "tabs", target = "ko_reactions")
-  hideTab(inputId = "tabs", target = "simulate_expression_changes")
+  # hideTab(inputId = "tabs", target = "change_media")
+  # hideTab(inputId = "tabs", target = "ko_reactions")
+  # hideTab(inputId = "tabs", target = "simulate_expression_changes")
   working_dir = getwd()
   path = "/data/toycon.xml"
   if (.Platform$OS.type == "windows") {
@@ -72,7 +73,7 @@ shinyServer(function(input, output, session) {
   }
   model_file_path = paste(working_dir, path, sep = "")
   
-
+  
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
@@ -197,7 +198,7 @@ shinyServer(function(input, output, session) {
             new_df = merge(new_df, df1, all = T)
           }
           selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-          new_df = new_df[selection,]
+          new_df = new_df[selection, ]
           new_df$metabolite = sapply(new_df$reaction, function(x)
             strsplit(x, split = "\\|")[[1]][2])
           new_df$reaction = sapply(new_df$reaction, function(x)
@@ -207,9 +208,9 @@ shinyServer(function(input, output, session) {
           new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
           new_df[rotate, "metabolite"] = cache
           new_df$reaction = sapply(new_df$reaction, function(x)
-            names_dict[1, which(names_dict[2,] == x)[1]])
+            names_dict[1, which(names_dict[2, ] == x)[1]])
           new_df$metabolite = sapply(new_df$metabolite, function(x)
-            names_dict[1, which(names_dict[2,] == x)[1]])
+            names_dict[1, which(names_dict[2, ] == x)[1]])
           new_df = new_df[, c(3, 4, 2)]
           new_df$stoi = as.character(new_df$stoi)
           output$fluxes = renderTable({
@@ -246,28 +247,47 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       
       #Plotting graph
       visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-        visLegend(position = "right",stepX = 100,
-                  stepY = 75,
-                  width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+        visLegend(
+          position = "right",
+          stepX = 100,
+          stepY = 75,
+          width = 0.2,
+          useGroups = F,
+          addNodes = lnodes,
+          zoom = T,
+          addEdges = ledges
+        ) %>%
         visOptions(highlightNearest = TRUE) %>%
         visEdges(
           color = "black",
@@ -295,8 +315,8 @@ shinyServer(function(input, output, session) {
           gravitationalConstant = 0
         ))
     })
-
-
+    
+    
     output$text_main = renderText({
       paste("<u><b>Launch tabs with following functionalities: ",
             "</b></u>")
@@ -313,7 +333,7 @@ shinyServer(function(input, output, session) {
       placement = "right",
       trigger = "click",
       options = list(container = "body")
-  )
+    )
     addPopover(
       session = session,
       id = "flux_popover",
@@ -361,7 +381,7 @@ shinyServer(function(input, output, session) {
       placement = "right",
       trigger = "click",
       options = list(container = "body")
-  )
+    )
     
     addPopover(
       session = session,
@@ -391,7 +411,7 @@ shinyServer(function(input, output, session) {
       trigger = "hover",
       options = list(container = "body")
     )
-
+    
     
     addPopover(
       session = session,
@@ -409,7 +429,7 @@ shinyServer(function(input, output, session) {
                        selected = "help")
     })
     
-
+    
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
@@ -417,9 +437,66 @@ shinyServer(function(input, output, session) {
     
     
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
-    observeEvent(input$change_media, ignoreInit = T, {
+    observeEvent(input$change_media,once = T, ignoreInit = T, {
       #Prepare the list of reactions to constrain
-      showTab(inputId = "tabs", target = "change_media")
+      insertTab(
+        inputId = "tabs",
+        target = "help",
+        tabPanel(
+          "Change media",
+          value = "change_media",
+          sidebarPanel(
+            fluidRow(
+              class = "myRowText",
+              column(8, HTML(
+                "<u><b>Use predefined media: </b></u>"
+              )),
+              column(
+                1,
+                offset = 0,
+                actionLink("apply_media_popover", "", icon = icon("question-circle-o"))
+              )
+            ),
+            fluidRow(class = "myRowButton", column(
+              6,
+              bsButton(inputId = "media1", label = "Glucose free media")
+            )),
+            fluidRow(class = "myRowButton", column(
+              6,
+              bsButton(inputId = "media2", label = "Microaerophilic media")
+            )),
+            fluidRow(class = "myRowButton", column(
+              6,
+              bsButton(inputId = "media3", label = "Lactate rich media")
+            )),
+            fluidRow(class = "myRowButton", column(
+              6,
+              bsButton(inputId = "media_custom", label = "Custom media")
+            )),
+            br(),
+            fluidRow(
+              class = "myRowButton",
+              column(5, HTML("<b>Objective value: </b>")),
+              column(1, offset = 0, htmlOutput("text_flux_media")),
+              column(
+                1,
+                offset = 1,
+                actionLink("flux_popover_media", "", icon = icon("question-circle-o"))
+              )
+            ),
+            br(),
+            div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+            uiOutput("pick_rxn"),
+            fluidRow(
+              class = "myRowButton",
+              column(10, uiOutput("range")),
+              column(1, offset = 0, uiOutput("range_help"))
+            ),
+            uiOutput("button_apply_media")
+          ),
+          mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
+        )
+      )
       updateNavbarPage(session = session,
                        inputId = "tabs",
                        selected = "change_media")
@@ -427,20 +504,59 @@ shinyServer(function(input, output, session) {
       # names(choices_list) = sapply(choices_list, function(x)
       #   names_dict[1, which(names_dict[2,] == x)[1]])
       
-
+      
       #render th text to display in the UI
       output$text_media = renderText({
         paste("<u><b>Use predefined media: ", "</b></u>")
       })
-
-
+      
+      
     })
     
     # SHOW SIMULATE EXPR TAB --------------------------------------------------
     
-    observeEvent(input$simulate_expr, ignoreInit = T, {
+    observeEvent(input$simulate_expr,once = T, ignoreInit = T, {
       #Show the tab in the app
-      showTab(inputId = "tabs", target = "simulate_expression_changes")
+      insertTab(
+        inputId = "tabs",
+        target = "help",
+        tabPanel(
+          "Transcriptomics experiment",
+          value = "simulate_expression_changes",
+          sidebarPanel(
+            fluidRow(
+              class = "myRowText",
+              column(9, HTML(
+                "<b>Pick a gene for expression adjustment:</b>"
+              )),
+              column(
+                1,
+                offset = 0,
+                actionLink("expression_popover", "", icon = icon("question-circle-o"))
+              )
+            ),
+            uiOutput("pick_expr_gene"),
+            HTML("<b>Select the gene expression level:</b>"),
+            uiOutput("expr"),
+            uiOutput("button_apply_expr"),
+            br(),
+            br(),
+            fluidRow(
+              class = "myRowButton",
+              column(5, HTML("<b>Objective value: </b>")),
+              column(1, htmlOutput("text_flux_expr")),
+              column(
+                1,
+                offset = 1,
+                actionLink("flux_popover_expr", "", icon = icon("question-circle-o"))
+              )
+            ),
+            tableOutput(outputId = 'fluxes_expr'),
+            width = 4
+          ),
+          mainPanel(visNetworkOutput("graph_expr", height = "700"), width = 8)
+        )
+      )
       updateNavbarPage(session = session,
                        inputId = "tabs",
                        selected = "simulate_expression_changes")
@@ -599,29 +715,48 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -755,27 +890,46 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -912,27 +1066,46 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       output$graph_media = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -954,10 +1127,9 @@ shinyServer(function(input, output, session) {
     })
     
     observeEvent(input$media_custom, {
-      
       choices_list = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
       names(choices_list) = sapply(choices_list, function(x)
-        names_dict[1, which(names_dict[2,] == x)[1]])
+        names_dict[1, which(names_dict[2, ] == x)[1]])
       
       #render the UI select component
       output$pick_rxn = renderUI(
@@ -992,16 +1164,16 @@ shinyServer(function(input, output, session) {
       )
       
       
-      output$range_help = renderUI(
-        actionLink(inputId = "range_popover","",icon=icon("question-circle-o"))
-      )
-
+      output$range_help = renderUI(actionLink(
+        inputId = "range_popover",
+        "",
+        icon = icon("question-circle-o")
+      ))
+      
       #render the button applying the changes
-      output$button_apply_media = renderUI(
-        bsButton(inputId = "apply_media",
-                 label = "Constrain")
-      )
-
+      output$button_apply_media = renderUI(bsButton(inputId = "apply_media",
+                                                    label = "Constrain"))
+      
       addPopover(
         session = session,
         id = "range_help",
@@ -1011,8 +1183,7 @@ shinyServer(function(input, output, session) {
         trigger = "click",
         options = list(container = "body")
       )
-    }
-    )
+    })
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
       #get the bouds to be applied
@@ -1143,27 +1314,46 @@ shinyServer(function(input, output, session) {
         coords = read.csv(path)
         #Empasise the main reactions
         visdata$nodes = cbind(visdata$nodes, coords)
-        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
         #Emphasize main metabolites
-        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-        lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                             shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                             title = "Informations")
+        visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+        lnodes <-
+          data.frame(
+            label = c(
+              "Cytosolic metabolite",
+              "Mitochondrial metabolite",
+              "Reaction"
+            ),
+            shape = c("dot", "dot", "box"),
+            color = c("lightsalmon", "red", "lightblue"),
+            title = "Informations"
+          )
         
-        ledges <- data.frame(color = c("black", "black"),
-                             label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+        ledges <- data.frame(
+          color = c("black", "black"),
+          label = c("flux", "no flux"),
+          arrows = c("to", "to"),
+          dashes = c(F, T)
+        )
         output$graph_media = renderVisNetwork({
           #Plotting graph
           visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-            visLegend(position = "right",stepX = 100,
-                      stepY = 75,
-                      width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+            visLegend(
+              position = "right",
+              stepX = 100,
+              stepY = 75,
+              width = 0.2,
+              useGroups = F,
+              addNodes = lnodes,
+              zoom = T,
+              addEdges = ledges
+            ) %>%
             visOptions(highlightNearest = TRUE) %>%
             visEdges(color = "black", arrows = "to") %>%
             visGroups(groupname = "Metabolite",
@@ -1202,8 +1392,44 @@ shinyServer(function(input, output, session) {
     
     # SHOW KO REACTION TAB ----------------------------------------------------
     
-    observeEvent(input$ko_rxn, ignoreInit = T, {
-      showTab(inputId = "tabs", target = "ko_reactions")
+    observeEvent(input$ko_rxn,once = T, ignoreInit = T, {
+      insertTab(
+        inputId = "tabs",
+        target = "help",
+        tabPanel(
+          "Gene knockout",
+          value = "ko_reactions",
+          sidebarPanel(
+            fluidRow(
+              class = "myRowText",
+              column(7, HTML(
+                "<b><u>Pick a gene to knock out:</u></b>"
+              )),
+              column(
+                1,
+                offset = 0,
+                actionLink("pick_rxn_ko_popover", "", icon = icon("question-circle-o"))
+              )
+            ),
+            uiOutput("pick_ko_rxn"),
+            div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
+            div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("reset_ko")),
+            br(),
+            fluidRow(
+              class = "myRowButton",
+              column(5, HTML("<b>Objective value: </b>")),
+              column(1, htmlOutput("text_flux_ko")),
+              column(
+                1,
+                offset = 1,
+                actionLink("flux_popover_ko", "", icon = icon("question-circle-o"))
+              )
+            ),
+            tableOutput(outputId = 'fluxes_ko')
+          ),
+          mainPanel(visNetworkOutput("graph_ko", height = "700"), width = 8)
+        )
+      )
       updateNavbarPage(session = session,
                        inputId = "tabs",
                        selected = "ko_reactions")
@@ -1225,8 +1451,8 @@ shinyServer(function(input, output, session) {
         )
       )
       output$button_apply_ko = renderUI({
-          bsButton(inputId = "apply_ko",
-                   label = "Knockout")
+        bsButton(inputId = "apply_ko",
+                 label = "Knockout")
       })
     })
     
@@ -1361,27 +1587,46 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
       #Empasise the main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       output$graph_ko = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
@@ -1446,14 +1691,18 @@ shinyServer(function(input, output, session) {
       #render UI table to display the fluxes in the model with missing reaction
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = paste("Fluxes after the KO of gene coding for enzyme that catalyzes", names_dict[1, which(names_dict[2, ] == paste("R_", reaction_ID, sep = ""))],"reaction"),
+      }, width = "250", caption = paste(
+        "Fluxes after the KO of gene coding for enzyme that catalyzes",
+        names_dict[1, which(names_dict[2,] == paste("R_", reaction_ID, sep = ""))],
+        "reaction"
+      ),
       caption.placement = getOption("xtable.caption.placement", "top"),
       caption.width = getOption("xtable.caption.width", NULL))
       #render text with objective value
       output$text_flux_ko = renderText({
         paste("<b>",
-          as.character(flux),
-          "</b>")
+              as.character(flux),
+              "</b>")
       })
       
       working_dir = getwd()
@@ -1480,10 +1729,10 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       
       #delete the KOed reactions
-      reaction = paste("R_",reaction_ID,sep = "")
-      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction), ]
+      reaction = paste("R_", reaction_ID, sep = "")
+      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction),]
       visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
-                                             visdata$edges$to == reaction), ]
+                                             visdata$edges$to == reaction),]
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
@@ -1533,7 +1782,7 @@ shinyServer(function(input, output, session) {
         }
         #Read the saved coordinates for the graph dispalying purpose
         coords = read.csv(path)
-        coords = coords[-which(rownames(coords) == reaction), ]
+        coords = coords[-which(rownames(coords) == reaction),]
         visdata$nodes = cbind(visdata$nodes, coords)
         #Adjust the coorfinates of the network after the deaction KO
         for (i in seq(1, dim(fluxes)[1])) {
@@ -1555,26 +1804,45 @@ shinyServer(function(input, output, session) {
         dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
         visdata$edges$dashes = dashed
         #Emphasize main reactions
-        visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
         #Emphasize main metabolites
-        visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-        visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
-        lnodes <- data.frame(label = c("Cytoslic metabolite","Mitochondrial metabolite","Reaction"),
-                             shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                             title = "Informations")
+        visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+        lnodes <-
+          data.frame(
+            label = c(
+              "Cytoslic metabolite",
+              "Mitochondrial metabolite",
+              "Reaction"
+            ),
+            shape = c("dot", "dot", "box"),
+            color = c("lightsalmon", "red", "lightblue"),
+            title = "Informations"
+          )
         
-        ledges <- data.frame(color = c("black", "black"),
-                             label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+        ledges <- data.frame(
+          color = c("black", "black"),
+          label = c("flux", "no flux"),
+          arrows = c("to", "to"),
+          dashes = c(F, T)
+        )
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(
             color = "black",
@@ -1729,29 +1997,48 @@ shinyServer(function(input, output, session) {
       }
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
-      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
       
-      lnodes <- data.frame(label = c("Cytosolic metabolite","Mitochondrial metabolite","Reaction"),
-                           shape = c( "dot","dot","box"), color = c("lightsalmon", "red","lightblue"),
-                           title = "Informations")
+      lnodes <-
+        data.frame(
+          label = c(
+            "Cytosolic metabolite",
+            "Mitochondrial metabolite",
+            "Reaction"
+          ),
+          shape = c("dot", "dot", "box"),
+          color = c("lightsalmon", "red", "lightblue"),
+          title = "Informations"
+        )
       
-      ledges <- data.frame(color = c("black", "black"),
-                           label = c("flux", "no flux"), arrows =c("to", "to"),dashes = c(F,T))
+      ledges <- data.frame(
+        color = c("black", "black"),
+        label = c("flux", "no flux"),
+        arrows = c("to", "to"),
+        dashes = c(F, T)
+      )
       
       output$graph_expr = renderVisNetwork({
         #Plotting graph
         visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(position = "right",stepX = 100,
-                    stepY = 75,
-                    width = 0.2,useGroups = F,addNodes = lnodes,zoom = T,addEdges = ledges) %>%
+          visLegend(
+            position = "right",
+            stepX = 100,
+            stepY = 75,
+            width = 0.2,
+            useGroups = F,
+            addNodes = lnodes,
+            zoom = T,
+            addEdges = ledges
+          ) %>%
           visOptions(highlightNearest = TRUE) %>%
           visEdges(color = "black", arrows = "to") %>%
           visGroups(groupname = "Metabolite",
