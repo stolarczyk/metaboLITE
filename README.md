@@ -41,7 +41,7 @@ The most reliable, safest and **easiest installation approach** is to use the [D
 
     ```docker pull [OPTIONS]```
 
-    e.g copy and paste:
+e.g copy and paste:
 
     ``` sudo docker pull mstolarczyk/toyconapp:newest ``` (this may take some time depending on your connection)
 
@@ -49,7 +49,7 @@ The most reliable, safest and **easiest installation approach** is to use the [D
 
     ``` sudo docker images```
 
-    The output of the command above should resemble the following:
+The output of the command above should resemble the following:
 
     ``` 
     REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
@@ -60,11 +60,11 @@ The most reliable, safest and **easiest installation approach** is to use the [D
     
     ```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
 
-    e.g
+e.g copy and paste
 
     ```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
 
-    Thie command above will allow you to connect to the application from your web browser.
+Thie command above will allow you to connect to the application from your web browser.
 
 **6. Copy and paste this address into your web browser**
 
