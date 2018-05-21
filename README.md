@@ -25,15 +25,15 @@ The *ToyCon visualization app* is an R shiny app that aids the basic understandi
 # Installation - Docker container<a name="Installation"></a>
 The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/)).
 
-1. **Install the Docker CE (community edition) software on your machine**
-    The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
+**1. Install the Docker CE (community edition) software on your machine**
+The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
 
-    * Linux
-        * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
-        * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
-        * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
-    * [Windows](https://docs.docker.com/docker-for-windows/install/)
-    * [MacOS](https://docs.docker.com/docker-for-mac/install/)
+* Linux
+    * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
+    * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
+    * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+* [Windows](https://docs.docker.com/docker-for-windows/install/)
+* [MacOS](https://docs.docker.com/docker-for-mac/install/)
 
 **2. Open the Docker application to ensure it downloaded correctly**
 
