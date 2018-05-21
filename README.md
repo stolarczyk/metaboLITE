@@ -39,33 +39,33 @@ The most reliable, safest and **easiest installation approach** is to use the [D
 
 **3. Open the command window (terminal) and download the docker image from the repository** with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
-    ```docker pull [OPTIONS]```
+```docker pull [OPTIONS]```
 
 e.g copy and paste:
 
-    ``` sudo docker pull mstolarczyk/toyconapp:newest ``` (this may take some time depending on your connection)
+``` sudo docker pull mstolarczyk/toyconapp:newest ``` (this may take some time depending on your connection)
 
 **4. Check the image status**:
 
-    ``` sudo docker images```
+``` sudo docker images```
 
 The output of the command above should resemble the following:
 
-    ``` 
-    REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
-    mstolarczyk/toyconapp   newest              45f03ae5cff4        30 minutes ago      2.35GB 
-    ``` 
+``` 
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
+mstolarczyk/toyconapp   newest              45f03ae5cff4        30 minutes ago      2.35GB 
+``` 
 
 **5. Run the application** using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
     
-    ```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
+```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
 
 e.g copy and paste
 
-    ```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
+```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
 
 Thie command above will allow you to connect to the application from your web browser.
 
 **6. Copy and paste this address into your web browser**
 
-    ``` localhost:8080 ```
+``` localhost:8080 ```
