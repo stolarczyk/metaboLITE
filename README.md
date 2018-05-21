@@ -64,7 +64,7 @@ e.g copy and paste
 
 ```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
 
-Thie command above will allow you to connect to the application from your web browser.
+The command above will allow you to connect to the application from your web browser.
 
 **6. Copy and paste this address into your web browser**
 
