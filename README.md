@@ -23,48 +23,49 @@ The *ToyCon visualization app* is an R shiny app that aids the basic understandi
 - **Gene expression influenece visualization**, which is intended to depict the impact of the pseudo-gene expression changes in the model, which directly influences the flux that is carried by the reaction catalyzed by the enzyme encoded by the gene in question. It is indended to give the user an idea of how the algorithms for gene expression integration influence the fluxes in in the model.
 
 # Installation - Docker container<a name="Installation"></a>
-The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to build the image from Dockerfile or run the pre-built Docker image (both provided with this application in `docker/Dockerfile` and in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/), respectively).
+The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/)).
 
-To follow either of these approaches install the Docker CE (community edition) software on your machine. The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
+1. **Install the Docker CE (community edition) software on your machine**
+    The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
 
-* Linux
-    * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
-    * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
-    * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
-* [Windows](https://docs.docker.com/docker-for-windows/install/)
-* [MacOS](https://docs.docker.com/docker-for-mac/install/)
+    * Linux
+        * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
+        * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
+        * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+    * [Windows](https://docs.docker.com/docker-for-windows/install/)
+    * [MacOS](https://docs.docker.com/docker-for-mac/install/)
 
-After installation open the Docker application to ensure it downloaded correctly
+**2. Open the Docker application to ensure it downloaded correctly**
 
-Subsequently open the command window (terminal) and download the docker image from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
+**3. Open the command window (terminal) and download the docker image from the repository** with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
-```docker pull [OPTIONS]```
+    ```docker pull [OPTIONS]```
 
-e.g copy and paste:
+    e.g copy and paste:
 
-``` sudo docker pull mstolarczyk/toyconapp:newest ``` (this may take some time depending on your connection)
+    ``` sudo docker pull mstolarczyk/toyconapp:newest ``` (this may take some time depending on your connection)
 
-Check the image status:
+**4. Check the image status**:
 
-``` sudo docker images```
+    ``` sudo docker images```
 
-The output of the command above should resemble the following:
+    The output of the command above should resemble the following:
 
-``` 
-REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
-mstolarczyk/toyconapp   newest              45f03ae5cff4        30 minutes ago      2.35GB 
-``` 
+    ``` 
+    REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
+    mstolarczyk/toyconapp   newest              45f03ae5cff4        30 minutes ago      2.35GB 
+    ``` 
 
-Next, the application can be run using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+**5. Run the application** using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+    
+    ```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
 
-```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
+    e.g
 
-e.g
+    ```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
 
-```sudo docker run -p 8080:8080 45f03ae5cff4 ``` (note that the ``` IMAGE ID ``` will be different in your case)
+    Thie command above will allow you to connect to the application from your web browser.
 
-Thie command above will allow you to connect to the application from your web browser.
+**6. Copy and paste this address into your web browser**
 
-Subsequently, to run the application go to your favourite web browser and paste:
-
-``` localhost:8080 ```
+    ``` localhost:8080 ```
