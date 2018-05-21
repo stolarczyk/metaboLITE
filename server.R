@@ -547,104 +547,6 @@ shinyServer(function(input, output, session) {
       paste("<u><b>Visualize the metabolic network: ", "</b></u>")
     })
     
-    addPopover(
-      session = session,
-      id = "apply_media_popover",
-      title = "Constrain selected reaction",
-      content = "The media changes are performed by constraining the exchange reactions in the model during the FBA simulation",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    addPopover(
-      session = session,
-      id = "flux_popover",
-      title = "Objective value",
-      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    
-    addPopover(
-      session = session,
-      id = "flux_popover_media",
-      title = "Objective value",
-      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    
-    addPopover(
-      session = session,
-      id = "flux_popover_ko",
-      title = "Objective value",
-      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    
-    addPopover(
-      session = session,
-      id = "flux_popover_expr",
-      title = "Objective value",
-      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    addPopover(
-      session = session,
-      id = "pick_rxn_ko_popover",
-      title = "Knocksout the reaction picked above",
-      content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    
-    addPopover(
-      session = session,
-      id = "media1",
-      title = "Apply glucose free media",
-      content = "<b>glucose exchange bounds:</b><br> lower = 0, upper = 0 <br>",
-      placement = "right",
-      trigger = "hover",
-      options = list(container = "body")
-    )
-    addPopover(
-      session = session,
-      id = "media2",
-      title = "Apply microaerophilic media",
-      content = "<b>O2 exchange bounds:</b><br>lower = -10, upper = 10",
-      placement = "right",
-      trigger = "hover",
-      options = list(container = "body")
-    )
-    
-    addPopover(
-      session = session,
-      id = "media3",
-      title = "Apply lactate rich media",
-      content = "<b>lactate exchange bounds:</b><br> lower = -700, upper = 700 <br>",
-      placement = "right",
-      trigger = "hover",
-      options = list(container = "body")
-    )
-    
-    
-    addPopover(
-      session = session,
-      id = "expression_popover",
-      title = "Adjusts the gene expression level",
-      content = "The pseudo-expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively. It directly influences the flux that is carried by the reaction catalyzed by the enzyme encoded by the gene in question",
-      placement = "right",
-      trigger = "click",
-      options = list(container = "body")
-    )
-    
     observeEvent(input$tabs_popover, ignoreInit = T, {
       updateNavbarPage(session = session,
                        inputId = "tabs",
@@ -663,6 +565,7 @@ shinyServer(function(input, output, session) {
                  once = T,
                  ignoreInit = T,
                  {
+
                    #Prepare the list of reactions to constrain
                    insertTab(
                      inputId = "tabs",
@@ -684,32 +587,22 @@ shinyServer(function(input, output, session) {
                          ),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           bsButton(inputId = "media1", label = "Glucose free media")
+                           popify(bsButton(inputId = "media1", label = "Glucose free media"),title = "Apply glucose free media",content = "Simulate organism growth in media containing lactate, oxygen, carbon dioxide, water, but no glucose (the import of this metabolite is inhibited by changing <b>the lower and upper bound of glucose exchange to 0</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           bsButton(inputId = "media2", label = "Microaerophilic media")
+                           popify(bsButton(inputId = "media2", label = "Microaerophilic media"),title = "Apply microaerophilic media",content = "Simulate organism growth in media containing lactate, glucose, carbon dioxide, water, but limited amount of oxygen (the import of this metabolite is inhibited by changing <b>the lower and upper bound of oxygen exchange to -10 and 10, respevtively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           bsButton(inputId = "media3", label = "Lactate rich media")
+                           popify(bsButton(inputId = "media3", label = "Lactate rich media"),title = "Apply lactate rich media",content = "Simulate organism growth in media containing oxygen, carbon dioxide, water and high concentration of lactate (the import of this metabolite is constrained by changing <b>the lower and upper bound of lactate exchange to -700 and 700, respectively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           bsButton(inputId = "media_custom", label = "Custom media")
+                           popify(bsButton(inputId = "media_custom", label = "Custom media"),title = "Compose custom media",content = "Simulate organism growth in custom media conditions.",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
-                         br(),
-                         fluidRow(
-                           class = "myRowButton",
-                           column(5, HTML("<b>Objective value: </b>")),
-                           column(1, offset = 0, htmlOutput("text_flux_media")),
-                           column(
-                             1,
-                             offset = 1,
-                             actionLink("flux_popover_media", "", icon = icon("question-circle-o"))
-                           )
-                         ),
-                         br(),
+                         # br(),
+                         uiOutput("line"),
                          div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
                          uiOutput("pick_rxn"),
                          fluidRow(
@@ -717,7 +610,34 @@ shinyServer(function(input, output, session) {
                            column(10, uiOutput("range")),
                            column(1, offset = 0, uiOutput("range_help"))
                          ),
-                         uiOutput("button_apply_media")
+                         uiOutput("button_apply_media"),
+                         hr(),
+                         fluidRow(
+                           # class = "myRowButton",
+                           column(5, HTML("<b>Objective value: </b>")),
+                           column(1, offset = 0, htmlOutput("text_flux_media")),
+                           column(
+                             1,
+                             offset = 1,
+                             popify(actionLink("flux_popover_media", "", icon = icon("question-circle-o")),title = "Objective value",
+                                    content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                                    placement = "right",
+                                    trigger = "click",
+                                    options = list(container = "body"))
+                           )
+                         ),
+                         br(),
+                         tableOutput(outputId = 'fluxes_media')
+                         # br(),
+                         # hr(),
+                         # div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+                         # uiOutput("pick_rxn"),
+                         # fluidRow(
+                         #   class = "myRowButton",
+                         #   column(10, uiOutput("range")),
+                         #   column(1, offset = 0, uiOutput("range_help"))
+                         # ),
+                         # uiOutput("button_apply_media")
                        ),
                        mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
                      )
@@ -735,6 +655,7 @@ shinyServer(function(input, output, session) {
                      paste("<u><b>Use predefined media: ", "</b></u>")
                    })
                    
+
                    
                  })
     
@@ -811,26 +732,31 @@ shinyServer(function(input, output, session) {
                      inputId = "tabs",
                      target = "help",
                      tabPanel(
-                       "Transcriptomics experiment",
+                       "Integrate transcriptomic data",
                        value = "simulate_expression_changes",
                        sidebarPanel(
                          fluidRow(
                            class = "myRowText",
                            column(9, HTML(
-                             "<b>Pick a gene for expression adjustment:</b>"
+                             "<b>Change expression of a gene:</b>"
                            )),
                            column(
                              1,
                              offset = 0,
-                             actionLink("expression_popover", "", icon = icon("question-circle-o"))
+                             popify(actionLink("expression_popover", "", icon = icon("question-circle-o")),title = "Adjusts the gene expression level",
+                                    content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively.",
+                                    placement = "right",
+                                    trigger = "click",
+                                    options = list(container = "body"))
                            )
                          ),
                          uiOutput("pick_expr_gene"),
                          HTML("<b>Select the gene expression level:</b>"),
+                         br(),
+                         br(),
                          uiOutput("expr"),
                          uiOutput("button_apply_expr"),
-                         br(),
-                         br(),
+                          hr(),
                          fluidRow(
                            class = "myRowButton",
                            column(5, HTML("<b>Objective value: </b>")),
@@ -838,7 +764,11 @@ shinyServer(function(input, output, session) {
                            column(
                              1,
                              offset = 1,
-                             actionLink("flux_popover_expr", "", icon = icon("question-circle-o"))
+                             popify(actionLink("flux_popover_expr", "", icon = icon("question-circle-o")),title = "Objective value",
+                             content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                             placement = "right",
+                             trigger = "click",
+                             options = list(container = "body"))
                            )
                          ),
                          tableOutput(outputId = 'fluxes_expr'),
@@ -869,7 +799,7 @@ shinyServer(function(input, output, session) {
                    #render the apply button for the UI
                    output$button_apply_expr = renderUI({
                      bsButton(inputId = "apply_expr",
-                              label = "Adjust")
+                              label = "Run FBA")
                    })
                    #Render the selection slider for the expression level adjustment
                    output$expr = renderUI(
@@ -877,18 +807,21 @@ shinyServer(function(input, output, session) {
                        inputId = "expr",
                        min = 0,
                        max = 1,
-                       label = NULL,
+                       label = div(style='width:350px;', 
+                                   div(style='float:left;font-weight:normal;', 'no expression'), 
+                                   div(style='float:right;font-weight:normal;', 'maximal overexpression')),
                        value = 0.5,
                        step = 0.1,
                        round = TRUE,
                        ticks = F,
-                       width = "300px"
+                       width = "350px"
                      )
                    )
                  })
     
     # APPLY MEDIA1 ------------------------------------------------------------
     observeEvent(input$media1, {
+
       #Define the type of media and assigne to the python variable
       media_type = "media1"
       python.assign("media_type", media_type)
@@ -908,8 +841,7 @@ shinyServer(function(input, output, session) {
       fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
       rownames(fluxes_output) = c()
       colnames(fluxes_output) = c("Reaction", "Flux")
-      
-      
+
       working_dir = getwd()
       path = "/data/toycon.xml"
       if (.Platform$OS.type == "windows") {
@@ -1002,6 +934,13 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
+      #render UI table to display the fluxes in the model with missing reaction
+      output$fluxes_media = renderTable({
+        fluxes_output
+      }, width = "350", caption = "Reaction fluxes after change to glucose free media",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", "350"))
+      
       #transform the data to visNetwork format
       visdata_ori <- toVisNetworkData(toycon_graph)
       #preserve the original model
@@ -1225,6 +1164,12 @@ shinyServer(function(input, output, session) {
         }
       }
       
+      #render UI table to display the fluxes in the model with missing reaction
+      output$fluxes_media = renderTable({
+        fluxes_output
+      }, width = "350", caption = "Reaction fluxes after change to microaerophilic media",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", "350"))
       
       for (i in seq(1, dim(names_dict)[2], by = 1)) {
         #Mapping nodes IDs to names for table displaying purposes
@@ -1476,6 +1421,13 @@ shinyServer(function(input, output, session) {
               "</b>")
       })
       
+      #render UI table to display the fluxes in the model with missing reaction
+      output$fluxes_media = renderTable({
+        fluxes_output
+      }, width = "350", caption = "Reaction fluxes after change to lactate rich media",
+      caption.placement = getOption("xtable.caption.placement", "top"),
+      caption.width = getOption("xtable.caption.width", "350"))
+      
       toycon_graph = igraph.from.graphNEL(data)
       net = asNetwork(toycon_graph)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -1612,8 +1564,11 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-    
+  # APPLY CUSTOM MEDIA ------------------------------------------------------------
     observeEvent(input$media_custom, {
+      output$fluxes_media = renderTable({
+        
+      })
       working_dir = getwd()
       path = "/data/toycon.xml"
       if (.Platform$OS.type == "windows") {
@@ -1696,7 +1651,9 @@ shinyServer(function(input, output, session) {
               "</b></u>")
       })
       
-      
+    output$line = renderUI(hr())
+    output$line1 = renderUI(hr())
+    
       #render the flux range limiting slider for the UI
       output$range = renderUI(
         sliderInput(
@@ -1735,6 +1692,7 @@ shinyServer(function(input, output, session) {
     })
     # APPLY MEDIA -------------------------------------------------------------
     observeEvent(input$apply_media, {
+
       #get the bouds to be applied
       lb = input$range[1]
       ub = input$range[2]
@@ -1844,6 +1802,12 @@ shinyServer(function(input, output, session) {
                 as.character(flux),
                 "</b>")
         })
+        
+        output$fluxes_media = renderTable({
+          fluxes_output
+        }, width = "350", caption = "Reaction fluxes after change to custom growth media",
+        caption.placement = getOption("xtable.caption.placement", "top"),
+        caption.width = getOption("xtable.caption.width", "350"))
         
         toycon_graph = igraph.from.graphNEL(data)
         net = asNetwork(toycon_graph)
@@ -2010,7 +1974,7 @@ shinyServer(function(input, output, session) {
         inputId = "tabs",
         target = "help",
         tabPanel(
-          "Gene knockout",
+          "Simulate gene knockout",
           value = "ko_reactions",
           sidebarPanel(
             fluidRow(
@@ -2021,13 +1985,17 @@ shinyServer(function(input, output, session) {
               column(
                 1,
                 offset = 0,
-                actionLink("pick_rxn_ko_popover", "", icon = icon("question-circle-o"))
+                popify(actionLink("pick_rxn_ko_popover", "", icon = icon("question-circle-o")),title = "Knocksout the reaction picked above",
+                       content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
+                       placement = "right",
+                       trigger = "click",
+                       options = list(container = "body"))
               )
             ),
             uiOutput("pick_ko_rxn"),
             div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
             div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("reset_ko")),
-            br(),
+            hr(),
             fluidRow(
               class = "myRowButton",
               column(5, HTML("<b>Objective value: </b>")),
@@ -2035,7 +2003,11 @@ shinyServer(function(input, output, session) {
               column(
                 1,
                 offset = 1,
-                actionLink("flux_popover_ko", "", icon = icon("question-circle-o"))
+                popify(actionLink("flux_popover_ko", "", icon = icon("question-circle-o")),title = "Objective value",
+                       content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                       placement = "right",
+                       trigger = "click",
+                       options = list(container = "body"))
               )
             ),
             tableOutput(outputId = 'fluxes_ko')
@@ -2240,9 +2212,9 @@ shinyServer(function(input, output, session) {
       #render the fluxes table for the UI
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = "Fluxes without any KOs",
+      }, width = "350", caption = "Fluxes without any KOs",
       caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", NULL))
+      caption.width = getOption("xtable.caption.width", "350"))
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
       output$text_flux_media = renderText({
@@ -2495,13 +2467,13 @@ shinyServer(function(input, output, session) {
       #render UI table to display the fluxes in the model with missing reaction
       output$fluxes_ko = renderTable({
         fluxes_output
-      }, width = "250", caption = paste(
+      }, width = "350", caption = paste(
         "Fluxes after the KO of gene coding for enzyme that catalyzes",
         names_dict[1, which(names_dict[2,] == paste("R_", reaction_ID, sep = ""))],
         "reaction"
       ),
       caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", NULL))
+      caption.width = getOption("xtable.caption.width", "350"))
       #render text with objective value
       output$text_flux_ko = renderText({
         paste("<b>",
@@ -2785,9 +2757,9 @@ shinyServer(function(input, output, session) {
       #render the fluxes table for the UI
       output$fluxes_expr = renderTable({
         fluxes_output
-      }, width = "250", caption = "Fluxes after gene expression adjustment",
+      }, width = "350", caption = "Reaction fluxes after integrating expression constraints",
       caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", NULL))
+      caption.width = getOption("xtable.caption.width", "350"))
       
       output$text_flux_expr = renderText({
         paste("<b>",

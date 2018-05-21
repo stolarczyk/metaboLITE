@@ -22,21 +22,23 @@ shinyUI(
     fluid = T,
     collapsible = T,
     tabPanel(
-      "Visualize",
+      "Visualize network",
       value="visualize",
       sidebarPanel(
-        fluidRow(class="myRowText",column(6,HTML("<u><b>Launch tabs:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
+        fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
                  column(6, bsButton(inputId = "change_media",label = "Change media"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "ko_rxn",label = "Gene knockout"))
+                 column(6,bsButton(inputId = "ko_rxn",label = "Simulate gene knockout"))
                  ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "simulate_expr",label = "Transcriptomics experiment"))
+                 column(6,bsButton(inputId = "simulate_expr",label = "Integrate transcriptomic data"))
                  ),
+        hr(),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
         tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
+        tags$head(tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))),
         radioButtons(
           inputId = "weighting",
           label = HTML("Display weights:"),
@@ -54,8 +56,13 @@ shinyUI(
           placement = "right",
           trigger = "hover"
         ),
-        br(),br(),
-        fluidRow(class="myRowText",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux")),column(1,offset = 1,actionLink("flux_popover","",icon=icon("question-circle-o")))),
+        br(),
+        hr(),
+        fluidRow(class="myRowText",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux")),column(1,offset = 1,popify(actionLink("flux_popover","",icon=icon("question-circle-o")),title = "Objective value",
+                                                                                                                                                      content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                                                                                                                                                      placement = "right",
+                                                                                                                                                      trigger = "click",
+                                                                                                                                                      options = list(container = "body")))),
         #htmlOutput("text_flux"),
         tableOutput(outputId = 'fluxes'),
         width = 4
