@@ -582,7 +582,11 @@ shinyServer(function(input, output, session) {
                            column(
                              1,
                              offset = 0,
-                             actionLink("apply_media_popover", "", icon = icon("question-circle-o"))
+                             popify(actionLink("apply_media_popover", "", icon = icon("question-circle-o")),title = "Grow the organism in different media conditions",
+                                    content = "Media changing can be easily simulated by chanding the exchange reactions fluxes",
+                                    placement = "right",
+                                    trigger = "click",
+                                    options = list(container = "body"))
                            )
                          ),
                          fluidRow(class = "myRowButton", column(
