@@ -1,7 +1,7 @@
 
 
 
-
+test
 
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
@@ -259,11 +259,11 @@ get_model_data <- function(){
   
   #Setting proper nodes names
   for (i in seq(1, length(names))) {
-    if (nchar(names[i]) < 6) {
-      names[i] = substr(names[i], 1, 4)
-    } else{
-      names[i] = substr(names[i], 1, 6)
-    }
+    # if (nchar(names[i]) < 6) {
+    #   names[i] = substr(names[i], 1, 4)
+    # } else{
+    #   names[i] = substr(names[i], 1, 6)
+    # }
     if (any(names(sbml_model@model@species) == as.character(names[i]))) {
       metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
       edges_names[i] = metabolite
