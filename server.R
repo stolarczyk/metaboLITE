@@ -1,8 +1,5 @@
 
 
-
-test
-
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
@@ -253,6 +250,7 @@ get_model_data <- function(){
   color_reaction = "lightblue"
   color_metabolite = "lightsalmon"
   color_metabolite_mitochondria = "red"
+  # color_metabolite_external = "moccasin"
   names = rownames(visdata$nodes)
   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
   edges_names = names
@@ -332,6 +330,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    # color_metabolite_external = "moccasin"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -407,11 +406,11 @@ shinyServer(function(input, output, session) {
           edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
           for (i in seq(1, length(data@edgeData@data))) {
             hit = which(edges_df$name == ndata[i])
-            data@edgeData@data[[i]]$stoi = edges_df[hit, 3]
+            data@edgeData@data[[i]]$coefficient = edges_df[hit, 3]
           }
           #Rewrites the coefficients to edge's weight slot
           for (i in seq(1, length(data@edgeData@data))) {
-            data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$stoi
+            data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$coefficient
           }
           new_df = data.frame()
           for (i in seq(1, length(data@edgeData@data))) {
@@ -434,12 +433,11 @@ shinyServer(function(input, output, session) {
           new_df$metabolite = sapply(new_df$metabolite, function(x)
             names_dict[1, which(names_dict[2, ] == x)[1]])
           new_df = new_df[, c(3, 4, 2)]
-          new_df$stoi = as.character(new_df$stoi)
-          output$fluxes = renderTable({
+          new_df$coefficient = as.character(new_df$coefficient)
+          names(new_df)=c("Reaction","Metabolite","Coefficient")
+          output$fluxes = DT::renderDataTable({
             new_df
-          }, caption = "Stoichiometry",
-          caption.placement = getOption("xtable.caption.placement", "top"),
-          caption.width = getOption("xtable.caption.width", NULL))
+          },options = list(pageLength = 10),caption="Stoichiometry",rownames=FALSE)
           toycon_graph = igraph.from.graphNEL(data)
           net = asNetwork(toycon_graph)
           net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -484,10 +482,11 @@ shinyServer(function(input, output, session) {
           label = c(
             "Cytosolic metabolite",
             "Mitochondrial metabolite",
+            # "External metabolite",
             "Reaction"
           ),
-          shape = c("dot", "dot", "box"),
-          color = c("lightsalmon", "red", "lightblue"),
+          shape = c("dot", "dot","box"),
+          color = c("lightsalmon", "red","lightblue"),
           title = "Informations"
         )
       

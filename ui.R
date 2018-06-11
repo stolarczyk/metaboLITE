@@ -64,7 +64,7 @@ shinyUI(
                                                                                                                                                       trigger = "click",
                                                                                                                                                       options = list(container = "body")))),
         #htmlOutput("text_flux"),
-        tableOutput(outputId = 'fluxes'),
+        DT::dataTableOutput("fluxes"),
         width = 4
       ),
       mainPanel(visNetworkOutput(

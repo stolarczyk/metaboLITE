@@ -84,7 +84,7 @@ RUN git clone https://github.com/michalstolarczyk/shinyapp.git
 EXPOSE 8080
 
 #Run the app
-CMD ["R","-e","shiny::runApp(appDir = '/tmp/shinyapp', port = 8080,launch.browser = F ,host = '0.0.0.0', quiet = FALSE, display.mode = 'auto',test.mode = FALSE)"]
+CMD ["R","-e","shiny::runApp(appDir = '/tmp/shinyapp', port = 8080,launch.browser = T ,host = '0.0.0.0', quiet = FALSE, display.mode = 'auto',test.mode = FALSE)"]
 
 
 
