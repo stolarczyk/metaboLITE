@@ -63,22 +63,22 @@ add_dups_new_layout <- function(visdata) {
   return(visdata)
 }
 
-show_basic_network <- function() {
+show_basic_network <- function(model_name="toycon") {
   #This function is used to show a basic network when the tabs are first launched in order to help the user to decide what to do
   working_dir = getwd()
-  path = "/data/toycon.xml"
+  path = paste("/data/",model_name,".xml",sep = "")
   if (.Platform$OS.type == "windows") {
     path = gsub("\\\\", "/", path)
   }
   model_file_path = paste(working_dir, path, sep = "")
-  path = "/data/model_var.RData"
+  path = paste("/data/",model_name,"_var.RData",sep = "")
   if (.Platform$OS.type == "windows") {
     path = gsub("\\\\", "/", path)
   }
   
-  load(paste(working_dir, path, sep = ""))
-  toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
-  data = rsbml_graph((sbml_model))
+  load(paste(working_dir, path, sep = "")) #formal class SBML object
+  toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+  data = rsbml_graph(sbml_model)
   toycon_graph = igraph.from.graphNEL(data)
   visdata <- toVisNetworkData(toycon_graph)
   visdata_ori = visdata
@@ -217,73 +217,6 @@ show_basic_network <- function() {
     ))
 }
 
-get_model_data <- function(){
-  working_dir = getwd()
-  path = "/data/toycon.xml"
-  if (.Platform$OS.type == "windows") {
-    path = gsub("\\\\", "/", path)
-  }
-  model_file_path = paste(working_dir, path, sep = "")
-  path = "/data/model_var.RData"
-  if (.Platform$OS.type == "windows") {
-    path = gsub("\\\\", "/", path)
-  }
-  
-  load(paste(working_dir, path, sep = ""))
-  toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
-  data = rsbml_graph((sbml_model))
-  toycon_graph = igraph.from.graphNEL(data)
-  visdata <- toVisNetworkData(toycon_graph)
-  visdata_ori = visdata
-  
-  #Adding duplicate metabolites/reactions
-  visdata = add_dups_new_layout(visdata)
-  
-  visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
-  visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
-  visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
-  visdata$edges$width = 2
-  visdata$edges$length = 150
-  net = asNetwork(toycon_graph)
-  
-  #Setting colors according to node class
-  color_reaction = "lightblue"
-  color_metabolite = "lightsalmon"
-  color_metabolite_mitochondria = "red"
-  # color_metabolite_external = "moccasin"
-  names = rownames(visdata$nodes)
-  net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
-  edges_names = names
-  
-  #Setting proper nodes names
-  for (i in seq(1, length(names))) {
-    # if (nchar(names[i]) < 6) {
-    #   names[i] = substr(names[i], 1, 4)
-    # } else{
-    #   names[i] = substr(names[i], 1, 6)
-    # }
-    if (any(names(sbml_model@model@species) == as.character(names[i]))) {
-      metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
-      edges_names[i] = metabolite
-    }
-    else{
-      if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
-        reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
-        edges_names[i] = reaction_name
-      }
-      else{
-        edges_names[i] = "NoName"
-      }
-    }
-  }
-  
-  #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-  edges_names = sapply(edges_names, function(x)
-    fill_blank(x, 7))
-  names_dict = rbind(edges_names, names) #Names and IDs dictionary
-  visdata$nodes$label = as.vector(edges_names)
-}
-
 
 shinyServer(function(input, output, session) {
   working_dir = getwd()
@@ -304,13 +237,13 @@ shinyServer(function(input, output, session) {
       path = gsub("\\\\", "/", path)
     }
     model_file_path = paste(working_dir, path, sep = "")
-    path = "/data/model_var.RData"
+    path = "/data/toycon_var.RData"
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
     
     load(paste(working_dir, path, sep = ""))
-    toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+    toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
     data = rsbml_graph((sbml_model))
     toycon_graph = igraph.from.graphNEL(data)
     visdata <- toVisNetworkData(toycon_graph)
@@ -593,7 +526,6 @@ shinyServer(function(input, output, session) {
                            6,
                            popify(bsButton(inputId = "media_custom", block = T,label = "Custom media"),title = "Compose custom media",content = "Simulate organism growth in custom media conditions.",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
-                         # br(),
                          uiOutput("line"),
                          div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
                          uiOutput("pick_rxn"),
@@ -605,7 +537,7 @@ shinyServer(function(input, output, session) {
                          uiOutput("button_apply_media"),
                          hr(),
                          fluidRow(
-                           # class = "myRowButton",
+                           class = "myRowButton",
                            column(5, HTML("<b>Objective value: </b>")),
                            column(1, offset = 0, htmlOutput("text_flux_media")),
                            column(
@@ -620,16 +552,6 @@ shinyServer(function(input, output, session) {
                          ),
                          br(),
                          DT::dataTableOutput('fluxes_media')
-                         # br(),
-                         # hr(),
-                         # div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
-                         # uiOutput("pick_rxn"),
-                         # fluidRow(
-                         #   class = "myRowButton",
-                         #   column(10, uiOutput("range")),
-                         #   column(1, offset = 0, uiOutput("range_help"))
-                         # ),
-                         # uiOutput("button_apply_media")
                        ),
                        mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
                      )
@@ -663,13 +585,13 @@ shinyServer(function(input, output, session) {
                      path = gsub("\\\\", "/", path)
                    }
                    model_file_path = paste(working_dir, path, sep = "")
-                   path = "/data/model_var.RData"
+                   path = "/data/toycon_var.RData"
                    if (.Platform$OS.type == "windows") {
                      path = gsub("\\\\", "/", path)
                    }
                    
                    load(paste(working_dir, path, sep = ""))
-                   toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+                   toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
                    data = rsbml_graph((sbml_model))
                    toycon_graph = igraph.from.graphNEL(data)
                    visdata <- toVisNetworkData(toycon_graph)
@@ -840,13 +762,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -1094,13 +1016,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -1336,13 +1258,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -1572,13 +1494,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -1721,13 +1643,13 @@ shinyServer(function(input, output, session) {
           path = gsub("\\\\", "/", path)
         }
         model_file_path = paste(working_dir, path, sep = "")
-        path = "/data/model_var.RData"
+        path = "/data/toycon_var.RData"
         if (.Platform$OS.type == "windows") {
           path = gsub("\\\\", "/", path)
         }
         
         load(paste(working_dir, path, sep = ""))
-        toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+        toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
         data = rsbml_graph((sbml_model))
         toycon_graph = igraph.from.graphNEL(data)
         visdata <- toVisNetworkData(toycon_graph)
@@ -2027,13 +1949,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2127,13 +2049,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2218,8 +2140,8 @@ shinyServer(function(input, output, session) {
               as.character(flux),
               "</b>")
       })
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
-      path = "/data/model_var.RData"
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
+      path = "/data/toycon_var.RData"
       load(paste(working_dir, path, sep = ""))
       toycon_graph = igraph.from.graphNEL(data)
       #transform the data to visNetwork format
@@ -2375,13 +2297,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2483,14 +2405,14 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/x`", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       #read the model in
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       ndata = names(data@edgeData)
       #conver the model to visNetwork format
@@ -2655,13 +2577,13 @@ shinyServer(function(input, output, session) {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/model_var.RData"
+      path = "/data/toycon_var.RData"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
       load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon1.rda", sep = ""))
+      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
       data = rsbml_graph((sbml_model))
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2894,7 +2816,6 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
     })
-  # })
   session$onSessionEnded(function() {
     #set dir
     setwd("data")

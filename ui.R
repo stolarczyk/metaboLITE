@@ -24,6 +24,7 @@ shinyUI(
       "Visualize network",
       value="visualize",
       sidebarPanel(
+        radioButtons(inputId = "genre",label = HTML("Choose model:"),selected = "iNRG",choices = c("iNRG" = "iNRG","Other" = "Other"),width = "50%"),
         fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
                  column(7, bsButton(inputId = "change_media",block = T,label = "Change media"))
