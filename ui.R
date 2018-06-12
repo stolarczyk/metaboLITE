@@ -3,7 +3,6 @@
 
 
 
-
 # This is the user-interface definition of a Shiny web application.
 
 library(shiny)
@@ -28,20 +27,20 @@ shinyUI(
         fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
                  column(6, bsButton(inputId = "change_media",label = "Change media"))
-                 ),
+        ),
         fluidRow(class="myRowButton",
                  column(6,bsButton(inputId = "ko_rxn",label = "Simulate gene knockout"))
-                 ),
+        ),
         fluidRow(class="myRowButton",
                  column(6,bsButton(inputId = "simulate_expr",label = "Integrate transcriptomic data"))
-                 ),
+        ),
         hr(),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
         tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
         tags$head(tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))),
         radioButtons(
           inputId = "weighting",
-          label = HTML("Display weights:"),
+          label = HTML("Display weights:"),selected = "none",
           choices = c(
             "None" = "none",
             "Stoichiometry" = "stoichiometry"
@@ -50,7 +49,7 @@ shinyUI(
         
         popify(
           bsButton(inputId = "update",
-                   label = "Apply"),
+                   label = "Apply",value = T),
           title = "Apply the settings",
           content = "Greater flux through reactions or stoichiometry in the model will be shown as thicker edges of the graph",
           placement = "right",
@@ -64,7 +63,7 @@ shinyUI(
                                                                                                                                                       trigger = "click",
                                                                                                                                                       options = list(container = "body")))),
         #htmlOutput("text_flux"),
-        DT::dataTableOutput("fluxes"),
+        DT::dataTableOutput('fluxes'),
         width = 4
       ),
       mainPanel(visNetworkOutput(

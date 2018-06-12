@@ -297,7 +297,7 @@ shinyServer(function(input, output, session) {
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
-  observeEvent(input$update, ignoreNULL = F  ,{
+  observeEvent(input$update  ,{
     working_dir = getwd()
     path = "/data/toycon.xml"
     if (.Platform$OS.type == "windows") {
@@ -366,7 +366,7 @@ shinyServer(function(input, output, session) {
     output$graph = renderVisNetwork({
       if (isolate(input$weighting) == "none") {
         edgesize = 0.75
-        output$fluxes = renderTable({
+        output$fluxes = DT::renderDataTable({
           
         })
         #binds the R variable to Python variable
@@ -435,9 +435,6 @@ shinyServer(function(input, output, session) {
           new_df = new_df[, c(3, 4, 2)]
           new_df$coefficient = as.character(new_df$coefficient)
           names(new_df)=c("Reaction","Metabolite","Coefficient")
-          output$fluxes = DT::renderDataTable({
-            new_df
-          },options = list(pageLength = 10),caption="Stoichiometry",rownames=FALSE)
           toycon_graph = igraph.from.graphNEL(data)
           net = asNetwork(toycon_graph)
           net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -457,6 +454,10 @@ shinyServer(function(input, output, session) {
           visdata$edges$width = edgesize
           visdata$edges$title = paste("Stoichiometric coefficient: ",
                                       round(weights_edges))
+          
+          output$fluxes = DT::renderDataTable({
+            new_df
+          },options = list(pageLength = 10),caption="Stoichiometry",rownames=FALSE)
         }
       }
       #Read the saved coordinates for the graph dispalying purpose
@@ -537,7 +538,7 @@ shinyServer(function(input, output, session) {
         ))
     })
     
-    
+
     output$text_main = renderText({
       paste("<u><b>Launch tabs with following functionalities: ",
             "</b></u>")
@@ -630,7 +631,7 @@ shinyServer(function(input, output, session) {
                            )
                          ),
                          br(),
-                         tableOutput(outputId = 'fluxes_media')
+                         DT::dataTableOutput('fluxes_media')
                          # br(),
                          # hr(),
                          # div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
@@ -938,11 +939,15 @@ shinyServer(function(input, output, session) {
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
       #render UI table to display the fluxes in the model with missing reaction
-      output$fluxes_media = renderTable({
+      # output$fluxes_media = renderTable({
+      #   fluxes_output
+      # }, width = "350", caption = "Reaction fluxes after change to glucose free media",
+      # caption.placement = getOption("xtable.caption.placement", "top"),
+      # caption.width = getOption("xtable.caption.width", "350"))
+      
+      output$fluxes_media = DT::renderDataTable({
         fluxes_output
-      }, width = "350", caption = "Reaction fluxes after change to glucose free media",
-      caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", "350"))
+      },options = list(pageLength = 10),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
       
       #transform the data to visNetwork format
       visdata_ori <- toVisNetworkData(toycon_graph)
@@ -1168,11 +1173,9 @@ shinyServer(function(input, output, session) {
       }
       
       #render UI table to display the fluxes in the model with missing reaction
-      output$fluxes_media = renderTable({
+      output$fluxes_media = DT::renderDataTable({
         fluxes_output
-      }, width = "350", caption = "Reaction fluxes after change to microaerophilic media",
-      caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", "350"))
+      },options = list(pageLength = 10),caption="Reaction fluxes after change to microaerophilic media",rownames=FALSE)
       
       for (i in seq(1, dim(names_dict)[2], by = 1)) {
         #Mapping nodes IDs to names for table displaying purposes
@@ -1425,11 +1428,10 @@ shinyServer(function(input, output, session) {
       })
       
       #render UI table to display the fluxes in the model with missing reaction
-      output$fluxes_media = renderTable({
+
+      output$fluxes_media = DT::renderDataTable({
         fluxes_output
-      }, width = "350", caption = "Reaction fluxes after change to lactate rich media",
-      caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", "350"))
+      },options = list(pageLength = 10),caption="Reaction fluxes after change to lactate rich media",rownames=FALSE)
       
       toycon_graph = igraph.from.graphNEL(data)
       net = asNetwork(toycon_graph)
@@ -1572,6 +1574,10 @@ shinyServer(function(input, output, session) {
       output$fluxes_media = renderTable({
         
       })
+      output$fluxes_media = DT::renderDataTable({
+
+      })
+      
       working_dir = getwd()
       path = "/data/toycon.xml"
       if (.Platform$OS.type == "windows") {
@@ -1806,11 +1812,10 @@ shinyServer(function(input, output, session) {
                 "</b>")
         })
         
-        output$fluxes_media = renderTable({
+        output$fluxes_media = DT::renderDataTable({
           fluxes_output
-        }, width = "350", caption = "Reaction fluxes after change to custom growth media",
-        caption.placement = getOption("xtable.caption.placement", "top"),
-        caption.width = getOption("xtable.caption.width", "350"))
+        },options = list(pageLength = 10),caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
+        
         
         toycon_graph = igraph.from.graphNEL(data)
         net = asNetwork(toycon_graph)
