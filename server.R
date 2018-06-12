@@ -84,8 +84,9 @@ show_basic_network <- function(model_name="toycon") {
   visdata_ori = visdata
   
   #Adding duplicate metabolites/reactions
-  visdata = add_dups_new_layout(visdata)
-  
+  if(model_name=="toycon"){
+    visdata = add_dups_new_layout(visdata)
+  }
   visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
   visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
   visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
@@ -103,11 +104,6 @@ show_basic_network <- function(model_name="toycon") {
   
   #Setting proper nodes names
   for (i in seq(1, length(names))) {
-    if (nchar(names[i]) < 6) {
-      names[i] = substr(names[i], 1, 4)
-    } else{
-      names[i] = substr(names[i], 1, 6)
-    }
     if (any(names(sbml_model@model@species) == as.character(names[i]))) {
       metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
       edges_names[i] = metabolite
@@ -124,8 +120,10 @@ show_basic_network <- function(model_name="toycon") {
   }
   
   #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-  edges_names = sapply(edges_names, function(x)
-    fill_blank(x, 7))
+  if(model_name=="toycon"){
+    edges_names = sapply(edges_names, function(x)
+      fill_blank(x, 7))
+  }
   names_dict = rbind(edges_names, names) #Names and IDs dictionary
   visdata$nodes$label = as.vector(edges_names)
   
@@ -146,18 +144,19 @@ show_basic_network <- function(model_name="toycon") {
     path = gsub("\\\\", "/", path)
   }
   coords = read.csv(path)
-  visdata$nodes = cbind(visdata$nodes, coords)
-  #Emphasize main reactions
-  visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
-  #Emphasize main metabolites
-  visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-  visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
-  
+  if(model_name=="toycon"){
+    visdata$nodes = cbind(visdata$nodes, coords)
+    #Emphasize main reactions
+    visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+    #Emphasize main metabolites
+    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+  }
   lnodes <-
     data.frame(
       label = c(
