@@ -24,15 +24,16 @@ shinyUI(
       "Visualize network",
       value="visualize",
       sidebarPanel(
+        radioButtons(inputId = "genre",label = HTML("Choose model:"),selected = "iNRG",choices = c("iNRG" = "iNRG","Other" = "Other"),width = "50%"),
         fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
-                 column(6, bsButton(inputId = "change_media",label = "Change media"))
+                 column(7, bsButton(inputId = "change_media",block = T,label = "Change media"))
         ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "ko_rxn",label = "Simulate gene knockout"))
+                 column(7,bsButton(inputId = "ko_rxn",block = T,label = "Simulate gene knockout"))
         ),
         fluidRow(class="myRowButton",
-                 column(6,bsButton(inputId = "simulate_expr",label = "Integrate transcriptomic data"))
+                 column(7,bsButton(inputId = "simulate_expr",block = T,label = "Integrate transcriptomic data"))
         ),
         hr(),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
