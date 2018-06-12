@@ -483,7 +483,6 @@ shinyServer(function(input, output, session) {
           label = c(
             "Cytosolic metabolite",
             "Mitochondrial metabolite",
-            # "External metabolite",
             "Reaction"
           ),
           shape = c("dot", "dot","box"),
@@ -538,26 +537,15 @@ shinyServer(function(input, output, session) {
         ))
     })
     
-
-    output$text_main = renderText({
-      paste("<u><b>Launch tabs with following functionalities: ",
-            "</b></u>")
-    })
-    output$text_vis = renderText({
-      paste("<u><b>Visualize the metabolic network: ", "</b></u>")
-    })
-    
-    observeEvent(input$tabs_popover, ignoreInit = T, {
-      updateNavbarPage(session = session,
-                       inputId = "tabs",
-                       selected = "help")
-    })
-    
-    
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
     
+  })
+  observeEvent(input$tabs_popover, ignoreInit = T, {
+    updateNavbarPage(session = session,
+                     inputId = "tabs",
+                     selected = "help")
   })
     
     # SHOW CHANGE MEDIA TAB ---------------------------------------------------
@@ -591,19 +579,19 @@ shinyServer(function(input, output, session) {
                          ),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           popify(bsButton(inputId = "media1", label = "Glucose free media"),title = "Apply glucose free media",content = "Simulate organism growth in media containing lactate, oxygen, carbon dioxide, water, but no glucose (the import of this metabolite is inhibited by changing <b>the lower and upper bound of glucose exchange to 0</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
+                           popify(bsButton(inputId = "media1", block = T,label = "Glucose free media"),title = "Apply glucose free media",content = "Simulate organism growth in media containing lactate, oxygen, carbon dioxide, water, but no glucose (the import of this metabolite is inhibited by changing <b>the lower and upper bound of glucose exchange to 0</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           popify(bsButton(inputId = "media2", label = "Microaerophilic media"),title = "Apply microaerophilic media",content = "Simulate organism growth in media containing lactate, glucose, carbon dioxide, water, but limited amount of oxygen (the import of this metabolite is inhibited by changing <b>the lower and upper bound of oxygen exchange to -10 and 10, respevtively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
+                           popify(bsButton(inputId = "media2", block = T,label = "Microaerophilic media"),title = "Apply microaerophilic media",content = "Simulate organism growth in media containing lactate, glucose, carbon dioxide, water, but limited amount of oxygen (the import of this metabolite is inhibited by changing <b>the lower and upper bound of oxygen exchange to -10 and 10, respevtively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           popify(bsButton(inputId = "media3", label = "Lactate rich media"),title = "Apply lactate rich media",content = "Simulate organism growth in media containing oxygen, carbon dioxide, water and high concentration of lactate (the import of this metabolite is constrained by changing <b>the lower and upper bound of lactate exchange to -700 and 700, respectively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
+                           popify(bsButton(inputId = "media3",block = T, label = "Lactate rich media"),title = "Apply lactate rich media",content = "Simulate organism growth in media containing oxygen, carbon dioxide, water and high concentration of lactate (the import of this metabolite is constrained by changing <b>the lower and upper bound of lactate exchange to -700 and 700, respectively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          fluidRow(class = "myRowButton", column(
                            6,
-                           popify(bsButton(inputId = "media_custom", label = "Custom media"),title = "Compose custom media",content = "Simulate organism growth in custom media conditions.",trigger = "hover",placement = "right",options=list(container="body"))
+                           popify(bsButton(inputId = "media_custom", block = T,label = "Custom media"),title = "Compose custom media",content = "Simulate organism growth in custom media conditions.",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          # br(),
                          uiOutput("line"),
@@ -2001,7 +1989,7 @@ shinyServer(function(input, output, session) {
               )
             ),
             uiOutput("pick_ko_rxn"),
-            div(style = "vertical-align:top; width: 50%;height: 60px", uiOutput("button_apply_ko")),
+            div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("button_apply_ko")),
             div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("reset_ko")),
             hr(),
             fluidRow(
@@ -2108,7 +2096,7 @@ shinyServer(function(input, output, session) {
       )
       output$button_apply_ko = renderUI({
         bsButton(inputId = "apply_ko",
-                 label = "Knockout")
+                 label = "Knockout",block = T)
       })
     })
     
@@ -2373,7 +2361,7 @@ shinyServer(function(input, output, session) {
       output$reset_ko = renderUI(
         popify(
           bsButton(inputId = "reset",
-                   label = "Reset"),
+                   label = "Reset",block = T),
           title = "Reset model",
           content = "Brings the model back to its original state",
           placement = "right",

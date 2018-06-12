@@ -73,6 +73,7 @@ RUN Rscript -e "install.packages('visNetwork')"
 RUN Rscript -e "install.packages('xtable')"
 RUN Rscript -e "install.packages('sna')"
 RUN Rscript -e "install.packages('rPython')"
+RUN Rscript -e "install.packages('DT')"
 
 # Installing python-libsbml and cobra
 RUN pip install python-libsbml cobra

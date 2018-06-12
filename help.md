@@ -21,7 +21,7 @@ In order to simulate the model growth a <a href="https://www.ncbi.nlm.nih.gov/pm
 #### Change media tab
 - **Media changes impact visualization**, which is intended to depict the influence of growth media changes on the model growth and fluxes through reactions. The media changes are performed by constraining the exchange reactions in the model during the FBA simulation. For example in order to check the influence of oxygen shortage on the model growth one needs to lower the upper (and lower) flux bound(s) of the oxygen exchange reaction.
 
-#### Simulate expression changes tab
+#### Integrate transcriptomic data tab
 - **Gene expression influenece visualization**, which is intended to depict the impact of the pseudo-gene expression changes in the model, which directly influences the flux that is carried by the reaction catalyzed by the enzyme encoded by the gene in question. It is indented to give the user an idea of how the algorithms for gene expression integration influence the fluxes in in the model.
 
 
