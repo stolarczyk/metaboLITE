@@ -415,6 +415,9 @@ shinyServer(function(input, output, session) {
         # intentionally left empty - clears the populated table
       })
     }
+    output$text_flux = renderText({
+      paste("<b>", format(round(check_flux(model = model_name),digits = 2),nsmall=2), "</b>")
+    })
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
