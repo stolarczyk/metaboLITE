@@ -63,7 +63,7 @@ add_dups_new_layout <- function(visdata) {
   return(visdata)
 }
 
-show_basic_network <- function(model_name="toycon",weighting="none") {
+show_basic_network <- function(model_name="toycon",weighting="none"){
   #This function is used to show a basic network when the tabs are first launched in order to help the user to decide what to do
   working_dir = getwd()
   path = paste("/data/",model_name,".xml",sep = "")
@@ -166,50 +166,23 @@ show_basic_network <- function(model_name="toycon",weighting="none") {
       for (i in seq(1, length(data@edgeData@data))) {
         data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$coefficient
       }
-      new_df = data.frame()
-      for (i in seq(1, length(data@edgeData@data))) {
-        df1 = as.data.frame(data@edgeData@data[[i]])
-        df1$reaction = ndata[i]
-        new_df = merge(new_df, df1, all = T)
-      }
-      selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-      new_df = new_df[selection, ]
-      new_df$metabolite = sapply(new_df$reaction, function(x)
-        strsplit(x, split = "\\|")[[1]][2])
-      new_df$reaction = sapply(new_df$reaction, function(x)
-        strsplit(x, split = "\\|")[[1]][1])
-      rotate = which(grepl("M_", new_df$reaction))
-      cache = new_df[rotate, "reaction"]
-      new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
-      new_df[rotate, "metabolite"] = cache
-      new_df$reaction = sapply(new_df$reaction, function(x)
-        names_dict[1, which(names_dict[2, ] == x)[1]])
-      new_df$metabolite = sapply(new_df$metabolite, function(x)
-        names_dict[1, which(names_dict[2, ] == x)[1]])
-      new_df = new_df[, c(3, 4, 2)]
-      new_df$coefficient = as.character(new_df$coefficient)
-      names(new_df)=c("Reaction","Metabolite","Coefficient")
       toycon_graph = igraph.from.graphNEL(data)
       net = asNetwork(toycon_graph)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                       "vertex.names")]))])
-      #Transfer missing weights 
-      # from_idx = which(substr(visdata$edges[dim(visdata$edges)[1], 1][1], 1, nchar(visdata$edges[dim(visdata$edges)[1], 1][1]) -
-      #                           1) == visdata$edges[, 1])
-      # to_idx = which(substr(visdata$edges[dim(visdata$edges)[1], 2][1], 1, nchar(visdata$edges[dim(visdata$edges)[1], 2][1]) -
-      #                         1) == visdata$edges[, 2])
-      # if (from_idx == to_idx) {
-      #   visdata$edges[dim(visdata$edges)[1], 3] = visdata$edges[from_idx, 3]
-      # }
-      weights_edges = as.numeric(visdata$edges$weight)
+      if(model_name=="toycon"){
+        visdata1=visdata
+      } else{
+        toycon_graph1 = igraph.from.graphNEL(data)
+        visdata1 <- toVisNetworkData(toycon_graph1)
+      }
+      weights_edges = as.numeric(visdata1$edges$weight)
       edgesize = log(abs(weights_edges)) + 1
       visdata$edges$width = edgesize
-      visdata$edges$title = paste("Stoichiometric coefficient: ",
-                                  round(weights_edges))
-      
-     }
+      visdata$edges$title = paste("Stoichiometric coefficient: ",round(weights_edges))
+  }
   shape_metabolites=ifelse(model_name=="toycon","circle","dot")
   shape_reactions=ifelse(model_name=="toycon","box","square")
   lnodes <-
