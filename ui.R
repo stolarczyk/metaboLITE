@@ -61,9 +61,7 @@ shinyUI(
         fluidRow(class="myRowText",column(5,HTML("<b>Objective value: </b>")),column(1,offset = 0,htmlOutput("text_flux")),column(1,offset = 1,popify(actionLink("flux_popover","",icon=icon("question-circle-o")),title = "Objective value",
                                                                                                                                                       content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
                                                                                                                                                       placement = "right",
-                                                                                                                                                      trigger = "click",
-                                                                                                                                                      options = list(container = "body")))),
-        #htmlOutput("text_flux"),
+                                                                                                                                                      trigger = "click",                                                                                                                                  options = list(container = "body")))),
         DT::dataTableOutput('fluxes'),
         width = 4
       ),

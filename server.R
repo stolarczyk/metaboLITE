@@ -63,7 +63,7 @@ add_dups_new_layout <- function(visdata) {
   return(visdata)
 }
 
-show_basic_network <- function(model_name="toycon") {
+show_basic_network <- function(model_name="toycon",weighting="none") {
   #This function is used to show a basic network when the tabs are first launched in order to help the user to decide what to do
   working_dir = getwd()
   path = paste("/data/",model_name,".xml",sep = "")
@@ -153,6 +153,65 @@ show_basic_network <- function(model_name="toycon") {
     visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
   }
+  
+  if(weighting == "stoichiometry"){
+      #Necessary transformations for the table displaying purposes
+      ndata = names(data@edgeData)
+      edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
+      for (i in seq(1, length(data@edgeData@data))) {
+        hit = which(edges_df$name == ndata[i])
+        data@edgeData@data[[i]]$coefficient = edges_df[hit, 3]
+      }
+      #Rewrites the coefficients to edge's weight slot
+      for (i in seq(1, length(data@edgeData@data))) {
+        data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$coefficient
+      }
+      new_df = data.frame()
+      for (i in seq(1, length(data@edgeData@data))) {
+        df1 = as.data.frame(data@edgeData@data[[i]])
+        df1$reaction = ndata[i]
+        new_df = merge(new_df, df1, all = T)
+      }
+      selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
+      new_df = new_df[selection, ]
+      new_df$metabolite = sapply(new_df$reaction, function(x)
+        strsplit(x, split = "\\|")[[1]][2])
+      new_df$reaction = sapply(new_df$reaction, function(x)
+        strsplit(x, split = "\\|")[[1]][1])
+      rotate = which(grepl("M_", new_df$reaction))
+      cache = new_df[rotate, "reaction"]
+      new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
+      new_df[rotate, "metabolite"] = cache
+      new_df$reaction = sapply(new_df$reaction, function(x)
+        names_dict[1, which(names_dict[2, ] == x)[1]])
+      new_df$metabolite = sapply(new_df$metabolite, function(x)
+        names_dict[1, which(names_dict[2, ] == x)[1]])
+      new_df = new_df[, c(3, 4, 2)]
+      new_df$coefficient = as.character(new_df$coefficient)
+      names(new_df)=c("Reaction","Metabolite","Coefficient")
+      toycon_graph = igraph.from.graphNEL(data)
+      net = asNetwork(toycon_graph)
+      net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+      reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
+                                                          "vertex.names")][which(grepl("^R_", unlist(net$val)[which(names(unlist(net$val)) ==
+                                                                                                                      "vertex.names")]))])
+      #Transfer missing weights 
+      # from_idx = which(substr(visdata$edges[dim(visdata$edges)[1], 1][1], 1, nchar(visdata$edges[dim(visdata$edges)[1], 1][1]) -
+      #                           1) == visdata$edges[, 1])
+      # to_idx = which(substr(visdata$edges[dim(visdata$edges)[1], 2][1], 1, nchar(visdata$edges[dim(visdata$edges)[1], 2][1]) -
+      #                         1) == visdata$edges[, 2])
+      # if (from_idx == to_idx) {
+      #   visdata$edges[dim(visdata$edges)[1], 3] = visdata$edges[from_idx, 3]
+      # }
+      weights_edges = as.numeric(visdata$edges$weight)
+      edgesize = log(abs(weights_edges)) + 1
+      visdata$edges$width = edgesize
+      visdata$edges$title = paste("Stoichiometric coefficient: ",
+                                  round(weights_edges))
+      
+     }
+  shape_metabolites=ifelse(model_name=="toycon","circle","dot")
+  shape_reactions=ifelse(model_name=="toycon","box","square")
   lnodes <-
     data.frame(
       label = c(
@@ -171,7 +230,6 @@ show_basic_network <- function(model_name="toycon") {
     arrows = c("to", "to"),
     dashes = c(F, T)
   )
-  
   #Plotting graph
   visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
     visLegend(
@@ -197,19 +255,145 @@ show_basic_network <- function(model_name="toycon") {
     ) %>%
     visGroups(groupname = "Metabolite",
               color = color_metabolite,
-              shape = "circle") %>%
+              shape = shape_metabolites) %>%
     visGroups(groupname = "Reaction",
               color = color_reaction,
-              shape = "box") %>%
+              shape = shape_reactions) %>%
     visGroups(groupname = "Metabolite mitochondria",
               color = color_metabolite_mitochondria,
-              shape = "circle") %>%
+              shape = shape_metabolites) %>%
     visLayout(randomSeed = 1) %>%
     visPhysics(barnesHut = list(
       springLength = 200,
       springConstant = 0,
       gravitationalConstant = 0
     ))
+    }
+
+get_coefficients_DF <- function(model_name="toycon"){
+  working_dir = getwd()
+  path = paste("/data/",model_name,".xml",sep = "")
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  model_file_path = paste(working_dir, path, sep = "")
+  path = paste("/data/",model_name,"_var.RData",sep = "")
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  
+  load(paste(working_dir, path, sep = "")) #formal class SBML object
+  toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+  data = rsbml_graph(sbml_model)
+  toycon_graph = igraph.from.graphNEL(data)
+  visdata <- toVisNetworkData(toycon_graph)
+  visdata_ori = visdata
+  
+  #Adding duplicate metabolites/reactions
+  if(model_name=="toycon"){
+    visdata = add_dups_new_layout(visdata)
+  }
+  visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
+  visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
+  visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+  visdata$edges$width = 2
+  visdata$edges$length = 150
+  net = asNetwork(toycon_graph)
+  
+  #Setting colors according to node class
+  color_reaction = "lightblue"
+  color_metabolite = "lightsalmon"
+  color_metabolite_mitochondria = "red"
+  names = rownames(visdata$nodes)
+  net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+  edges_names = names
+  
+  #Setting proper nodes names
+  for (i in seq(1, length(names))) {
+    if(model_name=="toycon"){
+      if (nchar(names[i]) < 6) {
+        names[i] = substr(names[i], 1, 4)
+      } else{
+        names[i] = substr(names[i], 1, 6)
+      }
+    }
+    if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+      metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+      edges_names[i] = metabolite
+    }
+    else{
+      if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+        reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+        edges_names[i] = reaction_name
+      }
+      else{
+        edges_names[i] = "NoName"
+      }
+    }
+  }
+  
+  #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
+  if(model_name=="toycon"){
+    edges_names = sapply(edges_names, function(x)
+      fill_blank(x, 7))
+  }
+  names_dict = rbind(edges_names, names) #Names and IDs dictionary
+  visdata$nodes$label = as.vector(edges_names)
+  edgesize = 0.75
+  #Read the saved coordinates for the graph dispalying purpose
+  path = "data/textbooky_coords.csv"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  coords = read.csv(path)
+  if(model_name=="toycon"){
+    visdata$nodes = cbind(visdata$nodes, coords)
+    #Emphasize main reactions
+    visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+    #Emphasize main metabolites
+    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+  }
+    #Necessary transformations for the table displaying purposes
+    ndata = names(data@edgeData)
+    edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
+    for (i in seq(1, length(data@edgeData@data))) {
+      hit = which(edges_df$name == ndata[i])
+      data@edgeData@data[[i]]$coefficient = edges_df[hit, 3]
+    }
+    #Rewrites the coefficients to edge's weight slot
+    for (i in seq(1, length(data@edgeData@data))) {
+      data@edgeData@data[[i]]$weight = data@edgeData@data[[i]]$coefficient
+    }
+    new_df = data.frame()
+    for (i in seq(1, length(data@edgeData@data))) {
+      df1 = as.data.frame(data@edgeData@data[[i]])
+      df1$reaction = ndata[i]
+      new_df = merge(new_df, df1, all = T)
+    }
+    selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
+    new_df = new_df[selection, ]
+    new_df$metabolite = sapply(new_df$reaction, function(x)
+      strsplit(x, split = "\\|")[[1]][2])
+    new_df$reaction = sapply(new_df$reaction, function(x)
+      strsplit(x, split = "\\|")[[1]][1])
+    rotate = which(grepl("M_", new_df$reaction))
+    cache = new_df[rotate, "reaction"]
+    new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
+    new_df[rotate, "metabolite"] = cache
+    new_df$reaction = sapply(new_df$reaction, function(x)
+      names_dict[1, which(names_dict[2, ] == x)[1]])
+    new_df$metabolite = sapply(new_df$metabolite, function(x)
+      names_dict[1, which(names_dict[2, ] == x)[1]])
+    new_df = new_df[, c(3, 4, 2)]
+    new_df$coefficient = as.character(new_df$coefficient)
+    names(new_df)=c("Reaction","Metabolite","Coefficient")
+    return(new_df)
 }
 
 check_flux <- function(model="toycon"){
@@ -316,9 +500,9 @@ shinyServer(function(input, output, session) {
       if (isolate(input$weighting) == "none") {
         edgesize = 0.75
         output$fluxes = DT::renderDataTable({
-          # intentionally left empty - clears the populated table
+          data.frame()# intentionally left empty - clears the populated table
         })
-        model_name = input$pick_model
+        model_name = isolate(input$pick_model)
         flux=as.character(round(check_flux(model = model_name),digits = 2))
         output$text_flux = renderText({
           # paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
@@ -327,7 +511,7 @@ shinyServer(function(input, output, session) {
       }
       #Weighting edges
       else{
-        model_name = input$pick_model
+        model_name = isolate(input$pick_model)
         flux=as.character(round(check_flux(model = model_name),digits = 2))
         output$text_flux = renderText({
           paste("<b>", flux, "</b>")
