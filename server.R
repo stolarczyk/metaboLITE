@@ -104,6 +104,13 @@ show_basic_network <- function(model_name="toycon") {
   
   #Setting proper nodes names
   for (i in seq(1, length(names))) {
+    if(model_name=="toycon"){
+      if (nchar(names[i]) < 6) {
+        names[i] = substr(names[i], 1, 4)
+      } else{
+        names[i] = substr(names[i], 1, 6)
+      }
+    }
     if (any(names(sbml_model@model@species) == as.character(names[i]))) {
       metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
       edges_names[i] = metabolite
@@ -126,18 +133,7 @@ show_basic_network <- function(model_name="toycon") {
   }
   names_dict = rbind(edges_names, names) #Names and IDs dictionary
   visdata$nodes$label = as.vector(edges_names)
-  
   edgesize = 0.75
-  
-  python.assign("model_file_path", model_file_path)
-  path = "/scripts/check_flux.py"
-  if (.Platform$OS.type == "windows") {
-    path = gsub("\\\\", "/", path)
-  }
-  #runs the script specified by the path variable
-  python.load(paste(working_dir, path, sep = ""))
-  #gets the python variable after the script execution
-  flux = python.get(var.name = "flux")
   #Read the saved coordinates for the graph dispalying purpose
   path = "data/textbooky_coords.csv"
   if (.Platform$OS.type == "windows") {
@@ -214,6 +210,27 @@ show_basic_network <- function(model_name="toycon") {
       springConstant = 0,
       gravitationalConstant = 0
     ))
+}
+
+check_flux <- function(model="toycon"){
+  # this function gets the objective value when provided with a model name
+  # rPython package is used for the R Python connectivity, cobrapy is used for FBA calculations 
+  working_dir = getwd()
+  path = paste("/data/",model,".xml",sep = "")
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  model_file_path = paste(working_dir, path, sep = "")
+  python.assign("model_file_path", model_file_path)
+  path = "/scripts/check_flux.py"
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  #runs the script specified by the path variable
+  python.load(paste(working_dir, path, sep = ""))
+  #gets the python variable after the script execution
+  flux = python.get(var.name = "flux")
+  return(flux)
 }
 
 
@@ -299,32 +316,19 @@ shinyServer(function(input, output, session) {
       if (isolate(input$weighting) == "none") {
         edgesize = 0.75
         output$fluxes = DT::renderDataTable({
-          
+          # intentionally left empty - clears the populated table
         })
-        #binds the R variable to Python variable
-        python.assign("model_file_path", model_file_path)
-        path = "/scripts/check_flux.py"
-        if (.Platform$OS.type == "windows") {
-          path = gsub("\\\\", "/", path)
-        }
-        #runs the script specified by the path variable
-        python.load(paste(working_dir, path, sep = ""))
-        #gets the python variable after the script execution
-        flux = python.get(var.name = "flux")
+        model_name = input$pick_model
+        flux=as.character(round(check_flux(model = model_name),digits = 2))
         output$text_flux = renderText({
           # paste("<br/>", "<b>Objective value: ", flux, "</b>", "<br/>")
-          paste("<b>", flux, "</b>")
+          paste("<b>", flux , "</b>")
         })
       }
       #Weighting edges
       else{
-        python.assign("model_file_path", model_file_path)
-        path = "/scripts/check_flux.py"
-        if (.Platform$OS.type == "windows") {
-          path = gsub("\\\\", "/", path)
-        }
-        python.load(paste(working_dir, path, sep = ""))
-        flux = python.get(var.name = "flux")
+        model_name = input$pick_model
+        flux=as.character(round(check_flux(model = model_name),digits = 2))
         output$text_flux = renderText({
           paste("<b>", flux, "</b>")
         })
