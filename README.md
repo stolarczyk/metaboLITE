@@ -43,7 +43,7 @@ The installation instructions can be found on the [Docker website](https://docs.
 
 e.g copy and paste:
 
-``` sudo docker pull mstolarczyk/toyconapp ``` (this may take some time depending on your connection)
+``` sudo docker pull mstolarczyk/shinyapp:latest ``` (this may take some time depending on your connection)
 
 **4. Check the image status**:
 
