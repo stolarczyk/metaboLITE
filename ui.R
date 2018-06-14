@@ -24,7 +24,7 @@ shinyUI(
       "Visualize network",
       value="visualize",
       sidebarPanel(
-        selectInput(inputId = "pick_model",label = "Choose model:",choices = list("iNRG"="toycon","Ecoli"="ecoli"),selected = "toycon",width = "55%"),
+        fluidRow(class="myRowList",column(6,selectInput(inputId = "pick_model",label = "Choose model:",choices = list("iNRG"="toycon","Ecoli"="ecoli"),selected = "toycon",width = "55%")),column(2,offset = 0,popify(actionLink("choose_model_popover","",icon=icon("question-circle-o")),title = "Pick a model to run the experimets with",options = list(container = "body"),content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",trigger = "click",placement = "right"))),
         fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
                  column(7, bsButton(inputId = "change_media",block = T,label = "Change media"))
@@ -37,7 +37,7 @@ shinyUI(
         ),
         hr(),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
-        tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px}")),
+        tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px} .myRowList{height:100px;}")),
         tags$head(tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))),
         radioButtons(
           inputId = "weighting",

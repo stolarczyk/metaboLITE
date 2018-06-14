@@ -434,6 +434,7 @@ shinyServer(function(input, output, session) {
     observeEvent(input$change_media,
                  ignoreInit = T,
                  {
+
                    removeTab( inputId = "tabs",
                               target = "change_media",
                               session = getDefaultReactiveDomain())
@@ -473,13 +474,11 @@ shinyServer(function(input, output, session) {
                          fluidRow(class = "myRowButton", column(
                            6,
                            popify(bsButton(inputId = "media3",block = T, label = "Lactate rich media"),title = "Apply lactate rich media",content = "Simulate organism growth in media containing oxygen, carbon dioxide, water and high concentration of lactate (the import of this metabolite is constrained by changing <b>the lower and upper bound of lactate exchange to -700 and 700, respectively</b>). Does the organism produce ATP in this condition?",trigger = "hover",placement = "right",options=list(container="body"))
-                         ))),
-                         fluidRow(class = "myRowButton", column(
-                           6,
-                           popify(bsButton(inputId = "media_custom", block = T,label = "Custom media"),title = "Compose custom media",content = "Simulate organism growth in custom media conditions.",trigger = "hover",placement = "right",options=list(container="body"))
                          )),
                          uiOutput("line"),
-                         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own")),
+                         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own"))
+                         ),
+                         conditionalPanel(condition = "input.pick_model == 'ecoli'",HTML("<u><b>To simulate growth conditions of your choice select any exchange reaction and change its flux limits.</b></u>"),br(),br()),
                          uiOutput("pick_rxn"),
                          fluidRow(
                            class = "myRowButton",
@@ -513,7 +512,7 @@ shinyServer(function(input, output, session) {
                                     selected = "change_media")
                    
                    output$graph_media = renderVisNetwork({
-                     show_basic_network()
+                     show_basic_network(model_name)
                    })
                    
                    #render th text to display in the UI
@@ -1425,7 +1424,7 @@ shinyServer(function(input, output, session) {
       })
     })
   # APPLY CUSTOM MEDIA ------------------------------------------------------------
-    observeEvent(input$media_custom, {
+    observeEvent(input$change_media, {
       output$fluxes_media = DT::renderDataTable({
 
       })
@@ -1506,7 +1505,7 @@ shinyServer(function(input, output, session) {
       names(choices_list) = sapply(choices_list, function(x)
         names_dict[1, which(names_dict[2, ] == x)[1]])
       
-      #render the UI select component
+      # render the UI select component
       output$pick_rxn = renderUI(
         selectInput(
           inputId = "pick_rxn",
