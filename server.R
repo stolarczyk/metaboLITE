@@ -364,7 +364,6 @@ get_coefficients_DF <- function(model_name="toycon"){
     new_df$metabolite = sapply(new_df$metabolite, function(x)
       names_dict[1, which(names_dict[2, ] == x)[1]])
     new_df = new_df[, c(3, 4, 2)]
-    new_df$coefficient = as.character(new_df$coefficient)
     names(new_df)=c("Reaction","Metabolite","Coefficient")
     return(new_df)
 }
@@ -415,6 +414,12 @@ shinyServer(function(input, output, session) {
         # intentionally left empty - clears the populated table
       })
     }
+    output$text = renderPrint({
+                              s = input$fluxes_rows_selected
+                              if (length(s)) {
+                                cat('These rows were selected:\n\n')
+                                cat(s, sep = ', ')
+                              }})
     output$text_flux = renderText({
       paste("<b>", format(round(check_flux(model = model_name),digits = 2),nsmall=2), "</b>")
     })
