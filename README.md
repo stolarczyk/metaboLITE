@@ -1,3 +1,7 @@
+
+[![Docker Build Status](https://img.shields.io/docker/build/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/mstolarczyk/shinyapp/builds/bz9whpotuu6kmwwkhqwr7xz/)
+
+
 # **Toycon visualization app documentation**
 
 Michal Stolarczyk <mjs5kd@virginia.edu>
