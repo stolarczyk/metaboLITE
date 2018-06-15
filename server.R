@@ -1964,6 +1964,12 @@ shinyServer(function(input, output, session) {
     # SHOW KO REACTION TAB ----------------------------------------------------
     
     observeEvent(input$ko_rxn, once = T, ignoreInit = T, {
+      
+      removeTab(inputId = "tabs",
+                 target = "ko_reactions",
+                 session = getDefaultReactiveDomain())
+      model_name = isolate(input$pick_model)
+      
       insertTab(
         inputId = "tabs",
         target = "help",
@@ -2020,25 +2026,27 @@ shinyServer(function(input, output, session) {
       })
       
       working_dir = getwd()
-      path = "/data/toycon.xml"
+      path = paste("/data/",model_name,".xml",sep = "")
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/toycon_var.RData"
+      path = paste("/data/",model_name,"_var.RData",sep = "")
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
-      load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
-      data = rsbml_graph((sbml_model))
+      load(paste(working_dir, path, sep = "")) #formal class SBML object
+      toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+      data = rsbml_graph(sbml_model)
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
       visdata_ori = visdata
       
       #Adding duplicate metabolites/reactions
-      visdata = add_dups_new_layout(visdata)
+      if(model_name=="toycon"){
+        visdata = add_dups_new_layout(visdata)
+      }
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
@@ -2057,10 +2065,12 @@ shinyServer(function(input, output, session) {
       
       #Setting proper nodes names
       for (i in seq(1, length(names))) {
-        if (nchar(names[i]) < 6) {
-          names[i] = substr(names[i], 1, 4)
-        } else{
-          names[i] = substr(names[i], 1, 6)
+        if(model_name=="toycon"){
+          if (nchar(names[i]) < 6) {
+            names[i] = substr(names[i], 1, 4)
+          } else{
+            names[i] = substr(names[i], 1, 6)
+          }
         }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
           metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
@@ -2078,12 +2088,34 @@ shinyServer(function(input, output, session) {
       }
       
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-      edges_names = sapply(edges_names, function(x)
-        fill_blank(x, 7))
+      if(model_name=="toycon"){
+        edges_names = sapply(edges_names, function(x)
+          fill_blank(x, 7))
+      }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       
-      choices_list_ko = as.list(toycon@react_name)
-      names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
+      # if(model_name=="ecoli"){
+      #   # parsing the GPR: if there's any redundancy in the GPR (occurrence of logical OR) the single gene knockout won't affect the reaction govern by the rule
+      #   gprList = list()
+      #   for(rxn in seq_len(length(toycon@react_name))){
+      #     gpr_string = toycon@gpr[rxn]
+      #     result=stringr::str_locate_all(gpr_string,"b\\d{4}")[[1]]
+      #     genes_rxn=c()
+      #     for(row in seq_len(nrow(result))){
+      #       genes_rxn = append(genes_rxn,substr(gpr_string,result[row,1],result[row,2]))
+      #     }
+      #     redundancy = grepl("or",gpr_string) 
+      #     gprList[[rxn]] = append(redundancy,genes_rxn)
+      #   }
+      #   names(gprList) = toycon@react_name
+      #   
+      # }
+      
+      if(model_name=-"toycon"){
+        choices_list_ko = as.list(toycon@react_name)
+        names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
+      }
+      
       output$pick_ko_rxn = renderUI(
         selectInput(
           inputId = "pick_ko_rxn",
