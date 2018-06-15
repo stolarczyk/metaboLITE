@@ -215,7 +215,7 @@ show_basic_network <- function(model_name="toycon",weighting="none"){
       zoom = T,
       addEdges = ledges
     ) %>%
-    visOptions(highlightNearest = TRUE) %>%
+    visOptions(highlightNearest = T) %>%
     visEdges(
       color = "black",
       arrows = "to",
@@ -399,27 +399,82 @@ shinyServer(function(input, output, session) {
   model_file_path = paste(working_dir, path, sep = "")
   
   
-  
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
   observeEvent(input$update,{
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
-    output$graph = renderVisNetwork({show_basic_network(model_name = model_name, weighting = weighting)})
     
     if(weighting == "stoichiometry"){
-      output$fluxes = DT::renderDataTable({get_coefficients_DF(model_name = model_name)})
+      output$fluxes = DT::renderDataTable({get_coefficients_DF(model_name = model_name)},selection="single",options = list(pageLength = 10))
     }else{
       output$fluxes = DT::renderDataTable({
         # intentionally left empty - clears the populated table
       })
     }
-    output$text = renderPrint({
-                              s = input$fluxes_rows_selected
-                              if (length(s)) {
-                                cat('These rows were selected:\n\n')
-                                cat(s, sep = ', ')
-                              }})
+    
+    working_dir = getwd()
+    path = paste("/data/",model_name,".xml",sep = "")
+    if (.Platform$OS.type == "windows") {
+      path = gsub("\\\\", "/", path)
+    }
+    model_file_path = paste(working_dir, path, sep = "")
+    path = paste("/data/",model_name,"_var.RData",sep = "")
+    if (.Platform$OS.type == "windows") {
+      path = gsub("\\\\", "/", path)
+    }
+    load(paste(working_dir, path, sep = "")) #formal class SBML object
+    data = rsbml_graph(sbml_model)
+    toycon_graph = igraph.from.graphNEL(data)
+    visdata <- toVisNetworkData(toycon_graph)
+    names = rownames(visdata$nodes)
+    net = asNetwork(toycon_graph)
+    net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
+    edges_names = names
+    
+    #Setting proper nodes names
+    for (i in seq(1, length(names))) {
+      if(model_name=="toycon"){
+        if (nchar(names[i]) < 6) {
+          names[i] = substr(names[i], 1, 4)
+        } else{
+          names[i] = substr(names[i], 1, 6)
+        }
+      }
+      if (any(names(sbml_model@model@species) == as.character(names[i]))) {
+        metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
+        edges_names[i] = metabolite
+      }
+      else{
+        if (any(names(sbml_model@model@reactions) == as.character(names[i]))) {
+          reaction_name = sbml_model@model@reactions[[which(names(sbml_model@model@reactions) == as.character(names[i]))]]@name
+          edges_names[i] = reaction_name
+        }
+        else{
+          edges_names[i] = "NoName"
+        }
+      }
+    }
+    
+    #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
+    if(model_name=="toycon"){
+      edges_names = sapply(edges_names, function(x)
+        fill_blank(x, 7))
+    }
+    names_dict = rbind(edges_names, names) #Names and IDs dictionary
+    visdata$nodes$label = as.vector(edges_names)
+ 
+    output$graph = renderVisNetwork({show_basic_network(model_name = model_name, weighting = weighting)})
+    
+    observe({
+      s = input$fluxes_rows_selected
+      df=get_coefficients_DF(model_name = model_name)
+      rxn_name=df[s,1]
+      rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+      visNetworkProxy("graph") %>%
+        visSelectNodes(id = rxn_id)
+    })
+    
     output$text_flux = renderText({
       paste("<b>", format(round(check_flux(model = model_name),digits = 2),nsmall=2), "</b>")
     })
@@ -806,7 +861,7 @@ shinyServer(function(input, output, session) {
                                                                                                                      "vertex.names")]))])
       output$fluxes_media = DT::renderDataTable({
         fluxes_output
-      },options = list(pageLength = 10),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
       
       #transform the data to visNetwork format
       visdata_ori <- toVisNetworkData(toycon_graph)
