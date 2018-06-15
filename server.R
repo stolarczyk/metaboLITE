@@ -995,6 +995,15 @@ shinyServer(function(input, output, session) {
           )) %>%
           visLayout(randomSeed = 1)
       })
+      
+      observe({
+        s = input$fluxes_media_rows_selected
+        df=fluxes_output
+        rxn_name=df[s,1]
+        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+        visNetworkProxy("graph_media") %>%
+          visSelectNodes(id = rxn_id)
+      })
     })
     # APPLY MEDIA2 ------------------------------------------------------------
     #For the inline comments check out the APPLY MEDIA1 section above
@@ -1235,6 +1244,16 @@ shinyServer(function(input, output, session) {
           )) %>%
           visLayout(randomSeed = 1)
       })
+      
+      observe({
+        s = input$fluxes_media_rows_selected
+        df=fluxes_output
+        rxn_name=df[s,1]
+        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+        visNetworkProxy("graph_media") %>%
+          visSelectNodes(id = rxn_id)
+      })
+      
     })
     
     # APPLY MEDIA3 ------------------------------------------------------------
@@ -1482,6 +1501,16 @@ shinyServer(function(input, output, session) {
           )) %>%
           visLayout(randomSeed = 1)
       })
+      
+      observe({
+        s = input$fluxes_media_rows_selected
+        df=fluxes_output
+        rxn_name=df[s,1]
+        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+        visNetworkProxy("graph_media") %>%
+          visSelectNodes(id = rxn_id)
+      })
+      
     })
   # APPLY CUSTOM MEDIA ------------------------------------------------------------
     observeEvent(input$change_media, {
@@ -1754,7 +1783,7 @@ shinyServer(function(input, output, session) {
         
         output$fluxes_media = DT::renderDataTable({
           fluxes_output
-        },options = list(pageLength = 10),caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
+        },options = list(pageLength = 10),selection="single",caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
         
         
         toycon_graph = igraph.from.graphNEL(data)
@@ -1906,6 +1935,15 @@ shinyServer(function(input, output, session) {
               )
             ) %>%
             visLayout(randomSeed = 1)
+        })
+        
+        observe({
+          s = input$fluxes_media_rows_selected
+          df=fluxes_output
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id)
         })
       } else{
         #Ifthe lower bound is not lower thn te upper one - display a poper notification

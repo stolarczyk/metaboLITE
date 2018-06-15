@@ -21,7 +21,8 @@ shinyUI(
       value="visualize",
       sidebarPanel(
         verbatimTextOutput('text'),
-        fluidRow(class="myRowList",column(6,selectInput(inputId = "pick_model",label = "Choose model:",choices = list("iNRG"="toycon","Ecoli"="ecoli"),selected = "toycon",width = "55%")),column(2,offset = 0,popify(actionLink("choose_model_popover","",icon=icon("question-circle-o")),title = "Pick a model to run the experimets with",options = list(container = "body"),content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",trigger = "click",placement = "right"))),
+        fluidRow(class="myRowText",column(6,HTML("<u><b>Choose model:</b></u>")),column(2,offset = 0,popify(actionLink("choose_model_popover","",icon=icon("question-circle-o")),title = "Pick a model to run the experimets with",options = list(container = "body"),content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",trigger = "click",placement = "right"))),
+        selectInput(inputId = "pick_model",label = NULL,choices = list("iNRG"="toycon","Ecoli"="ecoli"),selected = "toycon",width = "55%"),
         fluidRow(class="myRowText",column(6,HTML("<u><b>Run experiments:</b></u>")),column(1,offset = 0,actionLink("tabs_popover","",icon=icon("question-circle-o")))),
         fluidRow(class="myRowButton",
                  column(7, bsButton(inputId = "change_media",block = T,label = "Change media"))
