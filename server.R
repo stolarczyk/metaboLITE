@@ -411,7 +411,7 @@ shinyServer(function(input, output, session) {
     weighting = isolate(input$weighting)
     
     if(weighting == "stoichiometry"){
-      output$fluxes = DT::renderDataTable({get_coefficients_DF(model_name = model_name)},selection="single",options = list(pageLength = 10))
+      output$fluxes = DT::renderDataTable({get_coefficients_DF(model_name = model_name)},selection="single",options = list(pageLength = 10),rownames=FALSE)
     }else{
       output$fluxes = DT::renderDataTable({
         # intentionally left empty - clears the populated table
@@ -1973,8 +1973,13 @@ shinyServer(function(input, output, session) {
       removeTab(inputId = "tabs",
                  target = "ko_reactions",
                  session = getDefaultReactiveDomain())
-      model_name = isolate(input$pick_model)
       
+      model_name = isolate(input$pick_model)
+      if(model_name != "toycon"){
+        output$fluxes_ko = DT::renderDataTable({
+          
+        })
+      }
       insertTab(
         inputId = "tabs",
         target = "help",
@@ -2015,8 +2020,8 @@ shinyServer(function(input, output, session) {
                        options = list(container = "body"))
               )
             ),
-            tableOutput(outputId = 'fluxes_ko'),
-            bsModal(id = "modal_ko", title = "GPR",trigger = "show_gpr_ko", size = "large",DT::dataTableOutput("gpr_ko"))
+            DT::dataTableOutput('fluxes_ko'),
+            bsModal(id = "modal_ko", title = "Gene - reaction associations table",trigger = "show_gpr_ko", size = "large",DT::dataTableOutput("gpr_ko"))
           ),
           mainPanel(visNetworkOutput("graph_ko", height = "700"), width = 8)
           
@@ -2032,7 +2037,7 @@ shinyServer(function(input, output, session) {
       output$graph_ko = renderVisNetwork({
         show_basic_network(model_name = model_name)
       })
-      
+
       working_dir = getwd()
       path = paste("/data/",model_name,".xml",sep = "")
       if (.Platform$OS.type == "windows") {
@@ -2046,7 +2051,6 @@ shinyServer(function(input, output, session) {
       
       load(paste(working_dir, path, sep = "")) #formal class SBML object
       toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
-      print(model_name)
       data = rsbml_graph(sbml_model)
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2120,7 +2124,7 @@ shinyServer(function(input, output, session) {
       #   
       # }
       
-      output$gpr_ko = DT::renderDataTable({create_GPR_df(toycon)})
+      output$gpr_ko = DT::renderDataTable({create_GPR_df(toycon)},rownames=FALSE)
       
       
       if(model_name=="toycon"){
@@ -2255,6 +2259,7 @@ shinyServer(function(input, output, session) {
               "</b>")
       })
       #render the fluxes table for the UI
+
       output$fluxes_ko = renderTable({
         fluxes_output
       }, width = "350", caption = "Fluxes without any KOs",
@@ -2407,38 +2412,31 @@ shinyServer(function(input, output, session) {
     
     # APPLY KO ----------------------------------------------------------------
     observeEvent(input$apply_ko, {
-      output$reset_ko = renderUI(
-        popify(
-          bsButton(inputId = "reset",
-                   label = "Reset",block = T),
-          title = "Reset model",
-          content = "Brings the model back to its original state",
-          placement = "right",
-          trigger = "hover"
-        )
-      )
+
+      model_name = isolate(input$pick_model)
       
       working_dir = getwd()
-      path = "/data/toycon.xml"
+      path = paste("/data/",model_name,".xml",sep = "")
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/toycon_var.RData"
+      path = paste("/data/",model_name,"_var.RData",sep = "")
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
-      load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
-      data = rsbml_graph((sbml_model))
+      load(paste(working_dir, path, sep = "")) #formal class SBML object
+      toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+      data = rsbml_graph(sbml_model)
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
       visdata_ori = visdata
       
       #Adding duplicate metabolites/reactions
-      visdata = add_dups_new_layout(visdata)
-      
+      if(model_name=="toycon"){
+        visdata = add_dups_new_layout(visdata)
+      }
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
       visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
@@ -2456,10 +2454,12 @@ shinyServer(function(input, output, session) {
       
       #Setting proper nodes names
       for (i in seq(1, length(names))) {
-        if (nchar(names[i]) < 6) {
-          names[i] = substr(names[i], 1, 4)
-        } else{
-          names[i] = substr(names[i], 1, 6)
+        if(model_name=="toycon"){
+          if (nchar(names[i]) < 6) {
+            names[i] = substr(names[i], 1, 4)
+          } else{
+            names[i] = substr(names[i], 1, 6)
+          }
         }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
           metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
@@ -2477,17 +2477,50 @@ shinyServer(function(input, output, session) {
       }
       
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-      edges_names = sapply(edges_names, function(x)
-        fill_blank(x, 7))
+      if(model_name=="toycon"){
+        edges_names = sapply(edges_names, function(x)
+          fill_blank(x, 7))
+      }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
+      visdata$nodes$label = as.vector(edges_names)
+      edgesize = 0.75
+      #Read the saved coordinates for the graph dispalying purpose
+      path = "data/textbooky_coords.csv"
+      if (.Platform$OS.type == "windows") {
+        path = gsub("\\\\", "/", path)
+      }
+      coords = read.csv(path)
+      if(model_name=="toycon"){
+        visdata$nodes = cbind(visdata$nodes, coords)
+        #Emphasize main reactions
+        visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+        #Emphasize main metabolites
+        visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
+        visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      }
+      
       
       #get the reaction name to be KOed and assign its ID to the Python variable
       reaction_name = (input$pick_ko_rxn)
-      reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
+      if(model_name == "toycon"){
+        reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
+      }else{
+        reaction_ID = reaction_name
+      }
       #reaction_ID = strsplit(reaction, split = "_")[[1]][2]
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)
-      path = "/scripts/ko_rxn.py"
+      if(model_name == "toycon"){
+        path = "/scripts/ko_rxn.py"  
+      }else{
+        path = "/scripts/ko_gene.py"
+      }
+      
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
@@ -2497,64 +2530,66 @@ shinyServer(function(input, output, session) {
       flux = python.get(var.name = "flux")
       fluxes = python.get(var.name = "fluxes")
       fluxes_output = t(rbind(t(names(fluxes)), t(fluxes)))
-      fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")
+      if(model_name=="toycon"){
+        fluxes_output[, 1] = paste("R_", fluxes_output[, 1], sep = "")  
+      }
       rownames(fluxes_output) = c()
       colnames(fluxes_output) = c("Reaction", "Flux")
       fluxes = fluxes_output
       
       
-      
-      for (i in seq(1, dim(names_dict)[2], by = 1)) {
-        #Mapping nodes IDs to names for table displaying purposes
-        if (any(which(fluxes_output[, 1] == names_dict[2, i])))
-          fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+      if(model_name=="toycon"){
+        for (i in seq(1, dim(names_dict)[2], by = 1)) {
+          #Mapping nodes IDs to names for table displaying purposes
+          if (any(which(fluxes_output[, 1] == names_dict[2, i])))
+            fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
+        }
+      }else{
+        for(i in seq_len(dim(fluxes_output)[1])){
+          name=toycon@react_name[which(gsub("\\(e\\)","_e",toycon@react_id) == fluxes_output[i,1])]
+          
+          fluxes_output[i,1] = name
+        }
       }
       #render UI table to display the fluxes in the model with missing reaction
-      output$fluxes_ko = renderTable({
-        fluxes_output
-      }, width = "350", caption = paste(
-        "Fluxes after the KO of gene coding for enzyme that catalyzes",
-        names_dict[1, which(names_dict[2,] == paste("R_", reaction_ID, sep = ""))],
-        "reaction"
-      ),
-      caption.placement = getOption("xtable.caption.placement", "top"),
-      caption.width = getOption("xtable.caption.width", "350"))
+      
+      output$fluxes_ko = DT::renderDataTable({fluxes_output},selection="single",options = list(pageLength = 10),rownames=FALSE)
+
       #render text with objective value
       output$text_flux_ko = renderText({
         paste("<b>",
-              as.character(flux),
+              format(round(flux,digits = 2),nsmall=2),
               "</b>")
       })
       
       working_dir = getwd()
-      path = "/data/toycon.xml"
+      path = paste("/data/",model_name,".xml",sep = "")
       if (.Platform$OS.type == "windows") {
-        path = gsub("\\\\", "/x`", path)
+        path = gsub("\\\\", "/", path)
       }
       model_file_path = paste(working_dir, path, sep = "")
-      path = "/data/toycon_var.RData"
+      path = paste("/data/",model_name,"_var.RData",sep = "")
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
       
-      #read the model in
-      load(paste(working_dir, path, sep = ""))
-      toycon = readRDS(paste(working_dir, "/data/toycon.rda", sep = ""))
-      data = rsbml_graph((sbml_model))
-      ndata = names(data@edgeData)
-      #conver the model to visNetwork format
+      load(paste(working_dir, path, sep = "")) #formal class SBML object
+      toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+      data = rsbml_graph(sbml_model)
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
+      visdata_ori = visdata
+
       
       #Adding duplicate metabolites/reactions
-      visdata = add_dups_new_layout(visdata)
-      
-      #delete the KOed reactions
-      reaction = paste("R_", reaction_ID, sep = "")
-      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction),]
-      visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
-                                             visdata$edges$to == reaction),]
-      
+      if(model_name=="toycon"){
+        visdata = add_dups_new_layout(visdata)
+        #delete the KOed reactions
+        reaction = paste("R_", reaction_ID, sep = "")
+        visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction),]
+        visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
+                                               visdata$edges$to == reaction),]
+      }
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
       visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
@@ -2570,10 +2605,12 @@ shinyServer(function(input, output, session) {
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
-        if (nchar(names[i]) < 6) {
-          names[i] = substr(names[i], 1, 4)
-        } else{
-          names[i] = substr(names[i], 1, 6)
+        if(model_name=="toycon"){
+          if (nchar(names[i]) < 6) {
+            names[i] = substr(names[i], 1, 4)
+          } else{
+            names[i] = substr(names[i], 1, 6)
+          }
         }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
           metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
@@ -2590,8 +2627,10 @@ shinyServer(function(input, output, session) {
         }
       }
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-      edges_names = sapply(edges_names, function(x)
-        fill_blank(x, 7))
+      if(model_name=="toycon"){
+        edges_names = sapply(edges_names, function(x)
+          fill_blank(x, 7))
+      }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
       output$graph_ko = renderVisNetwork({
@@ -2602,17 +2641,19 @@ shinyServer(function(input, output, session) {
           path = gsub("\\\\", "/", path)
         }
         #Read the saved coordinates for the graph dispalying purpose
-        coords = read.csv(path)
-        coords = coords[-which(rownames(coords) == reaction),]
-        visdata$nodes = cbind(visdata$nodes, coords)
-        #Adjust the coorfinates of the network after the deaction KO
-        for (i in seq(1, dim(fluxes)[1])) {
-          hits = which(
-            grepl(as.character(fluxes[i, 1]), visdata$edges$from) |
-              grepl(as.character(fluxes[i, 1]), visdata$edges$to)
-          )
-          for (j in hits) {
-            visdata$edges$weight[j] = as.numeric(fluxes[i, 2])
+        if(model_name=="toycon"){
+          coords = read.csv(path)
+          coords = coords[-which(rownames(coords) == reaction),]
+          visdata$nodes = cbind(visdata$nodes, coords)
+          #Adjust the coorfinates of the network after the deaction KO
+          for (i in seq(1, dim(fluxes)[1])) {
+            hits = which(
+              grepl(as.character(fluxes[i, 1]), visdata$edges$from) |
+                grepl(as.character(fluxes[i, 1]), visdata$edges$to)
+            )
+            for (j in hits) {
+              visdata$edges$weight[j] = as.numeric(fluxes[i, 2])
+            }
           }
         }
         #Get the weights from the net object
@@ -2634,6 +2675,11 @@ shinyServer(function(input, output, session) {
         visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
         visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+        
+        shape_metabolites=ifelse(model_name=="toycon","circle","dot")
+        shape_reactions=ifelse(model_name=="toycon","box","square")
+        
+        
         lnodes <-
           data.frame(
             label = c(
@@ -2677,21 +2723,32 @@ shinyServer(function(input, output, session) {
           ) %>%
           visGroups(groupname = "Metabolite",
                     color = color_metabolite,
-                    shape = "circle") %>%
+                    shape = shape_metabolites) %>%
           visGroups(groupname = "Reaction",
                     color = color_reaction,
-                    shape = "box") %>%
+                    shape = shape_reactions) %>%
           visGroups(groupname = "Metabolite mitochondria",
                     color = color_metabolite_mitochondria,
-                    shape = "circle") %>%
+                    shape = shape_metabolites) %>%
           visLayout(randomSeed = 1) %>%
           visPhysics(barnesHut = list(
             springLength = 200,
             springConstant = 0,
             gravitationalConstant = 0
           ))
-        
+
       })
+      
+      output$reset_ko = renderUI(
+        popify(
+          bsButton(inputId = "reset",
+                   label = "Reset",block = T),
+          title = "Reset model",
+          content = "Brings the model back to its original state",
+          placement = "right",
+          trigger = "hover"
+        )
+      )
     })
     
     
