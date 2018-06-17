@@ -2739,6 +2739,15 @@ shinyServer(function(input, output, session) {
 
       })
       
+      observe({
+        s = input$fluxes_ko_rows_selected
+        df=fluxes_output
+        rxn_name=df[s,1]
+        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+        visNetworkProxy("graph_ko") %>%
+          visSelectNodes(id = rxn_id)
+      })
+      
       output$reset_ko = renderUI(
         popify(
           bsButton(inputId = "reset",
