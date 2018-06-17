@@ -389,6 +389,11 @@ check_flux <- function(model="toycon"){
   return(flux)
 }
 
+create_GPR_df <- function(model) {
+  model@gpr[which(model@gpr == "")] = "No associated genes"
+  tab = data.frame(Reaction = model@react_name,GPR = model@gpr)
+  return(tab)
+}
 
 shinyServer(function(input, output, session) {
   working_dir = getwd()
@@ -1963,7 +1968,7 @@ shinyServer(function(input, output, session) {
     
     # SHOW KO REACTION TAB ----------------------------------------------------
     
-    observeEvent(input$ko_rxn, once = T, ignoreInit = T, {
+    observeEvent(input$ko_rxn, ignoreInit = T, {
       
       removeTab(inputId = "tabs",
                  target = "ko_reactions",
@@ -1992,7 +1997,7 @@ shinyServer(function(input, output, session) {
                        options = list(container = "body"))
               )
             ),
-            uiOutput("pick_ko_rxn"),
+            fluidRow(class = "myRowButton", column(7,uiOutput("pick_ko_rxn")),column(1,offset = 0,actionLink("show_gpr_ko", "", icon = icon("table")))),
             div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("button_apply_ko")),
             div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("reset_ko")),
             hr(),
@@ -2010,11 +2015,14 @@ shinyServer(function(input, output, session) {
                        options = list(container = "body"))
               )
             ),
-            tableOutput(outputId = 'fluxes_ko')
+            tableOutput(outputId = 'fluxes_ko'),
+            bsModal(id = "modal_ko", title = "GPR",trigger = "show_gpr_ko", size = "large",DT::dataTableOutput("gpr_ko"))
           ),
           mainPanel(visNetworkOutput("graph_ko", height = "700"), width = 8)
+          
         )
       )
+      
       updateNavbarPage(session = session,
                        inputId = "tabs",
                        selected = "ko_reactions")
@@ -2022,7 +2030,7 @@ shinyServer(function(input, output, session) {
                         selected = "ko")
       
       output$graph_ko = renderVisNetwork({
-        show_basic_network()
+        show_basic_network(model_name = model_name)
       })
       
       working_dir = getwd()
@@ -2038,6 +2046,7 @@ shinyServer(function(input, output, session) {
       
       load(paste(working_dir, path, sep = "")) #formal class SBML object
       toycon = readRDS(paste(working_dir, "/data/",model_name,".rda", sep = "")) #formal class modelorg object
+      print(model_name)
       data = rsbml_graph(sbml_model)
       toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
@@ -2111,9 +2120,17 @@ shinyServer(function(input, output, session) {
       #   
       # }
       
-      if(model_name=-"toycon"){
+      output$gpr_ko = DT::renderDataTable({create_GPR_df(toycon)})
+      
+      
+      if(model_name=="toycon"){
         choices_list_ko = as.list(toycon@react_name)
         names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
+      }else{
+        unique_genes=unique(unlist(toycon@genes))
+        unique_genes = unique_genes[which(unique_genes != "")]
+        choices_list_ko = as.list(unique_genes)
+        names(unique_genes)=unique_genes
       }
       
       output$pick_ko_rxn = renderUI(
@@ -2128,6 +2145,8 @@ shinyServer(function(input, output, session) {
         bsButton(inputId = "apply_ko",
                  label = "Knockout",block = T)
       })
+      
+
     })
     
     
