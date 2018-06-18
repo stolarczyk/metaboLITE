@@ -3,8 +3,6 @@ import sys
 
 # Read the model in
 model = cobra.io.read_sbml_model(str(model_file_path))
-# Get the variable from reaction_ID a proper name
-gene_ID = reaction_ID
 # Find the reactions that are associated with the selected gene
 reactions_associated = list(model.genes.get_by_id(gene_ID).reactions)
 # For each of the reactions

@@ -2,16 +2,24 @@ import cobra
 import sys
 
 #Read the model in
-toycon = cobra.io.read_sbml_model(str(model_file_path))
-#Get original bounds
-bounds = toycon.reactions.get_by_id(reaction_ID).bounds
-#Calculate new bounds (influenced by the pseudo-expression)
-lb = bounds[0]*bound
-ub = bounds[1]*bound
-#Apply them
-toycon.reactions.get_by_id(reaction_ID).bounds = (lb, ub)
-#Perform FBA
-flux = toycon.optimize().f
-#Save the results
-fluxes = toycon.optimize().fluxes.round(2)
+model = cobra.io.read_sbml_model(str(model_file_path))
+# Find the reactions that are associated with the selected gene
+reactions_associated = list(model.genes.get_by_id(str(gene_ID)).reactions)
+for rxn in reactions_associated:
+    # Get the ID
+    ID_ori = rxn.id
+    # Get the original flux bounds
+    bounds_ori = rxn.bounds
+    # Get the gene-protein-reaction rule
+    gpr_ori = rxn.gene_reaction_rule
+    # All the reactions are associated with just one gene, so expression changes of each gene affect the fluxes
+    lb = bounds_ori[0] * bound
+    ub = bounds_ori[1] * bound
+    model.reactions.get_by_id(ID_ori).bounds = (lb, ub)
+
+# Perform FBA
+flux = model.optimize().f
+# Save the results
+fluxes = model.optimize().fluxes.round(2)
 fluxes = fluxes.to_dict()
+

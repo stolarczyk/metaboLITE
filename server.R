@@ -593,7 +593,6 @@ shinyServer(function(input, output, session) {
     # SHOW SIMULATE EXPR TAB --------------------------------------------------
     
     observeEvent(input$simulate_expr,
-                 once = T,
                  ignoreInit = T,
                  {
                    removeTab( inputId = "tabs",
@@ -744,14 +743,10 @@ shinyServer(function(input, output, session) {
                        fill_blank(x, 7))
                    }
                    names_dict = rbind(edges_names, names) #Names and IDs dictionary
-                   if(model_name=="toycon"){
-                     choices_list_expr = as.list(names(sbml_model@model@reactions)[which(grepl("^R_E", names(sbml_model@model@reactions)))])
-                   } else{
-                     choices_list_expr = as.list(names(sbml_model@model@reactions)[which(grepl("^R_EX", names(sbml_model@model@reactions)))])
-                     
-                   }
-                   names(choices_list_expr) = sapply(choices_list_expr, function(x)
-                     names_dict[1, which(names_dict[2, ] == x)[1]])                   #render the selection list for the UI
+                     choices_list_expr = as.list(toycon@allGenes)
+                     names(choices_list_expr) = toycon@allGenes
+                   # names(choices_list_expr) = sapply(choices_list_expr, function(x)
+                     # names_dict[1, which(names_dict[2, ] == x)[1]])                   #render the selection list for the UI
                    output$pick_expr_gene = renderUI(
                      selectInput(
                        inputId = "pick_expr_gene",
@@ -2981,16 +2976,12 @@ shinyServer(function(input, output, session) {
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       
       #get the gene/reaction expression of which will be adjusted
-      reaction_name = (input$pick_expr_gene)
-      if(model_name=="toycon"){
-        reaction_ID = toycon@react_id[which(toycon@react_name == reaction_name)]
-      }else{
-        reaction_ID=reaction_name
-      }
+      gene_name = (input$pick_expr_gene)
+      gene_ID = gene_name
       #get the bounds of the expression level and assign to the Python variable
       bound = input$expr
       python.assign("bound", bound)
-      python.assign("reaction_ID", reaction_ID)
+      python.assign("gene_ID", gene_ID)
       python.assign("model_file_path", model_file_path)
       if(model_name=="toycon"){
         path = "/scripts/simulate_expression_toycon.py"
@@ -3107,8 +3098,10 @@ shinyServer(function(input, output, session) {
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
       }
-      coords = read.csv(path)
-      visdata$nodes = cbind(visdata$nodes, coords)
+      if(model_name=="toycon"){
+        coords = read.csv(path)
+        visdata$nodes = cbind(visdata$nodes, coords)
+      }
       visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
       visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
       visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
