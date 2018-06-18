@@ -2093,6 +2093,7 @@ shinyServer(function(input, output, session) {
               )
             ),
             DT::dataTableOutput('fluxes_ko'),
+            DT::dataTableOutput('fluxes_ko1'),
             bsModal(id = "modal_ko", title = "Gene - reaction associations lookup table",trigger = "show_gpr_ko", size = "large",DT::dataTableOutput("gpr_ko"))
           ),
           mainPanel(visNetworkOutput("graph_ko", height = "700"), width = 8)
@@ -2359,9 +2360,12 @@ shinyServer(function(input, output, session) {
         }
       }
       #render UI table to display the fluxes in the model with missing reaction
-      
-      output$fluxes_ko = DT::renderDataTable({fluxes_output},selection="single",options = list(pageLength = 10),rownames=FALSE)
-
+      if(model_name=="toycon"){
+        output$fluxes_ko = DT::renderDataTable({fluxes_output},selection="single",options = list(pageLength = 10),rownames=FALSE)
+      }else{
+        output$fluxes_ko1 = DT::renderDataTable({fluxes_output},selection="single",options = list(pageLength = 10),rownames=FALSE)
+        
+      }
       #render text with objective value
       output$text_flux_ko = renderText({
         paste("<b>",
@@ -2546,14 +2550,25 @@ shinyServer(function(input, output, session) {
 
       })
       
-      observe( {
-        s = input$fluxes_ko_rows_selected
-        df=fluxes_output
-        rxn_name=df[s,1]
-        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
-        visNetworkProxy("graph_ko") %>%
-          visSelectNodes(id = rxn_id)
-      })
+      if(model_name=="toycon"){
+        observe( {
+          s = input$fluxes_ko_rows_selected
+          df=fluxes_output
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_ko") %>%
+            visSelectNodes(id = rxn_id)
+        })
+      }else{
+        observe( {
+          s = input$fluxes_ko1_rows_selected
+          df=fluxes_output
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_ko") %>%
+            visSelectNodes(id = rxn_id)
+        })
+      }
       
       output$reset_ko = renderUI(
         popify(
