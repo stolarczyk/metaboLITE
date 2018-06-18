@@ -391,7 +391,7 @@ check_flux <- function(model="toycon"){
 
 create_GPR_df <- function(model) {
   model@gpr[which(model@gpr == "")] = "No associated genes"
-  tab = data.frame(Reaction = model@react_name,GPR = model@gpr)
+  tab = data.frame(Genes = model@gpr,Reaction = model@react_name)
   return(tab)
 }
 
@@ -567,7 +567,8 @@ shinyServer(function(input, output, session) {
                            )
                          ),
                          br(),
-                         DT::dataTableOutput('fluxes_media')
+                         DT::dataTableOutput('fluxes_media'),
+                         DT::dataTableOutput('fluxes_media1')
                        ),
                        mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
                      )
@@ -751,7 +752,7 @@ shinyServer(function(input, output, session) {
     
     # APPLY MEDIA1 ------------------------------------------------------------
     observeEvent(input$media1, {
-
+      model_name = isolate(input$pick_model)
       #Define the type of media and assigne to the python variable
       media_type = "media1"
       python.assign("media_type", media_type)
@@ -864,10 +865,17 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
-      output$fluxes_media = DT::renderDataTable({
-        fluxes_output
-      },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
       
+      
+      if(model_name == "toycon"){ 
+        output$fluxes_media = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }else{
+        output$fluxes_media1 = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }
       #transform the data to visNetwork format
       visdata_ori <- toVisNetworkData(toycon_graph)
       #preserve the original model
@@ -1001,18 +1009,30 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
       
-      observe({
-        s = input$fluxes_media_rows_selected
-        df=fluxes_output
-        rxn_name=df[s,1]
-        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
-        visNetworkProxy("graph_media") %>%
-          visSelectNodes(id = rxn_id)
-      })
+      if(model_name=="toycon"){
+        observe({
+          df=fluxes_output
+          s=input$fluxes_media_rows_selected
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id)
+        },priority = 0,autoDestroy = T)
+      }else{
+        observe({
+          df1=fluxes_output
+          s1=input$fluxes_media1_rows_selected
+          rxn_name=df1[s1,1]
+          rxn_id1=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id1)
+        },priority = 0,autoDestroy = T)
+      }
     })
     # APPLY MEDIA2 ------------------------------------------------------------
     #For the inline comments check out the APPLY MEDIA1 section above
     observeEvent(input$media2, {
+      model_name = isolate(input$pick_model)
       media_type = "media2"
       python.assign("media_type", media_type)
       python.assign("model_file_path", model_file_path)
@@ -1101,10 +1121,15 @@ shinyServer(function(input, output, session) {
       }
       
       #render UI table to display the fluxes in the model with missing reaction
-      output$fluxes_media = DT::renderDataTable({
-        fluxes_output
-      },options = list(pageLength = 10),caption="Reaction fluxes after change to microaerophilic media",rownames=FALSE)
-      
+      if(model_name == "toycon"){ 
+        output$fluxes_media = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }else{
+        output$fluxes_media1 = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }
       for (i in seq(1, dim(names_dict)[2], by = 1)) {
         #Mapping nodes IDs to names for table displaying purposes
         if (any(which(fluxes_output[, 1] == names_dict[2, i])))
@@ -1250,20 +1275,32 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
       
-      observe({
-        s = input$fluxes_media_rows_selected
-        df=fluxes_output
-        rxn_name=df[s,1]
-        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
-        visNetworkProxy("graph_media") %>%
-          visSelectNodes(id = rxn_id)
-      })
+      if(model_name=="toycon"){
+        observe({
+          df=fluxes_output
+          s=input$fluxes_media_rows_selected
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id)
+        },priority = 0,autoDestroy = T)
+      }else{
+        observe({
+          df1=fluxes_output
+          s1=input$fluxes_media1_rows_selected
+          rxn_name=df1[s1,1]
+          rxn_id1=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id1)
+        },priority = 0,autoDestroy = T)
+      }
       
     })
     
     # APPLY MEDIA3 ------------------------------------------------------------
     #For the inline comments check out the APPLY MEDIA1 section above
     observeEvent(input$media3, {
+      model_name = isolate(input$pick_model)
       media_type = "media3"
       python.assign("media_type", media_type)
       python.assign("model_file_path", model_file_path)
@@ -1367,9 +1404,15 @@ shinyServer(function(input, output, session) {
       
       #render UI table to display the fluxes in the model with missing reaction
 
-      output$fluxes_media = DT::renderDataTable({
-        fluxes_output
-      },options = list(pageLength = 10),caption="Reaction fluxes after change to lactate rich media",rownames=FALSE)
+      if(model_name == "toycon"){ 
+        output$fluxes_media = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }else{
+        output$fluxes_media1 = DT::renderDataTable({
+          fluxes_output
+        },options = list(pageLength = 10,selection="single"),caption="Reaction fluxes after change to glucose free media",rownames=FALSE)
+      }
       
       toycon_graph = igraph.from.graphNEL(data)
       net = asNetwork(toycon_graph)
@@ -1507,14 +1550,25 @@ shinyServer(function(input, output, session) {
           visLayout(randomSeed = 1)
       })
       
-      observe({
-        s = input$fluxes_media_rows_selected
-        df=fluxes_output
-        rxn_name=df[s,1]
-        rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
-        visNetworkProxy("graph_media") %>%
-          visSelectNodes(id = rxn_id)
-      })
+      if(model_name=="toycon"){
+        observe({
+          df=fluxes_output
+          s=input$fluxes_media_rows_selected
+          rxn_name=df[s,1]
+          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id)
+        },priority = 0,autoDestroy = T)
+      }else{
+        observe({
+          df1=fluxes_output
+          s1=input$fluxes_media1_rows_selected
+          rxn_name=df1[s1,1]
+          rxn_id1=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+          visNetworkProxy("graph_media") %>%
+            visSelectNodes(id = rxn_id1)
+        },priority = 0,autoDestroy = T)
+      }
       
     })
   # APPLY CUSTOM MEDIA ------------------------------------------------------------
@@ -1624,7 +1678,7 @@ shinyServer(function(input, output, session) {
           inputId = "range",
           min = -1000,
           max = 1000,
-          label = "Select the exchange limts:",
+          label = "Select the exchange limits:",
           value = c(-1000, 1000),
           step = 10,
           round = TRUE,
@@ -1654,8 +1708,9 @@ shinyServer(function(input, output, session) {
         options = list(container = "body")
       )
     })
+  
     # APPLY MEDIA -------------------------------------------------------------
-    observeEvent(input$apply_media, {
+    observeEvent(input$apply_media, priority = 1,{
       model_name = isolate(input$pick_model)
       working_dir = getwd()
       path = paste("/data/",model_name,".xml",sep = "")
@@ -1786,11 +1841,16 @@ shinyServer(function(input, output, session) {
                 "</b>")
         })
         
-        output$fluxes_media = DT::renderDataTable({
-          fluxes_output
-        },options = list(pageLength = 10),selection="single",caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
-        
-        
+        if(model_name=="toycon"){
+          output$fluxes_media = DT::renderDataTable({
+            fluxes_output
+          },options = list(pageLength = 10),selection="single",caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
+        }else{
+          output$fluxes_media1 = DT::renderDataTable({
+            fluxes_output
+          },options = list(pageLength = 10),selection="single",caption="Reaction fluxes after change to custom growth media",rownames=FALSE)
+          
+        }
         toycon_graph = igraph.from.graphNEL(data)
         net = asNetwork(toycon_graph)
         #Set the type of the node depending on its name
@@ -1940,16 +2000,28 @@ shinyServer(function(input, output, session) {
               )
             ) %>%
             visLayout(randomSeed = 1)
+  
         })
+        if(model_name=="toycon"){
+          observe({
+            df=fluxes_output
+            s=input$fluxes_media_rows_selected
+            rxn_name=df[s,1]
+            rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+            visNetworkProxy("graph_media") %>%
+              visSelectNodes(id = rxn_id)
+          },priority = 0,autoDestroy = T)
+        }else{
+          observe({
+            df1=fluxes_output
+            s1=input$fluxes_media1_rows_selected
+            rxn_name=df1[s1,1]
+            rxn_id1=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
+            visNetworkProxy("graph_media") %>%
+              visSelectNodes(id = rxn_id1)
+          },priority = 0,autoDestroy = T)
+        }
         
-        observe({
-          s = input$fluxes_media_rows_selected
-          df=fluxes_output
-          rxn_name=df[s,1]
-          rxn_id=visdata$nodes$id[which(visdata$nodes$label==rxn_name)]
-          visNetworkProxy("graph_media") %>%
-            visSelectNodes(id = rxn_id)
-        })
       } else{
         #Ifthe lower bound is not lower thn te upper one - display a poper notification
         showNotification(
@@ -1965,7 +2037,7 @@ shinyServer(function(input, output, session) {
         )
       }
     })
-    
+  
     # SHOW KO REACTION TAB ----------------------------------------------------
     
     observeEvent(input$ko_rxn, ignoreInit = T, {
@@ -2474,7 +2546,7 @@ shinyServer(function(input, output, session) {
 
       })
       
-      observe({
+      observe( {
         s = input$fluxes_ko_rows_selected
         df=fluxes_output
         rxn_name=df[s,1]
