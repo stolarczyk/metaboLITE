@@ -8,4 +8,4 @@ toycon = cobra.io.read_sbml_model(model_file_path)
 #Resetting the model case
 solution = toycon.optimize()
 flux = solution.objective_value
-fluxes = solution.fluxes.to_dict()
+fluxes = solution.fluxes.round(2).to_dict()
