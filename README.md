@@ -53,7 +53,7 @@ The output of the command above should resemble the following:
 
 ``` 
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
-mstolarczyk/toyconapp   newest              45f03ae5cff4        30 minutes ago      2.35GB 
+mstolarczyk/toyconapp   latest              45f03ae5cff4        30 minutes ago      2.35GB 
 ``` 
 
 **5. Run the application** using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
