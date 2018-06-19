@@ -571,7 +571,7 @@ shinyServer(function(input, output, session) {
                              1,
                              offset = 1,
                              popify(actionLink("flux_popover_media", "", icon = icon("question-circle-o")),title = "Objective value",
-                                    content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                                    content = "It represents flux through the reaction that is a biological objective of the model.",
                                     placement = "right",
                                     trigger = "click",
                                     options = list(container = "body"))
@@ -643,7 +643,7 @@ shinyServer(function(input, output, session) {
                        sidebarPanel(
                          fluidRow(
                            class = "myRowText",
-                           column(9, HTML(
+                           column(7, HTML(
                              "<b>Change expression of a gene:</b>"
                            )),
                            column(
@@ -669,7 +669,7 @@ shinyServer(function(input, output, session) {
                              1,
                              offset = 1,
                              popify(actionLink("flux_popover_expr", "", icon = icon("question-circle-o")),title = "Objective value",
-                             content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
+                             content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
                              trigger = "click",
                              options = list(container = "body"))
@@ -2139,8 +2139,7 @@ shinyServer(function(input, output, session) {
                 1,
                 offset = 1,
                 popify(actionLink("flux_popover_ko", "", icon = icon("question-circle-o")),title = "Objective value",
-                       content = "Since iNRG represents the energy metabolism its biological objective is ATP production. Consequently, this reaction is maximized while solving the FBA problem. Therefore, it can be interpreted as arbitrary units of ATP.",
-                       placement = "right",
+                       content = "It represents flux through the reaction that is a biological objective of the model.",                       placement = "right",
                        trigger = "click",
                        options = list(container = "body"))
               )
@@ -2237,7 +2236,7 @@ shinyServer(function(input, output, session) {
       
       if(model_name=="toycon"){
         choices_list_ko = as.list(toycon@react_name)
-        names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
+        names(choices_list_ko) = toycon@allGenes
       }else{
         unique_genes=unique(unlist(toycon@genes))
         unique_genes = unique_genes[which(unique_genes != "")]
@@ -3161,7 +3160,8 @@ shinyServer(function(input, output, session) {
         dashes = c(F, T)
       )
       #Plotting graph
-      visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
+      output$graph_expr = renderVisNetwork({
+        visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
         visLegend(
           position = "right",
           stepX = 100,
@@ -3198,6 +3198,7 @@ shinyServer(function(input, output, session) {
           springConstant = 0,
           gravitationalConstant = 0
         ))
+      })
 
       if(model_name=="toycon"){
         observe({
