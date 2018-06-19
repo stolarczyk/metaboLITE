@@ -504,6 +504,17 @@ shinyServer(function(input, output, session) {
                               target = "change_media",
                               session = getDefaultReactiveDomain())
                    model_name = isolate(input$pick_model)
+                   
+                   output$fluxes_media = DT::renderDataTable({
+                     # intentionally left empty - clears the populated table
+                   })
+                   output$fluxes_media1 = DT::renderDataTable({
+                     # intentionally left empty - clears the populated table
+                   })
+                   output$text_flux_media = renderText({
+                     # intentionally left empty - clears the field
+                   })
+                   
                    #Prepare the list of reactions to constrain
                    insertTab(
                      inputId = "tabs",
@@ -2083,11 +2094,17 @@ shinyServer(function(input, output, session) {
                  session = getDefaultReactiveDomain())
       
       model_name = isolate(input$pick_model)
-      if(model_name != "toycon"){
-        output$fluxes_ko = DT::renderDataTable({
-          
-        })
-      }
+
+      output$fluxes_ko = DT::renderDataTable({
+        # intentionally left empty - clears the populated table
+      })
+      output$fluxes_ko1 = DT::renderDataTable({
+        # intentionally left empty - clears the populated table
+      })
+      output$text_flux_ko = renderText({
+        # intentionally left empty - clears the field
+      })
+      
       insertTab(
         inputId = "tabs",
         target = "help",
