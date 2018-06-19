@@ -35,7 +35,7 @@ shinyUI(
         ),
         hr(),
         fluidRow(class="myRowText",column(10,HTML("<u><b>Visualize the metabolic network: </b></u>"))),
-        tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px} .myRowList{height:100px;}")),
+        tags$head(tags$style(".myRowButton{height:50px;} .myRowText{height:50px} .myRowList{height:100px;} .myRowSmall{height:20px;}")),
         tags$head(tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))),
         radioButtons(
           inputId = "weighting",

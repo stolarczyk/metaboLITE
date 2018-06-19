@@ -599,7 +599,16 @@ shinyServer(function(input, output, session) {
                               target = "simulate_expression_changes",
                               session = getDefaultReactiveDomain())
                    model_name = isolate(input$pick_model)
-                   working_dir = getwd()
+                   output$fluxes_expr = DT::renderDataTable({
+                     # intentionally left empty - clears the populated table
+                   })
+                   output$fluxes_expr1 = DT::renderDataTable({
+                     # intentionally left empty - clears the populated table
+                   })
+                   output$text_flux_expr = renderText({
+                     # intentionally left empty - clears the field
+                   })
+                   
                    path = paste("/data/",model_name,".xml",sep = "")
                    if (.Platform$OS.type == "windows") {
                      path = gsub("\\\\", "/", path)
@@ -636,10 +645,8 @@ shinyServer(function(input, output, session) {
                                     options = list(container = "body"))
                            )
                          ),
-                         uiOutput("pick_expr_gene"),
-                         HTML("<b>Select the gene expression level:</b>"),
-                         br(),
-                         br(),
+                         fluidRow(class = "myRowButton", column(7,uiOutput("pick_expr_gene")),column(1,offset = 0,actionLink("show_gpr_expr", "", icon = icon("table")))),
+                         fluidRow(class = "myRowText", column(7,HTML("<b>Select the gene expression level:</b>"))),
                          uiOutput("expr"),
                          uiOutput("button_apply_expr"),
                           hr(),
@@ -659,6 +666,7 @@ shinyServer(function(input, output, session) {
                          ),
                          DT::dataTableOutput('fluxes_expr'),
                          DT::dataTableOutput('fluxes_expr1'),
+                         bsModal(id = "modal_expr", title = "Gene - reaction associations lookup table",trigger = "show_gpr_expr", size = "large",DT::dataTableOutput("gpr_expr")),
                          width = 4
                        ),
                        mainPanel(visNetworkOutput("graph_expr", height = "700"), width = 8)
@@ -760,6 +768,7 @@ shinyServer(function(input, output, session) {
                      bsButton(inputId = "apply_expr",
                               label = "Run FBA")
                    })
+                   output$gpr_expr = DT::renderDataTable({create_GPR_df(toycon)},rownames=FALSE)
                    #Render the selection slider for the expression level adjustment
                    output$expr = renderUI(
                      sliderInput(
@@ -966,7 +975,6 @@ shinyServer(function(input, output, session) {
         fill_blank(x, 7))
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      names_dict = rbind(edges_names, names) #Names and IDs dictionary
       
       #Read the saved coordinates for the graph dispalying purpose
       path = "data/textbooky_coords.csv"
@@ -2210,7 +2218,6 @@ shinyServer(function(input, output, session) {
       
       output$gpr_ko = DT::renderDataTable({create_GPR_df(toycon)},rownames=FALSE)
       
-      
       if(model_name=="toycon"){
         choices_list_ko = as.list(toycon@react_name)
         names(choices_list_ko) = paste(toycon@allGenes, toycon@react_name, sep = ": ")
@@ -3026,7 +3033,7 @@ shinyServer(function(input, output, session) {
       
       output$text_flux_expr = renderText({
         paste("<b>",
-              as.character(flux),
+              format(round(flux,digits = 2),nsmall=2),
               "</b>")
       })
       
@@ -3037,10 +3044,11 @@ shinyServer(function(input, output, session) {
       reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                           "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                      "vertex.names")]))])
-      toycon_graph = igraph.from.graphNEL(data)
       visdata <- toVisNetworkData(toycon_graph)
       #Adding duplicate metabolites/reactions
-      visdata = add_dups_new_layout(visdata)
+      if(model_name=="toycon"){
+        visdata = add_dups_new_layout(visdata)
+      }
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
       visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
@@ -3069,10 +3077,12 @@ shinyServer(function(input, output, session) {
       edges_names = names
       #Setting names
       for (i in seq(1, length(names))) {
-        if (nchar(names[i]) < 6) {
-          names[i] = substr(names[i], 1, 4)
-        } else{
-          names[i] = substr(names[i], 1, 6)
+        if(model_name=="toycon"){
+          if (nchar(names[i]) < 6) {
+            names[i] = substr(names[i], 1, 4)
+          } else{
+            names[i] = substr(names[i], 1, 6)
+          }
         }
         if (any(names(sbml_model@model@species) == as.character(names[i]))) {
           metabolite = sbml_model@model@species[[which(names(sbml_model@model@species) == as.character(names[i]))]]@name
@@ -3089,11 +3099,12 @@ shinyServer(function(input, output, session) {
         }
       }
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-      edges_names = sapply(edges_names, function(x)
-        fill_blank(x, 7))
+      if(model_name=="toycon"){
+        edges_names = sapply(edges_names, function(x)
+          fill_blank(x, 7))
+      }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
-      names_dict = rbind(edges_names, names) #Names and IDs dictionary
       path = "data/textbooky_coords.csv"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
@@ -3112,6 +3123,8 @@ shinyServer(function(input, output, session) {
       visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
       visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
       
+      shape_metabolites=ifelse(model_name=="toycon","circle","dot")
+      shape_reactions=ifelse(model_name=="toycon","box","square")
       lnodes <-
         data.frame(
           label = c(
@@ -3130,38 +3143,45 @@ shinyServer(function(input, output, session) {
         arrows = c("to", "to"),
         dashes = c(F, T)
       )
-      
-      output$graph_expr = renderVisNetwork({
-        #Plotting graph
-        visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
-          visLegend(
-            position = "right",
-            stepX = 100,
-            stepY = 75,
-            width = 0.2,
-            useGroups = F,
-            addNodes = lnodes,
-            zoom = T,
-            addEdges = ledges
-          ) %>%
-          visOptions(highlightNearest = TRUE) %>%
-          visEdges(color = "black", arrows = "to") %>%
-          visGroups(groupname = "Metabolite",
-                    color = color_metabolite,
-                    shape = "circle") %>%
-          visGroups(groupname = "Reaction",
-                    color = color_reaction,
-                    shape = "box") %>%
-          visGroups(groupname = "Metabolite mitochondria",
-                    color = color_metabolite_mitochondria,
-                    shape = "circle") %>%
-          visPhysics(barnesHut = list(
-            springLength = 200,
-            springConstant = 0,
-            gravitationalConstant = 0
-          )) %>%
-          visLayout(randomSeed = 1)
-      })
+      #Plotting graph
+      visNetwork(nodes = visdata$nodes, edges = visdata$edges) %>%
+        visLegend(
+          position = "right",
+          stepX = 100,
+          stepY = 75,
+          width = 0.2,
+          useGroups = F,
+          addNodes = lnodes,
+          zoom = T,
+          addEdges = ledges
+        ) %>%
+        visOptions(highlightNearest = T) %>%
+        visEdges(
+          color = "black",
+          arrows = "to",
+          smooth = list(
+            enabled = TRUE,
+            type = "vertical",
+            roundness = 0.1,
+            forceDirection = "vertical"
+          )
+        ) %>%
+        visGroups(groupname = "Metabolite",
+                  color = color_metabolite,
+                  shape = shape_metabolites) %>%
+        visGroups(groupname = "Reaction",
+                  color = color_reaction,
+                  shape = shape_reactions) %>%
+        visGroups(groupname = "Metabolite mitochondria",
+                  color = color_metabolite_mitochondria,
+                  shape = shape_metabolites) %>%
+        visLayout(randomSeed = 1) %>%
+        visPhysics(barnesHut = list(
+          springLength = 200,
+          springConstant = 0,
+          gravitationalConstant = 0
+        ))
+
       if(model_name=="toycon"){
         observe({
           df=fluxes_output
