@@ -1,5 +1,5 @@
 
-[![Docker Build Status](https://img.shields.io/docker/build/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/mstolarczyk/shinyapp/builds/bz9whpotuu6kmwwkhqwr7xz/)
+[![Docker Build Status](https://img.shields.io/docker/build/jrottenberg/ffmpeg.svg)](https://hub.docker.com/r/mstolarczyk/shinyapp/builds/bsjmzpsrkpskyctsfz67uf4/)
 
 
 # **Toycon visualization app documentation**
