@@ -240,7 +240,7 @@ show_basic_network <- function(model_name="toycon",weighting="none"){
       springLength = 200,
       springConstant = 0,
       gravitationalConstant = 0
-    ))
+    )) %>% visExport(type = "png","network")
     }
 
 get_coefficients_DF <- function(model_name="toycon"){
@@ -503,7 +503,7 @@ shinyServer(function(input, output, session) {
                    removeTab( inputId = "tabs",
                               target = "change_media",
                               session = getDefaultReactiveDomain())
-                   model_name = isolate(input$pick_model)
+                   model_name = (input$pick_model)
                    
                    output$fluxes_media = DT::renderDataTable({
                      # intentionally left empty - clears the populated table
@@ -554,7 +554,7 @@ shinyServer(function(input, output, session) {
                          uiOutput("line"),
                          div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own"))
                          ),
-                         conditionalPanel(condition = "input.pick_model == 'ecoli'",HTML("<u><b>To simulate growth conditions of your choice select any exchange reaction and change its flux limits.</b></u>"),br(),br()),
+                         conditionalPanel(condition = "input.pick_model == 'ecoli'",HTML("<font color='#808080'>To simulate growth conditions of your choice select any exchange reaction and change its flux limits below</font>"),br(),br()),
                          uiOutput("pick_rxn"),
                          fluidRow(
                            class = "myRowButton",
@@ -3220,6 +3220,19 @@ shinyServer(function(input, output, session) {
         },priority = 0,autoDestroy = T)
       }
     })
+  
+  observeEvent(input$pick_model,{
+    removeTab(inputId = "tabs",
+              target = "ko_reactions",
+              session = getDefaultReactiveDomain())
+    removeTab(inputId = "tabs",
+              target = "simulate_expression_changes",
+              session = getDefaultReactiveDomain())
+    removeTab(inputId = "tabs",
+              target = "change_media",
+              session = getDefaultReactiveDomain())
+  })
+  
   session$onSessionEnded(function() {
     #set dir
     setwd("data")
