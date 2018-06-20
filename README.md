@@ -32,7 +32,9 @@ The installation instructions can be found on the [Docker website](https://docs.
     * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
     * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
     * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
-* [Windows](https://docs.docker.com/docker-for-windows/install/)
+* Windows
+    * [Windows 10 Pro/Enterprise/Education](https://docs.docker.com/docker-for-windows/install/)
+    * [Older Windows](https://docs.docker.com/toolbox/toolbox_install_windows/)
 * [MacOS](https://docs.docker.com/docker-for-mac/install/)
 
 **2. Open the Docker application to ensure it downloaded correctly**
