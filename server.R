@@ -558,6 +558,7 @@ shinyServer(function(input, output, session) {
                      sidebarPanel(
                        conditionalPanel(
                          condition = "input.pick_model == 'toycon'",
+                         h3("Experiment setup"),br(),br(),
                          fluidRow(class = "myRowText",
                                   column(
                                     8, HTML("<u><b>Use predefined media: </b></u>")
@@ -624,6 +625,7 @@ shinyServer(function(input, output, session) {
                        ),
                        conditionalPanel(
                          condition = "input.pick_model == 'ecoli'",
+                         h3("Experiment setup"),br(),br(),
                          HTML(
                            "<font color='#808080'>To simulate growth conditions of your choice select any exchange reaction and change its flux limits below</font>"
                          ),
@@ -638,6 +640,7 @@ shinyServer(function(input, output, session) {
                        ),
                        uiOutput("button_apply_media"),
                        hr(),
+                       br(),h3("Results"),br(),br(),
                        fluidRow(
                          class = "myRowButton",
                          column(5, HTML("<b>Objective value: </b>")),
@@ -724,6 +727,7 @@ shinyServer(function(input, output, session) {
                      "Integrate transcriptomic data",
                      value = "simulate_expression_changes",
                      sidebarPanel(
+                       h3("Experiment setup"),br(),br(),
                        fluidRow(class = "myRowText",
                                 column(
                                   7, HTML("<b>Change expression of a gene:</b>")
@@ -751,6 +755,7 @@ shinyServer(function(input, output, session) {
                        uiOutput("expr"),
                        uiOutput("button_apply_expr"),
                        hr(),
+                       br(),h3("Results"),br(),br(),
                        fluidRow(
                          class = "myRowButton",
                          column(5, HTML("<b>Objective value: </b>")),
@@ -2229,6 +2234,7 @@ shinyServer(function(input, output, session) {
         "Simulate gene knockout",
         value = "ko_reactions",
         sidebarPanel(
+          h3("Experiment setup"),br(),br(),
           fluidRow(class = "myRowText",
                    column(
                      7, HTML("<b><u>Pick a gene to knock out:</u></b>")
@@ -2253,6 +2259,7 @@ shinyServer(function(input, output, session) {
           div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("button_apply_ko")),
           div(style = "vertical-align:top; width: 30%;height: 60px", uiOutput("reset_ko")),
           hr(),
+          br(),h3("Results"),br(),br(),
           fluidRow(
             class = "myRowButton",
             column(5, HTML("<b>Objective value: </b>")),

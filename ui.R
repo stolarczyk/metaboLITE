@@ -21,8 +21,9 @@ shinyUI(
       "Visualize network",
       value = "visualize",
       sidebarPanel(
+        h3("Experiment setup"),br(),br(),
         fluidRow(class = "myRowText", column(6, HTML(
-          "<u><b>Choose model:</b></u>"
+          "<u><b>Choose a model:</b></u>"
         )), column(
           2,
           offset = 0,
@@ -116,6 +117,7 @@ shinyUI(
         ),
         br(),
         hr(),
+        br(),h3("Results"),br(),br(),
         fluidRow(
           class = "myRowText",
           column(5, HTML("<b>Objective value: </b>")),
