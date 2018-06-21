@@ -54,7 +54,7 @@ shinyUI(
           offset = 0,
           actionLink("model_stats", "", icon = icon("info-circle"))
         )),
-        uiOutput("exclude"),
+        tags$div(id = 'placeholder'),
         fluidRow(class = "myRowText", column(
           6, HTML("<u><b>Run experiments:</b></u>")
         ), column(
@@ -96,7 +96,8 @@ shinyUI(
             ".myRowButton{height:50px;} .myRowText{height:50px} .myRowList{height:100px;} .myRowSmall{height:20px;}"
           ),
           tags$style(".fa-question-circle {color:#919499}"),
-          tags$style(".fa-info-circle {color:#919499}")
+          tags$style(".fa-info-circle {color:#919499}"),
+          tags$style(".fa-table {color:#919499}")
         ),
         tags$head(tags$style(
           HTML("hr {border-top: 2px solid #bcbcbc;}")

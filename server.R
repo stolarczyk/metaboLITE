@@ -1147,6 +1147,9 @@ shinyServer(function(input, output, session) {
     visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
+    shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
+    shape_reactions = ifelse(model_name == "toycon", "box", "square")
+    
     lnodes <-
       data.frame(
         label = c(
@@ -1420,6 +1423,10 @@ shinyServer(function(input, output, session) {
     visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+    
+    shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
+    shape_reactions = ifelse(model_name == "toycon", "box", "square")
+    
     lnodes <-
       data.frame(
         label = c(
@@ -1701,6 +1708,10 @@ shinyServer(function(input, output, session) {
     visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
     visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
+    
+    shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
+    shape_reactions = ifelse(model_name == "toycon", "box", "square")
+    
     lnodes <-
       data.frame(
         label = c(
@@ -3476,16 +3487,28 @@ shinyServer(function(input, output, session) {
               target = "change_media",
               session = getDefaultReactiveDomain())
     if (input$pick_model != "toycon") {
-      output$exclude = renderUI(
+      
+      insertUI(
+        selector = "#placeholder",
+        ui = tags$div(id = "exclude",         
         checkboxInput(
           inputId = "exclude",
           label = "Do not visualize the exchange and transport reactions",
           value = F,
           width = "55%"
-        )
+        ))
       )
+      
+      # output$exclude = renderUI(
+      #   checkboxInput(
+      #     inputId = "exclude",
+      #     label = "Do not visualize the exchange and transport reactions",
+      #     value = F,
+      #     width = "55%"
+      #   )
+      # )
     } else{
-      renderUI(output$exclude)
+      removeUI(selector = "#exclude")
     }
   })
   
