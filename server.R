@@ -2587,6 +2587,8 @@ shinyServer(function(input, output, session) {
       }, options = list(pageLength = 10), selection = "single", caption =
         "Reaction fluxes after change to custom growth media", rownames = FALSE)
     }
+    
+    toycon_graph = igraph.from.graphNEL(data)
     net = asNetwork(toycon_graph)
     #Set the type of the node depending on its name
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -3002,8 +3004,6 @@ shinyServer(function(input, output, session) {
     names_dict = rbind(edges_names, names) #Names and IDs dictionary
     visdata$nodes$label = as.vector(edges_names)
     output$graph_ko = renderVisNetwork({
-      #reading SBML files
-      
       path = "data/textbooky_coords.csv"
       if (.Platform$OS.type == "windows") {
         path = gsub("\\\\", "/", path)
@@ -3014,6 +3014,18 @@ shinyServer(function(input, output, session) {
         coords = coords[-which(rownames(coords) == reaction), ]
         visdata$nodes = cbind(visdata$nodes, coords)
         #Adjust the coorfinates of the network after the deaction KO
+        for (i in seq(1, dim(fluxes)[1])) {
+          hits = which(
+            grepl(as.character(fluxes[i, 1]), visdata$edges$from) |
+              grepl(as.character(fluxes[i, 1]), visdata$edges$to)
+          )
+          for (j in hits) {
+            visdata$edges$weight[j] = as.numeric(fluxes[i, 2])
+          }
+        }
+      }else{
+        #Adjust the coorfinates of the network after the deaction KO
+        fluxes[,1]=paste("R_",fluxes[,1],sep = "")
         for (i in seq(1, dim(fluxes)[1])) {
           hits = which(
             grepl(as.character(fluxes[i, 1]), visdata$edges$from) |
