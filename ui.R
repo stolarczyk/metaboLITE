@@ -28,7 +28,7 @@ shinyUI(
           2,
           offset = 0,
           popify(
-            actionLink("choose_model_popover", "", icon = icon("question-circle-o")),
+            actionLink("choose_model_popover", "", icon = icon("question-circle")),
             title = "Pick a model to run the experimets with",
             options = list(container = "body"),
             content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",
@@ -43,18 +43,22 @@ shinyUI(
           )
         )),
         br(),
-        selectInput(
+        fluidRow(column(6,selectInput(
           inputId = "pick_model",
           label = NULL,
           choices = list("iNRG" = "toycon", "Ecoli" = "ecoli"),
           selected = "toycon",
-          width = "55%"
-        ),
+          width = "100%"
+        )),column(
+          2,
+          offset = 0,
+          actionLink("model_stats", "", icon = icon("info-circle"))
+        )),
         uiOutput("exclude"),
         fluidRow(class = "myRowText", column(
           6, HTML("<u><b>Run experiments:</b></u>")
         ), column(
-          1, offset = 0, actionLink("tabs_popover", "", icon = icon("question-circle-o"))
+          1, offset = 0, actionLink("tabs_popover", "", icon = icon("question-circle"))
         )),
         fluidRow(class = "myRowButton",
                  column(
@@ -90,7 +94,9 @@ shinyUI(
         tags$head(
           tags$style(
             ".myRowButton{height:50px;} .myRowText{height:50px} .myRowList{height:100px;} .myRowSmall{height:20px;}"
-          )
+          ),
+          tags$style(".fa-question-circle {color:#919499}"),
+          tags$style(".fa-info-circle {color:#919499}")
         ),
         tags$head(tags$style(
           HTML("hr {border-top: 2px solid #bcbcbc;}")
@@ -126,7 +132,7 @@ shinyUI(
             1,
             offset = 1,
             popify(
-              actionLink("flux_popover", "", icon = icon("question-circle-o")),
+              actionLink("flux_popover", "", icon = icon("question-circle")),
               title = "Objective value",
               content = "It represents flux through the reaction that is a biological objective of the model.",
               placement = "right",
@@ -136,6 +142,13 @@ shinyUI(
           )
         ),
         DT::dataTableOutput('fluxes'),
+        bsModal(
+          id = "modal_model_stats",
+          title = "Model statistics",
+          trigger = "model_stats",
+          size = "small",
+          DT::dataTableOutput("model_stats")
+        ),
         width = 4
       ),
       mainPanel(visNetworkOutput("graph", height = "1200"), width = 8)

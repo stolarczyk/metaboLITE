@@ -258,11 +258,6 @@ show_basic_network <-
                 color = color_metabolite_external,
                 shape = shape_metabolites) %>%
       visLayout(randomSeed = 1) %>%
-      # visPhysics(barnesHut = list(
-      #   springLength = 200,
-      #   springConstant = 0,
-      #   gravitationalConstant = 0
-      # ))
       visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1))
   }
 
@@ -419,6 +414,21 @@ create_GPR_df <- function(model) {
   return(tab)
 }
 
+get_model_stats <- function(model_name) {
+  working_dir = getwd()
+  toycon = readRDS(paste(working_dir, "/data/", model_name, ".rda", sep = "")) #formal class modelorg object
+  if(model_name=="toycon"){
+    compartments = c("c","m")
+  }else{
+    compartments = toycon@mod_compart
+  }
+  num_compartments = length(compartments)
+  num_reactions = toycon@react_num
+  num_metabolites = toycon@met_num
+  num_genes = length(toycon@allGenes)
+  return(t(data.frame(Name=model_name,Reactions=num_reactions,Metabolites=num_metabolites,Genes = num_genes,Compartments=num_compartments)))
+}
+
 shinyServer(function(input, output, session) {
   working_dir = getwd()
   path = "/data/toycon.xml"
@@ -427,6 +437,11 @@ shinyServer(function(input, output, session) {
   }
   model_file_path = paste(working_dir, path, sep = "")
   
+  output$model_stats = DT::renderDataTable({
+    model1=get_model_stats("toycon")
+    model2=get_model_stats("ecoli")
+    data.frame(cbind(model1,model2))
+  },selection = "single", rownames = T,colnames = c("iNRG", "Ecoli"),options = list(dom = 't'))
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
@@ -438,6 +453,9 @@ shinyServer(function(input, output, session) {
     } else{
       exclude = F
     }
+    
+
+    
     
     if (weighting == "stoichiometry") {
       output$fluxes = DT::renderDataTable({
@@ -575,7 +593,7 @@ shinyServer(function(input, output, session) {
                                     1,
                                     offset = 0,
                                     popify(
-                                      actionLink("apply_media_popover", "", icon = icon("question-circle-o")),
+                                      actionLink("apply_media_popover", "", icon = icon("question-circle")),
                                       title = "Grow the organism in different media conditions",
                                       content = "Media changing can be easily simulated by manipulating the exchange reactions fluxes",
                                       placement = "right",
@@ -657,7 +675,7 @@ shinyServer(function(input, output, session) {
                            1,
                            offset = 1,
                            popify(
-                             actionLink("flux_popover_media", "", icon = icon("question-circle-o")),
+                             actionLink("flux_popover_media", "", icon = icon("question-circle")),
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
@@ -744,7 +762,7 @@ shinyServer(function(input, output, session) {
                                   1,
                                   offset = 0,
                                   popify(
-                                    actionLink("expression_popover", "", icon = icon("question-circle-o")),
+                                    actionLink("expression_popover", "", icon = icon("question-circle")),
                                     title = "Adjusts the gene expression level",
                                     content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively.",
                                     placement = "right",
@@ -772,7 +790,7 @@ shinyServer(function(input, output, session) {
                            1,
                            offset = 1,
                            popify(
-                             actionLink("flux_popover_expr", "", icon = icon("question-circle-o")),
+                             actionLink("flux_popover_expr", "", icon = icon("question-circle")),
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
@@ -1878,7 +1896,7 @@ shinyServer(function(input, output, session) {
         actionLink(
           inputId = "range_help",
           "",
-          icon = icon("question-circle-o")
+          icon = icon("question-circle")
         ),
         title = "Technical information",
         content = "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.",
@@ -2276,7 +2294,7 @@ shinyServer(function(input, output, session) {
                      1,
                      offset = 0,
                      popify(
-                       actionLink("pick_rxn_ko_popover", "", icon = icon("question-circle-o")),
+                       actionLink("pick_rxn_ko_popover", "", icon = icon("question-circle")),
                        title = "Knocksout the reaction picked above",
                        content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
                        placement = "right",
@@ -2301,7 +2319,7 @@ shinyServer(function(input, output, session) {
               1,
               offset = 1,
               popify(
-                actionLink("flux_popover_ko", "", icon = icon("question-circle-o")),
+                actionLink("flux_popover_ko", "", icon = icon("question-circle")),
                 title = "Objective value",
                 content = "It represents flux through the reaction that is a biological objective of the model.",
                 placement = "right",
