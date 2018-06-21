@@ -101,6 +101,7 @@ show_basic_network <-
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -109,6 +110,7 @@ show_basic_network <-
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -201,10 +203,11 @@ show_basic_network <-
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box"),
-        color = c("lightsalmon", "red", "lightblue"),
+        shape = c("dot", "dot","dot", "box"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -251,6 +254,9 @@ show_basic_network <-
       visGroups(groupname = "Metabolite mitochondria",
                 color = color_metabolite_mitochondria,
                 shape = shape_metabolites) %>%
+      visGroups(groupname = "Metabolite external",
+                color = color_metabolite_external,
+                shape = shape_metabolites) %>%
       visLayout(randomSeed = 1) %>%
       visPhysics(barnesHut = list(
         springLength = 200,
@@ -293,6 +299,7 @@ get_coefficients_DF <- function(model_name = "toycon") {
   color_reaction = "lightblue"
   color_metabolite = "lightsalmon"
   color_metabolite_mitochondria = "red"
+  color_metabolite_external = "indianred"
   names = rownames(visdata$nodes)
   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
   edges_names = names
@@ -662,7 +669,7 @@ shinyServer(function(input, output, session) {
                        DT::dataTableOutput('fluxes_media'),
                        DT::dataTableOutput('fluxes_media1')
                      ),
-                     mainPanel(visNetworkOutput("graph_media", height = "700"), width = 8)
+                     mainPanel(visNetworkOutput("graph_media", height = "1200"), width = 8)
                    )
                  )
                  updateNavbarPage(session = session,
@@ -784,7 +791,7 @@ shinyServer(function(input, output, session) {
                        ),
                        width = 4
                      ),
-                     mainPanel(visNetworkOutput("graph_expr", height = "700"), width = 8)
+                     mainPanel(visNetworkOutput("graph_expr", height = "1200"), width = 8)
                    )
                  )
                  updateNavbarPage(session = session,
@@ -824,6 +831,7 @@ shinyServer(function(input, output, session) {
                  visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
                  visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
                  visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+                 visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
                  visdata$edges$width = 2
                  visdata$edges$length = 150
                  net = asNetwork(toycon_graph)
@@ -832,6 +840,7 @@ shinyServer(function(input, output, session) {
                  color_reaction = "lightblue"
                  color_metabolite = "lightsalmon"
                  color_metabolite_mitochondria = "red"
+                 color_metabolite_external = "indianred"
                  names = rownames(visdata$nodes)
                  net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
                  edges_names = names
@@ -953,6 +962,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -961,6 +971,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1047,6 +1058,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     #Get the weights from the net object
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
@@ -1068,6 +1080,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     edges_names = names
     #Setting proper names names
@@ -1120,10 +1133,11 @@ shinyServer(function(input, output, session) {
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box"),
-        color = c("lightsalmon", "red", "lightblue"),
+        shape = c("dot", "dot","dot", "box"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -1158,6 +1172,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
                   shape = "circle") %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
+                  shape = shape_metabolites) %>%
         visPhysics(barnesHut = list(
           springLength = 200,
           springConstant = 0,
@@ -1229,6 +1246,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1237,6 +1255,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1318,6 +1337,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
@@ -1339,6 +1359,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1389,10 +1410,11 @@ shinyServer(function(input, output, session) {
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box"),
-        color = c("lightsalmon", "red", "lightblue"),
+        shape = c("dot", "dot","dot", "box"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -1426,6 +1448,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
                   shape = "circle") %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
+                  shape = shape_metabolites) %>%
         visPhysics(barnesHut = list(
           springLength = 200,
           springConstant = 0,
@@ -1500,6 +1525,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1508,6 +1534,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1593,6 +1620,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     
     
     weights_edges = c()
@@ -1616,6 +1644,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1666,10 +1695,11 @@ shinyServer(function(input, output, session) {
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box"),
-        color = c("lightsalmon", "red", "lightblue"),
+        shape = c("dot", "dot","dot", "box"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -1703,6 +1733,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
                   shape = "circle") %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
+                  shape = shape_metabolites) %>%
         visPhysics(barnesHut = list(
           springLength = 200,
           springConstant = 0,
@@ -1763,6 +1796,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1771,6 +1805,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1874,6 +1909,11 @@ shinyServer(function(input, output, session) {
   # APPLY MEDIA -------------------------------------------------------------
   observeEvent(input$apply_media, priority = 1, {
     model_name = isolate(input$pick_model)
+    if (model_name != "toycon") {
+      exclude = isolate(input$exclude)
+    } else{
+      exclude = F
+    }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -1938,6 +1978,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
       visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
       visdata$edges$width = 2
       visdata$edges$length = 150
       net = asNetwork(toycon_graph)
@@ -1946,6 +1987,7 @@ shinyServer(function(input, output, session) {
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
       color_metabolite_mitochondria = "red"
+      color_metabolite_external = "indianred"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -2037,6 +2079,7 @@ shinyServer(function(input, output, session) {
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
       visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+      visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
       
       #Get the weights from the net object
       weights_edges = c()
@@ -2060,6 +2103,7 @@ shinyServer(function(input, output, session) {
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
       color_metabolite_mitochondria = "red"
+      color_metabolite_external = "indianred"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -2119,11 +2163,12 @@ shinyServer(function(input, output, session) {
           label = c(
             "Cytosolic metabolite",
             "Mitochondrial metabolite",
+            "External metabolite",
             "Reaction"
           ),
-          shape = c("dot", "dot", "box")
+          shape = c("dot", "dot","dot", "box")
           ,
-          color = c("lightsalmon", "red", "lightblue"),
+          color = c("lightsalmon", "red","indianred", "lightblue"),
           title = "Informations"
         )
       
@@ -2158,6 +2203,9 @@ shinyServer(function(input, output, session) {
                     shape = shape_reactions) %>%
           visGroups(groupname = "Metabolite mitochondria",
                     color = color_metabolite_mitochondria,
+                    shape = shape_metabolites) %>%
+          visGroups(groupname = "Metabolite external",
+                    color = color_metabolite_external,
                     shape = shape_metabolites) %>%
           visPhysics(barnesHut = list(
             springLength = 200,
@@ -2287,7 +2335,7 @@ shinyServer(function(input, output, session) {
             DT::dataTableOutput("gpr_ko")
           )
         ),
-        mainPanel(visNetworkOutput("graph_ko", height = "700"), width = 8)
+        mainPanel(visNetworkOutput("graph_ko", height = "1200"), width = 8)
         
       )
     )
@@ -2328,6 +2376,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -2336,6 +2385,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2406,8 +2456,11 @@ shinyServer(function(input, output, session) {
   # KO RESET ----------------------------------------------------------------
   observeEvent(input$reset, {
     model_name = isolate(input$pick_model)
-    
-    model_name = isolate(input$pick_model)
+    if (model_name != "toycon") {
+      exclude = isolate(input$exclude)
+    } else{
+      exclude = F
+    }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -2456,6 +2509,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -2464,6 +2518,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2554,6 +2609,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     
     #Get the weights from the net object
     weights_edges = c()
@@ -2577,6 +2633,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2631,7 +2688,7 @@ shinyServer(function(input, output, session) {
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
     
-    if (model_name != "toycon") {
+    if (exclude == T & model_name != "toycon") {
       visdata = exclude_trans_exchange(visdata)
     }
     
@@ -2640,11 +2697,12 @@ shinyServer(function(input, output, session) {
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box")
+        shape = c("dot", "dot","dot", "box")
         ,
-        color = c("lightsalmon", "red", "lightblue"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -2677,6 +2735,9 @@ shinyServer(function(input, output, session) {
                   shape = shape_reactions) %>%
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
+                  shape = shape_metabolites) %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
                   shape = shape_metabolites) %>%
         visPhysics(barnesHut = list(
           springLength = 200,
@@ -2713,7 +2774,11 @@ shinyServer(function(input, output, session) {
   # APPLY KO ----------------------------------------------------------------
   observeEvent(input$apply_ko, {
     model_name = isolate(input$pick_model)
-    
+    if (model_name != "toycon") {
+      exclude = isolate(input$exclude)
+    } else{
+      exclude = F
+    }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -2738,6 +2803,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -2746,6 +2812,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2898,6 +2965,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
     
@@ -2905,6 +2973,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2984,7 +3053,7 @@ shinyServer(function(input, output, session) {
       shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
       shape_reactions = ifelse(model_name == "toycon", "box", "square")
       
-      if (model_name != "toycon") {
+      if (exclude == T & model_name != "toycon") {
         visdata = exclude_trans_exchange(visdata)
       }
       
@@ -2993,10 +3062,11 @@ shinyServer(function(input, output, session) {
           label = c(
             "Cytoslic metabolite",
             "Mitochondrial metabolite",
+            "External metabolite",
             "Reaction"
           ),
-          shape = c("dot", "dot", "box"),
-          color = c("lightsalmon", "red", "lightblue"),
+          shape = c("dot", "dot","dot", "box"),
+          color = c("lightsalmon", "red","indianred", "lightblue"),
           title = "Informations"
         )
       
@@ -3037,6 +3107,9 @@ shinyServer(function(input, output, session) {
                   shape = shape_reactions) %>%
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
+                  shape = shape_metabolites) %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
                   shape = shape_metabolites) %>%
         visLayout(randomSeed = 1) %>%
         visPhysics(barnesHut = list(
@@ -3086,6 +3159,11 @@ shinyServer(function(input, output, session) {
   # APPLY GENE EXPRESSION ---------------------------------------------------
   observeEvent(input$apply_expr, {
     model_name = isolate(input$pick_model)
+    if (model_name != "toycon") {
+      exclude = isolate(input$exclude)
+    } else{
+      exclude = F
+    }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -3111,6 +3189,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -3119,6 +3198,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3228,6 +3308,7 @@ shinyServer(function(input, output, session) {
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
     visdata$nodes$group[which(grepl("m\\d*$", visdata$nodes$id))] = "Metabolite mitochondria"
+    visdata$nodes$group[which(grepl(perl = T,pattern = "^M\\S*e$",x = visdata$nodes$id))] = "Metabolite external"
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
       weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
@@ -3248,6 +3329,7 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
+    color_metabolite_external = "indianred"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3302,7 +3384,7 @@ shinyServer(function(input, output, session) {
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
     
-    if (model_name != "toycon") {
+    if (exclude == T & model_name != "toycon") {
       visdata = exclude_trans_exchange(visdata)
     }
     
@@ -3311,10 +3393,11 @@ shinyServer(function(input, output, session) {
         label = c(
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
+          "External metabolite",
           "Reaction"
         ),
-        shape = c("dot", "dot", "box"),
-        color = c("lightsalmon", "red", "lightblue"),
+        shape = c("dot", "dot","dot", "box"),
+        color = c("lightsalmon", "red","indianred", "lightblue"),
         title = "Informations"
       )
     
@@ -3356,6 +3439,9 @@ shinyServer(function(input, output, session) {
                   shape = shape_reactions) %>%
         visGroups(groupname = "Metabolite mitochondria",
                   color = color_metabolite_mitochondria,
+                  shape = shape_metabolites) %>%
+        visGroups(groupname = "Metabolite external",
+                  color = color_metabolite_external,
                   shape = shape_metabolites) %>%
         visLayout(randomSeed = 1) %>%
         visPhysics(barnesHut = list(

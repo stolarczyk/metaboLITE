@@ -138,7 +138,7 @@ shinyUI(
         DT::dataTableOutput('fluxes'),
         width = 4
       ),
-      mainPanel(visNetworkOutput("graph", height = "700"), width = 8)
+      mainPanel(visNetworkOutput("graph", height = "1200"), width = 8)
     ),
     
     tabPanel("Help",
