@@ -258,11 +258,12 @@ show_basic_network <-
                 color = color_metabolite_external,
                 shape = shape_metabolites) %>%
       visLayout(randomSeed = 1) %>%
-      visPhysics(barnesHut = list(
-        springLength = 200,
-        springConstant = 0,
-        gravitationalConstant = 0
-      ))
+      # visPhysics(barnesHut = list(
+      #   springLength = 200,
+      #   springConstant = 0,
+      #   gravitationalConstant = 0
+      # ))
+      visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1))
   }
 
 get_coefficients_DF <- function(model_name = "toycon") {
@@ -1175,11 +1176,7 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        )) %>%
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1)) %>%
         visLayout(randomSeed = 1)
     })
     
@@ -1451,11 +1448,7 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        )) %>%
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1)) %>%
         visLayout(randomSeed = 1)
     })
     
@@ -1736,11 +1729,7 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        )) %>%
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1)) %>%
         visLayout(randomSeed = 1)
     })
     
@@ -2207,11 +2196,7 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Metabolite external",
                     color = color_metabolite_external,
                     shape = shape_metabolites) %>%
-          visPhysics(barnesHut = list(
-            springLength = 200,
-            springConstant = 0,
-            gravitationalConstant = 0
-          )) %>%
+          visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1)) %>%
           visLayout(randomSeed = 1)
         
       })
@@ -2739,11 +2724,7 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        )) %>%
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1)) %>%
         visLayout(randomSeed = 1)
       
     })
@@ -3112,11 +3093,7 @@ shinyServer(function(input, output, session) {
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
         visLayout(randomSeed = 1) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        ))
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1))
       
     })
     
@@ -3444,11 +3421,7 @@ shinyServer(function(input, output, session) {
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
         visLayout(randomSeed = 1) %>%
-        visPhysics(barnesHut = list(
-          springLength = 200,
-          springConstant = 0,
-          gravitationalConstant = 0
-        ))
+        visPhysics(solver = "hierarchicalRepulsion",hierarchicalRepulsion=list(nodeDistance=40,springLength=10,springConstant=0,damping=0.1))
     })
     
     if (model_name == "toycon") {
