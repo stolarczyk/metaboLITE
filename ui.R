@@ -1,5 +1,6 @@
 
 
+
 # This is the user-interface definition of a Shiny web application.
 
 library(shiny)
@@ -21,7 +22,9 @@ shinyUI(
       "Visualize network",
       value = "visualize",
       sidebarPanel(
-        h3("Experiment setup"),br(),br(),
+        h3("Experiment setup"),
+        br(),
+        br(),
         fluidRow(class = "myRowText", column(6, HTML(
           "<u><b>Choose a model:</b></u>"
         )), column(
@@ -43,13 +46,16 @@ shinyUI(
           )
         )),
         br(),
-        fluidRow(column(6,selectInput(
-          inputId = "pick_model",
-          label = NULL,
-          choices = list("iNRG" = "toycon", "Ecoli" = "ecoli"),
-          selected = "toycon",
-          width = "100%"
-        )),column(
+        fluidRow(column(
+          6,
+          selectInput(
+            inputId = "pick_model",
+            label = NULL,
+            choices = list("iNRG" = "toycon", "Ecoli" = "ecoli"),
+            selected = "toycon",
+            width = "100%"
+          )
+        ), column(
           2,
           offset = 0,
           actionLink("model_stats", "", icon = icon("info-circle"))
@@ -97,11 +103,9 @@ shinyUI(
           ),
           tags$style(".fa-question-circle {color:#919499}"),
           tags$style(".fa-info-circle {color:#919499}"),
-          tags$style(".fa-table {color:#919499}")
+          tags$style(".fa-table {color:#919499}"),
+          tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))
         ),
-        tags$head(tags$style(
-          HTML("hr {border-top: 2px solid #bcbcbc;}")
-        )),
         radioButtons(
           inputId = "weighting",
           label = HTML("Display weights:"),
@@ -124,7 +128,10 @@ shinyUI(
         ),
         br(),
         hr(),
-        br(),h3("Results"),br(),br(),
+        br(),
+        h3("Results"),
+        br(),
+        br(),
         fluidRow(
           class = "myRowText",
           column(5, HTML("<b>Objective value: </b>")),
