@@ -43,13 +43,10 @@ The installation instructions can be found on the [Docker website](https://docs.
 - On MacOS the green dot and "Docker is running" status should be displayed in the menu after clicking the Docker icon
 
 <br/>
-<img src="./docs_pics/icon_running.png" width="20%" class="center">
-<figcaption>Image 1 The dot shows the Docker software status.</figcaption>
+<img src="./docs_pics/icon_running.png" width="20%" align="left"> <img src="./docs_pics/icon_running.png" width="20%" align="middle">
+<figcaption>**Image 1.** LEFT: MacOS - the dot shows the Docker software status. RIGHT: Windows - ...</figcaption>
 <br/>
 
-- On Windows...
-
-PHOTO
 
 #### 3. Downloading and launching the application
 
@@ -63,7 +60,7 @@ On MacOS to get Kitematic just expand the Docker menu when it is running, select
 
 <br/>
 <img src="./docs_pics/icon_kitematic.png" width="25%" class="center">
-<figcaption>Image 2. Kitematic can be launched/installed from the Docker manu.</figcaption>
+<figcaption>**Image 2.** Kitematic can be launched/installed from the Docker manu.</figcaption>
 <br/>
 
 
@@ -71,14 +68,14 @@ _In case of both operating systems_: once the Kitematic is installed, you can se
 
 <br/>
 <img src="./docs_pics/search_image_kitematic.png" width="70%" class="center">
-<figcaption>Image 3. Any Docker image deposited to the Docker Hub can be downloaded with Kitematic.</figcaption>
+<figcaption>**Image 3.** Any Docker image deposited to the Docker Hub can be downloaded with Kitematic.</figcaption>
 <br/>
 
 Once the download process is completed, the container will run automatically and you can launch the application by clicking on the web preview section in Kitematic, as shown below:
 
 <br/>
 <img src="./docs_pics/launch_app_kitematic.png" width="70%" class="center">
-<figcaption>Image 4. The application can be launched by clicking on the web preview in the Kitematic software.</figcaption>
+<figcaption>**Image 4.** The application can be launched by clicking on the web preview in the Kitematic software.</figcaption>
 <br/>
 
 **3.2 Command line Docker image management (Linux only)**
