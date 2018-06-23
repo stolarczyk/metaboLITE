@@ -13,7 +13,7 @@ library(htmlwidgets)
 
 shinyUI(
   navbarPage(
-    "iNRG Model",
+    "iNRG Model", #chamnge the name
     theme = shinytheme("cosmo"),
     id = "tabs",
     fluid = T,
