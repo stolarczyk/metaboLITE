@@ -51,7 +51,7 @@ shinyUI(
           selectInput(
             inputId = "pick_model",
             label = NULL,
-            choices = list("iNRG" = "toycon", "Ecoli" = "ecoli"),
+            choices = list("iNRG" = "toycon", "Ecoli core metabolism" = "ecoli"),
             selected = "toycon",
             width = "100%"
           )
