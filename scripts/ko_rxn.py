@@ -6,6 +6,13 @@ model_file_path = str(model_file_path)
 toycon = cobra.io.read_sbml_model(model_file_path)
 
 reaction_ID = reaction_ID.upper()
+objective = str(objective)
+try:
+    toycon.reactions.get_by_id(objective)
+except KeyError:
+    print("The selected objective reaction is not in the model!")
+#Change objective
+toycon.objective = objective
 
 #Resetting the model case
 if reaction_ID == "RESET":

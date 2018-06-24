@@ -107,6 +107,7 @@ show_basic_network <-
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -308,7 +309,8 @@ get_coefficients_DF <- function(model_name = "toycon") {
   color_reaction = "lightblue"
   color_metabolite = "lightsalmon"
   color_metabolite_mitochondria = "red"
-  color_metabolite_external = "indianred"
+  color_metabolite_external = "indianred" 
+  color_reaction_objective = "lightgreen"
   names = rownames(visdata$nodes)
   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
   edges_names = names
@@ -466,15 +468,13 @@ shinyServer(function(input, output, session) {
     model1 = get_model_stats("toycon")
     model2 = get_model_stats("ecoli")
     data.frame(cbind(model1, model2))
-  }, selection = "single", rownames = T, colnames = c("iNRG", "Ecoli"), options = list(dom = 't'))
+  }, selection = "single", rownames = T, colnames = c("iNRG", "Ecoli core"), options = list(dom = 't'))
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
   observeEvent(input$update, {
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
-    objective = isolate(input$select_objective)
-    print(objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
     } else{
@@ -557,11 +557,7 @@ shinyServer(function(input, output, session) {
         visSelectNodes(id = rxn_id)
     })
     
-    output$text_flux = renderText({
-      paste("<b>", format(round(
-        check_flux(model = model_name), digits = 2
-      ), nsmall = 2), "</b>")
-    })
+
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
@@ -673,7 +669,7 @@ shinyServer(function(input, output, session) {
                            )
                          )),
                          uiOutput("line"),
-                         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own"))
+                         div(style = "vertical-align:top; width: 80%;height: 30px", htmlOutput("text_own"))
                        ),
                        conditionalPanel(
                          condition = "input.pick_model == 'ecoli'",
@@ -797,7 +793,7 @@ shinyServer(function(input, output, session) {
                                   popify(
                                     actionLink("expression_popover", "", icon = icon("question-circle")),
                                     title = "Adjusts the gene expression level",
-                                    content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively.",
+                                    content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximum overexpression\", respectively.",
                                     placement = "right",
                                     trigger = "click",
                                     options = list(container = "body")
@@ -891,6 +887,8 @@ shinyServer(function(input, output, session) {
                    pattern = "^M\\S*e$",
                    x = visdata$nodes$id
                  ))] = "Metabolite external"
+                 visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+                 
                  visdata$edges$width = 2
                  visdata$edges$length = 150
                  net = asNetwork(toycon_graph)
@@ -900,6 +898,7 @@ shinyServer(function(input, output, session) {
                  color_metabolite = "lightsalmon"
                  color_metabolite_mitochondria = "red"
                  color_metabolite_external = "indianred"
+                 color_reaction_objective = "lightgreen"
                  names = rownames(visdata$nodes)
                  net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
                  edges_names = names
@@ -961,7 +960,7 @@ shinyServer(function(input, output, session) {
                      label = div(
                        style = 'width:350px;',
                        div(style = 'float:left;font-weight:normal;', 'no expression'),
-                       div(style = 'float:right;font-weight:normal;', 'maximal overexpression')
+                       div(style = 'float:right;font-weight:normal;', 'maximum overexpression')
                      ),
                      value = 0.5,
                      step = 0.1,
@@ -975,9 +974,16 @@ shinyServer(function(input, output, session) {
   # APPLY MEDIA1 ------------------------------------------------------------
   observeEvent(input$media1, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
+    ori_objective=objective
+    objective=strsplit(objective,split = "_")[[1]][2]
     #Define the type of media and assigne to the python variable
     media_type = "media1"
+    
     python.assign("media_type", media_type)
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
     #change the path in case of widnowsOS
@@ -1024,6 +1030,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1033,6 +1041,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1124,6 +1133,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     #Get the weights from the net object
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
@@ -1146,6 +1157,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     edges_names = names
     #Setting proper names names
@@ -1202,10 +1214,11 @@ shinyServer(function(input, output, session) {
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
           "External metabolite",
-          "Reaction"
+          "Reaction",
+          "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue"),
+        shape = c("dot", "dot", "dot", "box","box"),
+        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
         title = "Informations"
       )
     
@@ -1243,6 +1256,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
           hierarchicalRepulsion = list(
@@ -1279,7 +1295,12 @@ shinyServer(function(input, output, session) {
   #For the inline comments check out the APPLY MEDIA1 section above
   observeEvent(input$media2, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
+    objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media2"
+    python.assign("objective", objective)
     python.assign("media_type", media_type)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
@@ -1323,6 +1344,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1332,6 +1355,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1418,6 +1442,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
@@ -1440,6 +1466,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1495,10 +1522,11 @@ shinyServer(function(input, output, session) {
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
           "External metabolite",
-          "Reaction"
+          "Reaction",
+          "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue"),
+        shape = c("dot", "dot", "dot", "box","box"),
+        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
         title = "Informations"
       )
     
@@ -1535,6 +1563,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
           hierarchicalRepulsion = list(
@@ -1573,7 +1604,12 @@ shinyServer(function(input, output, session) {
   #For the inline comments check out the APPLY MEDIA1 section above
   observeEvent(input$media3, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
+    objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media3"
+    python.assign("objective", objective)
     python.assign("media_type", media_type)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
@@ -1618,6 +1654,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1627,6 +1665,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1717,6 +1756,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     
     
     weights_edges = c()
@@ -1740,7 +1781,8 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
-    color_metabolite_external = "indianred"
+      color_metabolite_external = "indianred"
+      color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1795,10 +1837,11 @@ shinyServer(function(input, output, session) {
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
           "External metabolite",
-          "Reaction"
+          "Reaction",
+          "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue"),
+        shape = c("dot", "dot", "dot", "box","box"),
+        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
         title = "Informations"
       )
     
@@ -1835,6 +1878,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
           hierarchicalRepulsion = list(
@@ -1904,6 +1950,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -1913,6 +1961,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1968,7 +2017,7 @@ shinyServer(function(input, output, session) {
     
     #render th text to display in the UI
     output$text_own = renderText({
-      paste("<u><b>Adjust the exchange limits yourself: ",
+      paste("<u><b>Manipulate media component concentrations: ",
             "</b></u>")
     })
     
@@ -2008,7 +2057,7 @@ shinyServer(function(input, output, session) {
     
     #render the button applying the changes
     output$button_apply_media = renderUI(bsButton(inputId = "apply_media",
-                                                  label = "Constrain"))
+                                                  label = "Run"))
     
     
   })
@@ -2016,10 +2065,15 @@ shinyServer(function(input, output, session) {
   # APPLY MEDIA -------------------------------------------------------------
   observeEvent(input$apply_media, priority = 1, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2046,6 +2100,7 @@ shinyServer(function(input, output, session) {
       #use Python to change the bouds and perform the FBA
       python.assign("lb", lb)
       python.assign("ub", ub)
+      python.assign("objective", objective)
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)
       path = "/scripts/change_bounds.py"
@@ -2090,6 +2145,8 @@ shinyServer(function(input, output, session) {
         pattern = "^M\\S*e$",
         x = visdata$nodes$id
       ))] = "Metabolite external"
+      visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+      
       visdata$edges$width = 2
       visdata$edges$length = 150
       net = asNetwork(toycon_graph)
@@ -2098,7 +2155,8 @@ shinyServer(function(input, output, session) {
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
       color_metabolite_mitochondria = "red"
-      color_metabolite_external = "indianred"
+      color_metabolite_external = "indianred" 
+      color_reaction_objective = "lightgreen"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -2197,6 +2255,8 @@ shinyServer(function(input, output, session) {
         pattern = "^M\\S*e$",
         x = visdata$nodes$id
       ))] = "Metabolite external"
+      visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+      
       
       #Get the weights from the net object
       weights_edges = c()
@@ -2221,6 +2281,7 @@ shinyServer(function(input, output, session) {
       color_metabolite = "lightsalmon"
       color_metabolite_mitochondria = "red"
       color_metabolite_external = "indianred"
+      color_reaction_objective = "lightgreen"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
       edges_names = names
@@ -2283,11 +2344,12 @@ shinyServer(function(input, output, session) {
             "Cytosolic metabolite",
             "Mitochondrial metabolite",
             "External metabolite",
-            "Reaction"
+            "Reaction",
+            "Biological objective"
           ),
-          shape = c("dot", "dot", "dot", "box")
+          shape = c("dot", "dot", "dot", "box","box")
           ,
-          color = c("lightsalmon", "red", "indianred", "lightblue"),
+          color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
           title = "Informations"
         )
       
@@ -2326,6 +2388,9 @@ shinyServer(function(input, output, session) {
           visGroups(groupname = "Metabolite external",
                     color = color_metabolite_external,
                     shape = shape_metabolites) %>%
+          visGroups(groupname = "Biological objective",
+                    color = color_reaction_objective,
+                    shape = shape_reactions) %>%
           visPhysics(
             solver = "hierarchicalRepulsion",
             hierarchicalRepulsion = list(
@@ -2509,6 +2574,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -2518,6 +2585,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2588,10 +2656,16 @@ shinyServer(function(input, output, session) {
   # KO RESET ----------------------------------------------------------------
   observeEvent(input$reset, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
+    ori_objective = objective
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2605,6 +2679,7 @@ shinyServer(function(input, output, session) {
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     python.load(paste(working_dir, path, sep = ""))
     #Get the results
@@ -2637,6 +2712,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2733,6 +2809,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
     
     #Get the weights from the net object
     weights_edges = c()
@@ -2757,6 +2834,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -2821,11 +2899,12 @@ shinyServer(function(input, output, session) {
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
           "External metabolite",
-          "Reaction"
+          "Reaction",
+          "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box")
+        shape = c("dot", "dot", "dot", "box","box")
         ,
-        color = c("lightsalmon", "red", "indianred", "lightblue"),
+        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
         title = "Informations"
       )
     
@@ -2862,6 +2941,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
           hierarchicalRepulsion = list(
@@ -2901,10 +2983,15 @@ shinyServer(function(input, output, session) {
   # APPLY KO ----------------------------------------------------------------
   observeEvent(input$apply_ko, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2935,6 +3022,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -2944,6 +3033,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3008,8 +3098,8 @@ shinyServer(function(input, output, session) {
     } else{
       reaction_ID = reaction_name
     }
-    #reaction_ID = strsplit(reaction, split = "_")[[1]][2]
     python.assign("reaction_ID", reaction_ID)
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     if (model_name == "toycon") {
       path = "/scripts/ko_rxn.py"
@@ -3101,6 +3191,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
     
@@ -3109,6 +3201,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3208,10 +3301,11 @@ shinyServer(function(input, output, session) {
             "Cytoslic metabolite",
             "Mitochondrial metabolite",
             "External metabolite",
-            "Reaction"
+            "Reaction",
+            "Biological objective"
           ),
-          shape = c("dot", "dot", "dot", "box"),
-          color = c("lightsalmon", "red", "indianred", "lightblue"),
+          shape = c("dot", "dot", "dot", "box","box"),
+          color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
           title = "Informations"
         )
       
@@ -3256,6 +3350,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visLayout(randomSeed = 1) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
@@ -3308,10 +3405,15 @@ shinyServer(function(input, output, session) {
   # APPLY GENE EXPRESSION ---------------------------------------------------
   observeEvent(input$apply_expr, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
+    
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -3343,6 +3445,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     visdata$edges$width = 2
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -3352,6 +3456,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3392,6 +3497,7 @@ shinyServer(function(input, output, session) {
     gene_ID = gene_name
     #get the bounds of the expression level and assign to the Python variable
     bound = input$expr
+    python.assign("objective", objective)
     python.assign("bound", bound)
     python.assign("gene_ID", gene_ID)
     python.assign("model_file_path", model_file_path)
@@ -3466,6 +3572,8 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
+    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
       weights_edges = append(weights_edges, net$mel[[i]][[3]][[2]])
@@ -3487,6 +3595,7 @@ shinyServer(function(input, output, session) {
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
     color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -3551,10 +3660,11 @@ shinyServer(function(input, output, session) {
           "Cytosolic metabolite",
           "Mitochondrial metabolite",
           "External metabolite",
-          "Reaction"
+          "Reaction",
+          "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue"),
+        shape = c("dot", "dot", "dot", "box","box"),
+        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
         title = "Informations"
       )
     
@@ -3600,6 +3710,9 @@ shinyServer(function(input, output, session) {
         visGroups(groupname = "Metabolite external",
                   color = color_metabolite_external,
                   shape = shape_metabolites) %>%
+        visGroups(groupname = "Biological objective",
+                  color = color_reaction_objective,
+                  shape = shape_reactions) %>%
         visLayout(randomSeed = 1) %>%
         visPhysics(
           solver = "hierarchicalRepulsion",
@@ -3635,7 +3748,7 @@ shinyServer(function(input, output, session) {
   
   # MODEL CHANGE ------------------------------------------------------------
   
-  observeEvent(input$pick_model,ignoreInit = T, {
+  observeEvent(input$pick_model,ignoreInit = F, {
     removeTab(inputId = "tabs",
               target = "ko_reactions",
               session = getDefaultReactiveDomain())
