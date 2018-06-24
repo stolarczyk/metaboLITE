@@ -473,8 +473,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$update, {
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
-    objective = isolate(input$select_objective)
-    print(objective)
+
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
     } else{
@@ -971,9 +970,14 @@ shinyServer(function(input, output, session) {
   # APPLY MEDIA1 ------------------------------------------------------------
   observeEvent(input$media1, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    print(strsplit(objective,split = "_")[[1]][2])
+    objective=strsplit(objective,split = "_")[[1]][2]
     #Define the type of media and assigne to the python variable
     media_type = "media1"
+    
     python.assign("media_type", media_type)
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
     #change the path in case of widnowsOS
@@ -1275,7 +1279,11 @@ shinyServer(function(input, output, session) {
   #For the inline comments check out the APPLY MEDIA1 section above
   observeEvent(input$media2, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    print(strsplit(objective,split = "_")[[1]][2])
+    objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media2"
+    python.assign("objective", objective)
     python.assign("media_type", media_type)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
@@ -1569,7 +1577,11 @@ shinyServer(function(input, output, session) {
   #For the inline comments check out the APPLY MEDIA1 section above
   observeEvent(input$media3, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    print(strsplit(objective,split = "_")[[1]][2])
+    objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media3"
+    python.assign("objective", objective)
     python.assign("media_type", media_type)
     python.assign("model_file_path", model_file_path)
     path = "/scripts/run_media.py"
@@ -2012,10 +2024,13 @@ shinyServer(function(input, output, session) {
   # APPLY MEDIA -------------------------------------------------------------
   observeEvent(input$apply_media, priority = 1, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2042,6 +2057,7 @@ shinyServer(function(input, output, session) {
       #use Python to change the bouds and perform the FBA
       python.assign("lb", lb)
       python.assign("ub", ub)
+      python.assign("objective", objective)
       python.assign("reaction_ID", reaction_ID)
       python.assign("model_file_path", model_file_path)
       path = "/scripts/change_bounds.py"
@@ -2584,10 +2600,13 @@ shinyServer(function(input, output, session) {
   # KO RESET ----------------------------------------------------------------
   observeEvent(input$reset, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2601,6 +2620,7 @@ shinyServer(function(input, output, session) {
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     python.load(paste(working_dir, path, sep = ""))
     #Get the results

@@ -7,6 +7,14 @@ toycon = cobra.io.read_sbml_model(str(model_file_path))
 lower = int(lb)
 upper = int(ub)
 toycon.reactions.get_by_id(reaction_ID).bounds = (lower, upper)
+#Get objective and assert it is in the model
+objective = str(objective)
+try:
+    toycon.reactions.get_by_id(objective)
+except KeyError:
+    print("The selected objective reaction is not in the model!")
+#Change objective
+toycon.objective = objective
 #Run the FBA
 flux = toycon.optimize().f
 #Save the results
