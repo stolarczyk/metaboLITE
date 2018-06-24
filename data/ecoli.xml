@@ -7,7 +7,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
       <div style="height: 60px; background-color: #09F;">
         <div style="margin-left: auto; margin-right: auto; width: 970px;">
           <h1
-          style="           font-family: Lato, Helvetica Neue, Helvetica, Arial, sans-serif;           font-weight: 700;           color:#EFF8FF;           text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);            text-decoration-color: -moz-use-text-color;           margin-bottom: 40px;           margin-top: 0px;">
+          style="           font-family: Lato, Helvetica Neue, Helvetica, Arial, sans-serif;           font-weight: 700;           color:#EFF8FF;           text-shadow: 0px 0px 10px rgba 0, 0, 0, 0.5 ;            text-decoration-color: -moz-use-text-color;           margin-bottom: 40px;           margin-top: 0px;">
             <div class="dc:title">e_coli_core - Escherichia coli str. K-12 substr. MG1655</div>
           </h1>
         </div>
@@ -45,7 +45,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
       </div>
       <h2>References</h2>When using content from BiGG Models knowledge-base in your research works, please cite 
       <dl>
-        <dt>King ZA, Lu JS, Dräger A, Miller PC, Federowicz S, Lerman JA, Ebrahim A, Palsson BO, and&#160;Lewis NE. (2015). 
+        <dt>King ZA, Lu JS, Dräger A, Miller PC, Federowicz S, Lerman JA, Ebrahim A, Palsson BO, and&#160;Lewis NE.  2015 . 
         <dd>BiGG Models: A platform for integrating, standardizing, and sharing genome-scale models. 
         <i>Nucl Acids Res</i>. 
         <a href="https://dx.doi.org/10.1093/nar/gkv1049" target="_blank" title="Access the publication about BiGG Models knowledge-base">doi:10.1093/nar/gkv1049</a></dd></dt>
@@ -3055,7 +3055,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
       </groups:group>
     </groups:listOfGroups>
     <listOfUnitDefinitions>
-      <unitDefinition id="mmol_per_gDW_per_hr" metaid="mmol_per_gDW_per_hr" name="Millimoles per gram (dry weight) per hour">
+      <unitDefinition id="mmol_per_gDW_per_hr" metaid="mmol_per_gDW_per_hr" name="Millimoles per gram  dry weight  per hour">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#mmol_per_gDW_per_hr">
@@ -3109,7 +3109,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           </unit>
         </listOfUnits>
       </unitDefinition>
-      <unitDefinition id="substance" name="Millimoles per gram (dry weight)">
+      <unitDefinition id="substance" name="Millimoles per gram  dry weight ">
         <listOfUnits>
           <unit exponent="1" kind="mole" metaid="_38748d4c-242f-4503-a9e9-9afacc1183a4" multiplier="1" scale="-3">
             <annotation>
@@ -3489,7 +3489,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           </rdf:RDF>
         </annotation>
       </species>
-      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O10P2" hasOnlySubstanceUnits="false" id="M_adp_c" metaid="M_adp_c" name="ADP C10H12N5O10P2">
+      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O10P2" hasOnlySubstanceUnits="false" id="M_adp_c" metaid="M_adp_c" name="ADP">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#M_adp_c">
@@ -3570,7 +3570,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           </rdf:RDF>
         </annotation>
       </species>
-      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O7P" hasOnlySubstanceUnits="false" id="M_amp_c" metaid="M_amp_c" name="AMP C10H12N5O7P">
+      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O7P" hasOnlySubstanceUnits="false" id="M_amp_c" metaid="M_amp_c" name="AMP">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#M_amp_c">
@@ -3606,7 +3606,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           </rdf:RDF>
         </annotation>
       </species>
-      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O13P3" hasOnlySubstanceUnits="false" id="M_atp_c" metaid="M_atp_c" name="ATP C10H12N5O13P3">
+      <species boundaryCondition="false" compartment="c" constant="false" fbc:chemicalFormula="C10H12N5O13P3" hasOnlySubstanceUnits="false" id="M_atp_c" metaid="M_atp_c" name="ATP">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#M_atp_c">
@@ -5318,7 +5318,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
       <parameter constant="true" id="R_EX_glc__D_e_lower_bound" name="R EX glc-D e lower - bound" sboTerm="SBO:0000625" units="mmol_per_gDW_per_hr" value="-10" />
     </listOfParameters>
     <listOfReactions>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACALD" metaid="R_ACALD" name="Acetaldehyde dehydrogenase (acetylating)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACALD" metaid="R_ACALD" name="Acetaldehyde dehydrogenase  acetylating "
       reversible="true" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -5417,7 +5417,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_adp_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACONTa" metaid="R_ACONTa" name="Aconitase (half-reaction A, Citrate hydro-lyase)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACONTa" metaid="R_ACONTa" name="Aconitase  half-reaction A, Citrate hydro-lyase "
       reversible="true" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -5452,7 +5452,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h2o_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACONTb" metaid="R_ACONTb" name="Aconitase (half-reaction B, Isocitrate hydro-lyase)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ACONTb" metaid="R_ACONTb" name="Aconitase  half-reaction B, Isocitrate hydro-lyase "
       reversible="true" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -5614,7 +5614,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ALCD2x" metaid="R_ALCD2x" name="Alcohol dehydrogenase (ethanol)" reversible="true"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ALCD2x" metaid="R_ALCD2x" name="Alcohol dehydrogenase  ethanol " reversible="true"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -5752,7 +5752,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_pi_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ATPS4r" metaid="R_ATPS4r" name="ATP synthase (four protons for one ATP)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ATPS4r" metaid="R_ATPS4r" name="ATP synthase  four protons for one ATP "
       reversible="true" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -5805,7 +5805,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
         </listOfProducts>
       </reaction>
       <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_BIOMASS_Ecoli_core_w_GAM" metaid="R_BIOMASS_Ecoli_core_w_GAM"
-      name="Biomass Objective Function with GAM" reversible="false" sboTerm="SBO:0000629">
+      name="Biomass production" reversible="false" sboTerm="SBO:0000629">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#R_BIOMASS_Ecoli_core_w_GAM">
@@ -5907,7 +5907,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_CYTBD" metaid="R_CYTBD" name="Cytochrome oxidase bd (ubiquinol-8: 2 protons)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_CYTBD" metaid="R_CYTBD" name="Cytochrome oxidase bd  ubiquinol-8: 2 protons "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -6530,7 +6530,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_succ_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_FRUpts2" metaid="R_FRUpts2" name="Fructose transport via PEP:Pyr PTS (f6p generating)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_FRUpts2" metaid="R_FRUpts2" name="Fructose transport via PEP:Pyr PTS  f6p generating "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -6597,7 +6597,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_mal__L_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_FUMt2_2" metaid="R_FUMt2_2" name="Fumarate transport via proton symport (2 H)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_FUMt2_2" metaid="R_FUMt2_2" name="Fumarate transport via proton symport  2 H "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -6822,7 +6822,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_pi_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_GLUDy" metaid="R_GLUDy" name="Glutamate dehydrogenase (NADP)" reversible="true"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_GLUDy" metaid="R_GLUDy" name="Glutamate dehydrogenase  NADP " reversible="true"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -6904,7 +6904,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_nh4_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_GLUSy" metaid="R_GLUSy" name="Glutamate synthase (NADPH)" reversible="false"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_GLUSy" metaid="R_GLUSy" name="Glutamate synthase  NADPH " reversible="false"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -7036,7 +7036,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h2o_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ICDHyr" metaid="R_ICDHyr" name="Isocitrate dehydrogenase (NADP)" reversible="true"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_ICDHyr" metaid="R_ICDHyr" name="Isocitrate dehydrogenase  NADP " reversible="true"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -7173,7 +7173,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_mal__L_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_MALt2_2" metaid="R_MALt2_2" name="Malate transport via proton symport (2 H)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_MALt2_2" metaid="R_MALt2_2" name="Malate transport via proton symport  2 H "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -7238,7 +7238,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_oaa_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_ME1" metaid="R_ME1" name="Malic enzyme (NAD)" reversible="false" sboTerm="SBO:0000375">
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_ME1" metaid="R_ME1" name="Malic enzyme  NAD " reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#R_ME1">
@@ -7272,7 +7272,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_pyr_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_ME2" metaid="R_ME2" name="Malic enzyme (NADP)" reversible="false" sboTerm="SBO:0000375">
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_ME2" metaid="R_ME2" name="Malic enzyme  NADP " reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#R_ME2">
@@ -7305,7 +7305,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_pyr_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_NADH16" metaid="R_NADH16" name="NADH dehydrogenase (ubiquinone-8 &amp; 3 protons)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_NADH16" metaid="R_NADH16" name="NADH dehydrogenase  ubiquinone-8 &amp; 3 protons "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -7999,7 +7999,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_ru5p__D_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_SUCCt2_2" metaid="R_SUCCt2_2" name="Succinate transport via proton symport (2 H)"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_SUCCt2_2" metaid="R_SUCCt2_2" name="Succinate transport via proton symport  2 H "
       reversible="false" sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -8053,7 +8053,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_succ_e" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_SUCDi" metaid="R_SUCDi" name="Succinate dehydrogenase (irreversible)" reversible="false"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_SUCDi" metaid="R_SUCDi" name="Succinate dehydrogenase  irreversible " reversible="false"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -8088,7 +8088,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_q8h2_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_SUCOAS" metaid="R_SUCOAS" name="Succinyl-CoA synthetase (ADP-forming)" reversible="true"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_default_lb" fbc:upperFluxBound="cobra_default_ub" id="R_SUCOAS" metaid="R_SUCOAS" name="Succinyl-CoA synthetase  ADP-forming " reversible="true"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
@@ -8161,7 +8161,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
           <speciesReference constant="true" sboTerm="SBO:0000011" species="M_f6p_c" stoichiometry="1" />
         </listOfProducts>
       </reaction>
-      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_THD2" metaid="R_THD2" name="NAD(P) transhydrogenase" reversible="false"
+      <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_THD2" metaid="R_THD2" name="NAD P  transhydrogenase" reversible="false"
       sboTerm="SBO:0000375">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
