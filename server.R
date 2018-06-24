@@ -557,11 +557,7 @@ shinyServer(function(input, output, session) {
         visSelectNodes(id = rxn_id)
     })
     
-    output$text_flux = renderText({
-      paste("<b>", format(round(
-        check_flux(model = model_name), digits = 2
-      ), nsmall = 2), "</b>")
-    })
+
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
@@ -3635,7 +3631,7 @@ shinyServer(function(input, output, session) {
   
   # MODEL CHANGE ------------------------------------------------------------
   
-  observeEvent(input$pick_model,ignoreInit = T, {
+  observeEvent(input$pick_model,ignoreInit = F, {
     removeTab(inputId = "tabs",
               target = "ko_reactions",
               session = getDefaultReactiveDomain())

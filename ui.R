@@ -147,23 +147,7 @@ shinyUI(
         h3("Results"),
         br(),
         br(),
-        fluidRow(
-          class = "myRowText",
-          column(5, HTML("<b>Objective value: </b>")),
-          column(1, offset = 0, htmlOutput("text_flux")),
-          column(
-            1,
-            offset = 1,
-            popify(
-              actionLink("flux_popover", "", icon = icon("question-circle")),
-              title = "Objective value",
-              content = "It represents flux through the reaction that is a biological objective of the model.",
-              placement = "right",
-              trigger = "click",
-              options = list(container = "body")
-            )
-          )
-        ),
+
         DT::dataTableOutput('fluxes'),
         bsModal(
           id = "modal_model_stats",
