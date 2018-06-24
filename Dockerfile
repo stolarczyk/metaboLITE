@@ -74,6 +74,7 @@ RUN Rscript -e "install.packages('xtable')"
 RUN Rscript -e "install.packages('sna')"
 RUN Rscript -e "install.packages('rPython')"
 RUN Rscript -e "install.packages('DT')"
+RUN Rscript -e "install.packages('sybil')"
 
 # Installing python-libsbml and cobra
 RUN pip install python-libsbml cobra
