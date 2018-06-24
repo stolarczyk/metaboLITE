@@ -5,6 +5,15 @@ import sys
 model = cobra.io.read_sbml_model(str(model_file_path))
 # Find the reactions that are associated with the selected gene
 reactions_associated = list(model.genes.get_by_id(gene_ID).reactions)
+#Get objective and assert it is in the model
+objective = str(objective)
+try:
+    model.reactions.get_by_id(objective)
+except KeyError:
+    print("The selected objective reaction is not in the model!")
+#Change objective
+model.objective = objective
+
 # For each of the reactions
 for rxn in reactions_associated:
     # Get the ID

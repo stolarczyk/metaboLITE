@@ -2917,10 +2917,13 @@ shinyServer(function(input, output, session) {
   # APPLY KO ----------------------------------------------------------------
   observeEvent(input$apply_ko, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -3024,8 +3027,8 @@ shinyServer(function(input, output, session) {
     } else{
       reaction_ID = reaction_name
     }
-    #reaction_ID = strsplit(reaction, split = "_")[[1]][2]
     python.assign("reaction_ID", reaction_ID)
+    python.assign("objective", objective)
     python.assign("model_file_path", model_file_path)
     if (model_name == "toycon") {
       path = "/scripts/ko_rxn.py"
@@ -3324,10 +3327,13 @@ shinyServer(function(input, output, session) {
   # APPLY GENE EXPRESSION ---------------------------------------------------
   observeEvent(input$apply_expr, {
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
+      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
     } else{
       exclude = F
+      objective = strsplit(objective,split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -3408,6 +3414,7 @@ shinyServer(function(input, output, session) {
     gene_ID = gene_name
     #get the bounds of the expression level and assign to the Python variable
     bound = input$expr
+    python.assign("objective", objective)
     python.assign("bound", bound)
     python.assign("gene_ID", gene_ID)
     python.assign("model_file_path", model_file_path)
