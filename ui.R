@@ -133,7 +133,7 @@ shinyUI(
         popify(
           bsButton(
             inputId = "update",
-            label = "Apply",
+            label = "Update",
             value = T
           ),
           title = "Apply the settings",

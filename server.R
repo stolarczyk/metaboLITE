@@ -669,7 +669,7 @@ shinyServer(function(input, output, session) {
                            )
                          )),
                          uiOutput("line"),
-                         div(style = "vertical-align:top; width: 75%;height: 30px", htmlOutput("text_own"))
+                         div(style = "vertical-align:top; width: 80%;height: 30px", htmlOutput("text_own"))
                        ),
                        conditionalPanel(
                          condition = "input.pick_model == 'ecoli'",
@@ -793,7 +793,7 @@ shinyServer(function(input, output, session) {
                                   popify(
                                     actionLink("expression_popover", "", icon = icon("question-circle")),
                                     title = "Adjusts the gene expression level",
-                                    content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximal overexpression\", respectively.",
+                                    content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximum overexpression\", respectively.",
                                     placement = "right",
                                     trigger = "click",
                                     options = list(container = "body")
@@ -960,7 +960,7 @@ shinyServer(function(input, output, session) {
                      label = div(
                        style = 'width:350px;',
                        div(style = 'float:left;font-weight:normal;', 'no expression'),
-                       div(style = 'float:right;font-weight:normal;', 'maximal overexpression')
+                       div(style = 'float:right;font-weight:normal;', 'maximum overexpression')
                      ),
                      value = 0.5,
                      step = 0.1,
@@ -978,7 +978,6 @@ shinyServer(function(input, output, session) {
     ori_objective=objective
     
     ori_objective=objective
-    print(strsplit(objective,split = "_")[[1]][2])
     objective=strsplit(objective,split = "_")[[1]][2]
     #Define the type of media and assigne to the python variable
     media_type = "media1"
@@ -1299,7 +1298,6 @@ shinyServer(function(input, output, session) {
     objective = isolate(input$select_objective)
     ori_objective=objective
     
-    print(strsplit(objective,split = "_")[[1]][2])
     objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media2"
     python.assign("objective", objective)
@@ -1609,7 +1607,6 @@ shinyServer(function(input, output, session) {
     objective = isolate(input$select_objective)
     ori_objective=objective
     
-    print(strsplit(objective,split = "_")[[1]][2])
     objective=strsplit(objective,split = "_")[[1]][2]
     media_type = "media3"
     python.assign("objective", objective)
@@ -2020,7 +2017,7 @@ shinyServer(function(input, output, session) {
     
     #render th text to display in the UI
     output$text_own = renderText({
-      paste("<u><b>Adjust the exchange limits yourself: ",
+      paste("<u><b>Manipulate media component concentrations: ",
             "</b></u>")
     })
     
@@ -2060,7 +2057,7 @@ shinyServer(function(input, output, session) {
     
     #render the button applying the changes
     output$button_apply_media = renderUI(bsButton(inputId = "apply_media",
-                                                  label = "Constrain"))
+                                                  label = "Run"))
     
     
   })
