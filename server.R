@@ -473,6 +473,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$update, {
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
+    objective = isolate(input$select_objective)
+    print(objective)
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
     } else{
@@ -3633,7 +3635,7 @@ shinyServer(function(input, output, session) {
   
   # MODEL CHANGE ------------------------------------------------------------
   
-  observeEvent(input$pick_model, {
+  observeEvent(input$pick_model,ignoreInit = T, {
     removeTab(inputId = "tabs",
               target = "ko_reactions",
               session = getDefaultReactiveDomain())
@@ -3658,7 +3660,52 @@ shinyServer(function(input, output, session) {
     } else{
       removeUI(selector = "#exclude")
     }
+    model_name=input$pick_model
+    working_dir = getwd()
+    path = paste("/data/", model_name, "_var.RData", sep = "")
+    if (.Platform$OS.type == "windows") {
+      path = gsub("\\\\", "/", path)
+    }
+    load(paste(working_dir, path, sep = "")) #formal class SBML object
+    choices_list=list()
+    names_choices = c()
+    for(i in seq_len(length(sbml_model@model@reactions))){
+      choices_list[[i]] = sbml_model@model@reactions[[i]]@id
+      names_choices = append(names_choices,sbml_model@model@reactions[[i]]@name)
+    }
+    names(choices_list) = names_choices
+    if(model_name == "toycon"){
+      ori_objective = "R_R4"
+    }else{
+      ori_objective="R_BIOMASS_Ecoli_core_w_GAM"
+    }
+    
+    removeUI(selector = "#select_objective")
+    insertUI(selector = "#placeholder1",
+             ui = tags$div(
+               id = "select_objective",
+               selectInput(
+                 inputId = "select_objective",
+                 label = NULL,
+                 choices = choices_list,
+                 selected = ori_objective,
+                 width = "80%"
+               )
+             ))
   })
+  
+  observeEvent(input$select_objective,ignoreInit = T, {
+    removeTab(inputId = "tabs",
+              target = "ko_reactions",
+              session = getDefaultReactiveDomain())
+    removeTab(inputId = "tabs",
+              target = "simulate_expression_changes",
+              session = getDefaultReactiveDomain())
+    removeTab(inputId = "tabs",
+              target = "change_media",
+              session = getDefaultReactiveDomain())
+  })
+  
   
   observeEvent(input$exclude, {
     removeTab(inputId = "tabs",

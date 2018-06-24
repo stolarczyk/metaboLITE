@@ -5805,7 +5805,7 @@ xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" xmlns:groups="
         </listOfProducts>
       </reaction>
       <reaction fast="false" fbc:lowerFluxBound="cobra_0_bound" fbc:upperFluxBound="cobra_default_ub" id="R_BIOMASS_Ecoli_core_w_GAM" metaid="R_BIOMASS_Ecoli_core_w_GAM"
-      name="Biomass Objective Function with GAM" reversible="false" sboTerm="SBO:0000629">
+      name="Biomass production" reversible="false" sboTerm="SBO:0000629">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#R_BIOMASS_Ecoli_core_w_GAM">

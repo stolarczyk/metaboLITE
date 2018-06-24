@@ -25,8 +25,8 @@ shinyUI(
         h3("Experiment setup"),
         br(),
         br(),
-        fluidRow(class = "myRowText", column(6, HTML(
-          "<u><b>Choose a model:</b></u>"
+        fluidRow(class = "myRowText", column(7, HTML(
+          "<u><b>Choose the model:</b></u>"
         )), column(
           2,
           offset = 0,
@@ -47,7 +47,7 @@ shinyUI(
         )),
         br(),
         fluidRow(column(
-          6,
+          7,
           selectInput(
             inputId = "pick_model",
             label = NULL,
@@ -61,8 +61,23 @@ shinyUI(
           actionLink("model_stats", "", icon = icon("info-circle"))
         )),
         tags$div(id = 'placeholder'),
+        fluidRow(class = "myRowText", column(7, HTML(
+          "<u><b>Select the biological objective:</b></u>"
+        )), column(
+          2,
+          offset = 0,
+          popify(
+            actionLink("select_objective_popover", "", icon = icon("question-circle")),
+            options = list(container = "body"),
+            title = "Select the biological objective",
+            content = "The biological objective is the reaction that is relevant to the problem being studied. In the case of predicting growth, the objective is biomass production. Whereas in case of investigation energy metabolism - the ATP production.",
+            trigger = "click",
+            placement = "right"
+          )
+        )),
+        tags$div(id = 'placeholder1'),
         fluidRow(class = "myRowText", column(
-          6, HTML("<u><b>Run experiments:</b></u>")
+          7, HTML("<u><b>Run experiments:</b></u>")
         ), column(
           1, offset = 0, actionLink("tabs_popover", "", icon = icon("question-circle"))
         )),
@@ -161,7 +176,6 @@ shinyUI(
       ),
       mainPanel(visNetworkOutput("graph", height = "1200"), width = 8)
     ),
-    
     tabPanel("Help",
              value = "help",
              mainPanel(includeMarkdown(path = "help.md")))
