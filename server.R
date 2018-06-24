@@ -2183,7 +2183,9 @@ shinyServer(function(input, output, session) {
       visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
       
       #Adding duplicate metabolites/reactions
-      visdata = add_dups_new_layout(visdata)
+      if(model_name=="toycon"){
+        visdata = add_dups_new_layout(visdata)
+      }
       
       visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
       visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
@@ -2244,8 +2246,10 @@ shinyServer(function(input, output, session) {
         }
       }
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-      edges_names = sapply(edges_names, function(x)
-        fill_blank(x, 7))
+     if(model_name=="toycon"){
+        edges_names = sapply(edges_names, function(x)
+          fill_blank(x, 7))
+     }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
