@@ -43,7 +43,7 @@ The installation instructions can be found on the [Docker website](https://docs.
 - On MacOS the green dot and "Docker is running" status should be displayed in the menu after clicking the Docker icon
 
 <br/>
-<img src="./docs_pics/icon_running.png" width="20%" align="left"> <img src="./docs_pics/icon_running.png" width="20%" align="middle">
+<img src="./docs_pics/icon_running.png" width="20%" align="left"> 
 <figcaption>**Image 1.** LEFT: MacOS - the dot shows the Docker software status. RIGHT: Windows - ...</figcaption>
 <br/>
 
