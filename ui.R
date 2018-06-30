@@ -35,7 +35,7 @@ shinyUI(
             title = "Pick a model to run the experimets with",
             options = list(container = "body"),
             content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",
-            trigger = "click",
+            trigger = "focus",
             placement = "right"
           )
         )),
@@ -71,7 +71,7 @@ shinyUI(
             options = list(container = "body"),
             title = "Select the biological objective",
             content = "The biological objective is the reaction that is relevant to the problem being studied. In the case of predicting growth, the objective is biomass production. Whereas in case of investigation energy metabolism - the ATP production.",
-            trigger = "click",
+            trigger = "focus",
             placement = "right"
           )
         )),

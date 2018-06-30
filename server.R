@@ -622,7 +622,7 @@ shinyServer(function(input, output, session) {
                                       title = "Grow the organism in different media conditions",
                                       content = "Media changing can be easily simulated by manipulating the exchange reactions fluxes",
                                       placement = "right",
-                                      trigger = "click",
+                                      trigger = "focus",
                                       options = list(container = "body")
                                     )
                                   )),
@@ -709,7 +709,7 @@ shinyServer(function(input, output, session) {
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
-                             trigger = "click",
+                             trigger = "focus",
                              options = list(container = "body")
                            )
                          )
@@ -802,7 +802,7 @@ shinyServer(function(input, output, session) {
                                     title = "Adjusts the gene expression level",
                                     content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximum overexpression\", respectively.",
                                     placement = "right",
-                                    trigger = "click",
+                                    trigger = "focus",
                                     options = list(container = "body")
                                   )
                                 )),
@@ -833,7 +833,7 @@ shinyServer(function(input, output, session) {
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
-                             trigger = "click",
+                             trigger = "focus",
                              options = list(container = "body")
                            )
                          )
@@ -2059,7 +2059,7 @@ shinyServer(function(input, output, session) {
         title = "Technical information",
         content = "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.",
         placement = "right",
-        trigger = "click",
+        trigger = "focus",
         options = list(container = "body")
       )
     )
@@ -2496,7 +2496,7 @@ shinyServer(function(input, output, session) {
                        title = "Knocksout the reaction picked above",
                        content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
                        placement = "right",
-                       trigger = "click",
+                       trigger = "focus",
                        options = list(container = "body")
                      )
                    )),
@@ -2524,7 +2524,7 @@ shinyServer(function(input, output, session) {
                 title = "Objective value",
                 content = "It represents flux through the reaction that is a biological objective of the model.",
                 placement = "right",
-                trigger = "click",
+                trigger = "focus",
                 options = list(container = "body")
               )
             )
