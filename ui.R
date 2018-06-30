@@ -19,7 +19,7 @@ shinyUI(
     fluid = T,
     collapsible = T,
     tabPanel(
-      "Visualize network",
+      "Home",
       value = "visualize",
       sidebarPanel(
         h3("Experiment setup"),
