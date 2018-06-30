@@ -572,7 +572,7 @@ shinyServer(function(input, output, session) {
   
   # SHOW CHANGE MEDIA TAB ---------------------------------------------------
   observeEvent(input$change_media,
-               ignoreInit = T,
+               ignoreInit = F,
                {
                  removeTab(inputId = "tabs",
                            target = "change_media",
@@ -583,6 +583,9 @@ shinyServer(function(input, output, session) {
                  } else{
                    exclude = F
                  }
+                 
+                 objective = isolate(input$select_objective)
+                 ori_objective=objective
                  
                  output$fluxes_media = DT::renderDataTable({
                    # intentionally left empty - clears the populated table
@@ -749,6 +752,10 @@ shinyServer(function(input, output, session) {
                  } else{
                    exclude = F
                  }
+                 
+                 objective = isolate(input$select_objective)
+                 ori_objective=objective
+                 
                  output$fluxes_expr = DT::renderDataTable({
                    # intentionally left empty - clears the populated table
                  })
@@ -1920,6 +1927,8 @@ shinyServer(function(input, output, session) {
       
     })
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective=objective
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -2452,6 +2461,8 @@ shinyServer(function(input, output, session) {
     } else{
       exclude = F
     }
+    objective = isolate(input$select_objective)
+    ori_objective=objective
     
     output$fluxes_ko = DT::renderDataTable({
       # intentionally left empty - clears the populated table
