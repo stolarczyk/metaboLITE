@@ -83,7 +83,7 @@ shinyUI(
         )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "change_media",
                      block = T,
@@ -92,7 +92,7 @@ shinyUI(
                  )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "ko_rxn",
                      block = T,
@@ -101,11 +101,11 @@ shinyUI(
                  )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "simulate_expr",
                      block = T,
-                     label = "Integrate transcriptomic data"
+                     label = "Simulate gene expression changes"
                    )
                  )),
         hr(),
