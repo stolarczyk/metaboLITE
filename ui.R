@@ -61,6 +61,7 @@ shinyUI(
           actionLink("model_stats", "", icon = icon("info-circle"))
         )),
         tags$div(id = 'placeholder'),
+        br(),
         fluidRow(class = "myRowText", column(7, HTML(
           "<u><b>Select the biological objective:</b></u>"
         )), column(
@@ -76,6 +77,7 @@ shinyUI(
           )
         )),
         tags$div(id = 'placeholder1'),
+        br(),
         fluidRow(class = "myRowText", column(
           7, HTML("<u><b>Run experiments:</b></u>")
         ), column(
