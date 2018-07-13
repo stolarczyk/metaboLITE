@@ -174,7 +174,7 @@ show_basic_network <-
       visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     }
     
-    if (weighting == "stoichiometry") {
+    if (weighting == TRUE) {
       #Necessary transformations for the table displaying purposes
       ndata = names(data@edgeData)
       edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
@@ -499,7 +499,7 @@ shinyServer(function(input, output, session) {
       exclude = F
     }
     
-    if (weighting == "stoichiometry") {
+    if (weighting == TRUE) {
       output$fluxes = DT::renderDataTable({
         get_coefficients_DF(model_name = model_name)
       }, selection = "single", options = list(pageLength = 10), rownames = FALSE)

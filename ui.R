@@ -121,15 +121,22 @@ shinyUI(
           tags$style(".fa-table {color:#919499}"),
           tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))
         ),
-        radioButtons(
-          inputId = "weighting",
-          label = HTML("Display weights:"),
-          selected = "none",
-          choices = c("None" = "none",
-                      "Stoichiometry" = "stoichiometry"),
-          width = "50%"
-        ),
-        
+        fluidRow(column(
+          7,
+          checkboxInput(inputId="weighting",label = "Apply stoichiometry",value = FALSE,width = "100%")
+        ), column(
+          2,
+          offset = 0,
+          popify(
+            actionLink("stoichiometry_info", "", icon = icon("question-circle")),
+            title = "Stoichiometry definition",
+            options = list(container = "body"),
+            content = "Stoichiometry is the relationship between the quantities of metabolites taking part in a reaction.",
+            trigger = "focus",
+            placement = "right"
+          )
+          )),
+        br(),
         popify(
           bsButton(
             inputId = "update",
