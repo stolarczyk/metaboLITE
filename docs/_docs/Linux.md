@@ -3,7 +3,9 @@ title: Linux
 permalink: /docs/Linux/
 ---
 
-# Installation - Docker containerThe most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/shinyapp/)).
+# Installation - Docker container
+
+The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/shinyapp/)).
 
 ## 1. Install the Docker CE (community edition) software on your machine
 
