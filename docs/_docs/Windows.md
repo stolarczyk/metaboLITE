@@ -1,3 +1,8 @@
+---
+title: Windows
+permalink: /docs/Windows/
+---
+
 # **Toycon visualization app documentation**
 
 Michal Stolarczyk <mjs5kd@virginia.edu>

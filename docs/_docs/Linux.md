@@ -1,3 +1,8 @@
+---
+title: Linux
+permalink: /docs/Linux/
+---
+
 # **Toycon visualization app documentation**
 
 Michal Stolarczyk <mjs5kd@virginia.edu>

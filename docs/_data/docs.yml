@@ -1,11 +1,15 @@
-- title: Getting Started
+- title: Introduction
   docs:
   - home
-  - themes
-  - customization
 
-- title: Examples
+- title: test
   docs:
   - cheatsheet
   - font-awesome
   - bootstrap
+
+- title: Installation
+  docs:
+  - macOS
+  - Windows
+  - Linux

@@ -1,3 +1,8 @@
+---
+title: macOS
+permalink: /docs/macOS/
+---
+
 # **Toycon visualization app documentation**
 
 Michal Stolarczyk <mjs5kd@virginia.edu>
