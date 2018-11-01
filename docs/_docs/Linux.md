@@ -3,10 +3,9 @@ title: Linux
 permalink: /docs/Linux/
 ---
 
-# Installation - Docker container<a name="Installation"></a>
-The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/)).
+# Installation - Docker containerThe most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/shinyapp/)).
 
-#### 1. Install the Docker CE (community edition) software on your machine
+## 1. Install the Docker CE (community edition) software on your machine
 
 The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
 
@@ -14,15 +13,15 @@ The installation instructions can be found on the [Docker website](https://docs.
 * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
 * [Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
-#### 2. Open the Docker application to ensure it installed correctly
+## 2. Open the Docker application to ensure it installed correctly
 
 
-#### 3. Downloading and launching the application
+## 3. Downloading and launching the application
 
 Generally, running the commands presented in **3.2** will download and launch the application for every operating system. However, in case of MacOS and Windows, there is an option to use a graphical interface to avoid working in terminal, for details see the respective pages.
 
 
-**3.2 Command line Docker image management**
+### 3.2 Command line Docker image management**
 
 Depending on your Docker installation, the superuser privilages may be required, which can be acquired with `sudo`.
 
@@ -34,7 +33,7 @@ e.g copy and paste:
 
 ``` (sudo) docker pull mstolarczyk/shinyapp:latest ``` (this may take some time depending on your connection)
 
-**3.2.1. Check the image status**:
+#### 3.2.1. Check the image status:
 
 ``` (sudo) docker images```
 
@@ -45,7 +44,7 @@ REPOSITORY              TAG                 IMAGE ID            CREATED         
 mstolarczyk/toyconapp   latest              45f03ae5cff4        30 minutes ago      2.35GB 
 ``` 
 
-**3.2.2. Run the application** using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
+#### 3.2.2. Run the application using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
     
 ```docker run [OPTIONS] IMAGE [COMMAND] [ARG...] ```
 
@@ -55,7 +54,7 @@ e.g copy and paste
 
 The command above will allow you to connect to the application from your web browser.
 
-**3.2.3. Copy and paste this address into your web browser**
+#### 3.2.3. Copy and paste this address into your web browser
 
 ``` localhost:8080 ```
 
