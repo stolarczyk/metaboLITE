@@ -2,7 +2,8 @@
 title: Web Application
 email: mjd5kd@virginia.edu
 description: >
-This web based application that decouples learning to program and learning about genome-scale metabolic modeling
+  This web based application that decouples learning to program and learning about 
+  genome-scale metabolic modeling
 lang: en-US
 
 baseurl: "/shinyapp" # the subpath of your site, e.g. /blog/
