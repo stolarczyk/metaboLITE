@@ -29,7 +29,7 @@ On MacOS to get Kitematic just expand the Docker menu when it is running, select
 
 PIC
 
-_In case of both operating systems_: once the Kitematic is installed, you can search for any Docker image deposited to the Docker Hub. To download the shinyapp, just search the shinyapp phrase and "create" the container deposited by the user: mstolarczyk. 
+_In case of both operating systems_: once the Kitematic is installed, you can search for any Docker image deposited to the Docker Hub. To download the application, just search the `metabolite` phrase and "create" the container deposited by the user: `mstolarczyk`. 
 
 PIC
 

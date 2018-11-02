@@ -5,7 +5,7 @@ permalink: /docs/Linux/
 
 # Installation - Docker container
 
-The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/shinyapp/)).
+The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/metabolite/)).
 
 ## 1. Install the Docker CE (community edition) software on your machine
 
@@ -33,7 +33,7 @@ Open the command window (terminal) and download the docker image from the reposi
 
 e.g copy and paste:
 
-``` (sudo) docker pull mstolarczyk/shinyapp:latest ``` (this may take some time depending on your connection)
+``` (sudo) docker pull mstolarczyk/metabolite:latest ``` (this may take some time depending on your connection)
 
 #### 3.2.1. Check the image status:
 
@@ -43,7 +43,7 @@ The output of the command above should resemble the following:
 
 ``` 
 REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE 
-mstolarczyk/toyconapp   latest              45f03ae5cff4        30 minutes ago      2.35GB 
+mstolarczyk/metabolite   latest              45f03ae5cff4        30 minutes ago      2.35GB 
 ``` 
 
 #### 3.2.2. Run the application using the ``` IMAGE ID ``` with a following [command](https://docs.docker.com/engine/reference/commandline/run/):
