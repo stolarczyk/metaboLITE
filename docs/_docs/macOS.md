@@ -12,7 +12,7 @@ Docker for Mac requires Apple **Mac OS Yosemite 10.10.3 or above** (releases aft
 Download [*Docker for Mac*](https://docs.docker.com/docker-for-mac/install/). 
 The detailed installation instructions by Docker can be found on the [Docker website](https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac). See these in case you encounter any problems with the installation steps listed here!
 
-Direct link to the file: https://download.docker.com/mac/stable/Docker.dmg
+Direct link to the [file](https://download.docker.com/mac/stable/Docker.dmg)
 
 The `Docker.dmg` file will be downloaded to the directory you choose.
 

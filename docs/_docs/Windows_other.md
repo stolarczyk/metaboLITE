@@ -5,9 +5,9 @@ permalink: /docs/Windows_other/
 
 # Prerequisites
 
-Don't know which version of Windows you are running? This is how to check it: https://support.microsoft.com/en-us/help/13443/windows-which-operating-system
+Don't know which version of Windows you are running? This is [how to check it](https://support.microsoft.com/en-us/help/13443/windows-which-operating-system).
 
-Make sure you have the **virtualization** enabled in your system settings. This is how to do it: https://docs.docker.com/toolbox/toolbox_install_windows/#step-1-check-your-version. If the virtualization is not enabled, this [video](https://www.youtube.com/watch?v=zIm7f5Epd9U) will show you how to do it.
+Make sure you have the **virtualization** enabled in your system settings. This is [how to do it](https://docs.docker.com/toolbox/toolbox_install_windows/#step-1-check-your-version). If the virtualization is not enabled, this [video](https://www.youtube.com/watch?v=zIm7f5Epd9U) will show you how to do it.
 
 # Installation - Docker
 
@@ -16,7 +16,7 @@ Make sure you have the **virtualization** enabled in your system settings. This 
 Download the [Docker toolbox](https://docs.docker.com/toolbox/overview/#ready-to-get-started) for Windows 10 **other than** Pro/Enterprise/Education.
 The detailed installation instructions by Docker can be found on the [Docker website](https://docs.docker.com/toolbox/toolbox_install_windows/). See these in case you encounter any problems with the installation steps listed here!
 
-Direct link to the file: https://download.docker.com/win/stable/DockerToolbox.exe
+Direct link to the [file](https://download.docker.com/win/stable/DockerToolbox.exe)
 
 ## Install Docker on your machine
 
