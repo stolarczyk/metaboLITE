@@ -492,6 +492,12 @@ $jumbotron-heading-color:        inherit !default;
 $jumbotron-font-size:            ceil(($font-size-base * 1.5)) !default;
 $jumbotron-heading-font-size:    ceil(($font-size-base * 5.5)) !default;
 
+.jumbotron p {
+	color: #434547;
+	font-size: 20px;
+	color:#434547;
+}
+
 
 //== Form states and alerts
 //
