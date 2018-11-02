@@ -2,14 +2,10 @@
   docs:
   - home
 
-- title: test
-  docs:
-  - cheatsheet
-  - font-awesome
-  - bootstrap
 
-- title: Installation
+- title: Installation OS 
   docs:
   - macOS
   - Windows
+  - Windows_other
   - Linux
