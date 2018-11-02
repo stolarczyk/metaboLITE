@@ -3,37 +3,53 @@ title: Windows
 permalink: /docs/Windows/
 ---
 
+# Prerequisites
 
-# Installation - Docker container
+Don't know which version of Windows you are running? This is how to check it: https://support.microsoft.com/en-us/help/13443/windows-which-operating-system
 
-The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/)).
+Make sure you have the **virtualization** enabled in your system settings. This is how to do it: https://docs.docker.com/toolbox/toolbox_install_windows/#step-1-check-your-version.
 
-## 1. Install the Docker CE (community edition) software on your machine
+# Installation - Docker
 
-The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
+## Download the *Docker* installer on your machine
 
-* [Windows 10 Pro/Enterprise/Education](https://docs.docker.com/docker-for-windows/install/)
-* [Older Windows](https://docs.docker.com/toolbox/toolbox_install_windows/)
+Download the [Docker for Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows) for Windows 10 Pro/Enterprise/Education.
+The detailed installation instructions by Docker can be found on the [Docker website](https://docs.docker.com/docker-for-windows/install/#install-docker-for-windows-desktop-app). See these in case you encounter any problems with the installation steps listed here!
 
-## 2. Open the Docker application to ensure it installed correctly
+Direct link to the file: https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe
 
-## 3. Downloading and launching the application
+## Install Docker on your machine
 
-Generally, running the commands presented in **3.2** will download and launch the application for every operating system. However, in case of MacOS and Windows, there is an option to use a graphical interface to avoid working in terminal, for details see below.
+1. Double-click the installer installer to run it
+2. Follow the steps in the user friendly installation wizard
 
-### 3.1 Kitematic interface installation (Windows and MacOS only)
+as usually, you'll be asked about the software destination location
 
-There is a simple, yet powerful graphical user (GUI) interface available for Windows and MacOS - [Kitematic](https://kitematic.com/). Kitematic’s one click install gets Docker running on your computer and lets you control your app containers from a GUI.
-Kitematic is provided together with the Docker for Windows and should be ready to use on this stage of installation. 
-On MacOS to get Kitematic just expand the Docker menu when it is running, select Kitematic and you will be presented with the instructions on how to install it.
+3. Finalize the installation
 
-PIC
+## Check if the Dokcer was installed correctly
 
-_In case of both operating systems_: once the Kitematic is installed, you can search for any Docker image deposited to the Docker Hub. To download the application, just search the `metabolite` phrase and "create" the container deposited by the user: `mstolarczyk`. 
+TBA
 
-PIC
+## Run Kitematic
 
-Once the download process is completed, the container will run automatically and you can launch the application by clicking on the web preview section in Kitematic, as shown below:
+The *Kitematic* interface was installed with *Docker for Windows*
 
-PIC
+1. It can take couple minutes to setup for the first time
+
+![run Kitematic](docs_pics/runKitenaticWindows.PNG)
+
+2. Click *skip for now* in the right lower corner if you do not wish to create the account
+
+And you're all set! 
+
+## Find and run *metaboLITE*
+
+* click create in the box with the proper *metabolite* Docker image. It should be created by the user `mstolarczyk`
+
+![select metaboLITE](selectMetaboliteWindows.PNG)
+
+* the application will start and all you need to do is click on the web preview, this will launch it in your web browser
+
+![launch metaboLITE](launchMetaboliteWindows.PNG)
 

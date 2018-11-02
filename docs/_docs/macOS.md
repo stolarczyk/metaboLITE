@@ -3,10 +3,16 @@ title: macOS
 permalink: /docs/macOS/
 ---
 
-# Installation - Docker container<a name="Installation"></a>
-The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/toyconapp/)).
+# Prerequisites
 
-## 1. Install the Docker CE (community edition) software on your machine
+Docker for Mac requires Apple **Mac OS Yosemite 10.10.3 or above** (releases after April 8, 2015). Not sure which version of macOS you are running? This is [how to check it](docs_pics/checkMacVersion.png).
+
+## 1. Download the *Docker* installer to you machine 
+
+Download [*Docker for Mac*](https://docs.docker.com/docker-for-mac/install/). 
+The detailed installation instructions by Docker can be found on the [Docker website](https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac). See these in case you encounter any problems with the installation steps listed here!
+
+Direct link to the file: https://download.docker.com/mac/stable/Docker.dmg
 
 The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
 
