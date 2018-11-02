@@ -6,7 +6,7 @@ MAINTAINER Michal Stolarczyk (mjs5kd@virginia.edu)
 RUN apt-get -y update
 RUN apt-get -y install apt-transport-https
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-RUN echo "deb https://mirrors.ebi.ac.uk/CRAN/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
+RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
 
 # Update & upgrade sources
 RUN apt-get -y update
