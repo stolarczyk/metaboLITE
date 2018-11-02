@@ -1,0 +1,9 @@
+- title: Introduction
+  docs:
+  - home
+
+- title: Installation
+  docs:
+  - macOS
+  - Windows
+  - Linux
