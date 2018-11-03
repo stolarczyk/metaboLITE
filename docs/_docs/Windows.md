@@ -37,7 +37,7 @@ The *Kitematic* interface was installed with *Docker for Windows*
 
 1. It can take couple minutes to setup for the first time
 
-![run Kitematic](https://github.com/michalstolarczyk/metaboLITE/tree/master/docs/docs_pics/runKitenaticWindows.PNG)
+![run Kitematic](https://raw.githubusercontent.com/michalstolarczyk/metaboLITE/master/docs/docs_pics/runKitematicWindows.PNG)
 
 2. Click *skip for now* in the right lower corner if you do not wish to create the account
 
@@ -47,9 +47,9 @@ And you're all set!
 
 * click create in the box with the proper *metabolite* Docker image. It should be created by the user `mstolarczyk`
 
-![select metaboLITE](https://github.com/michalstolarczyk/metaboLITE/tree/master/docs/docs_pics/selectMetaboliteWindows.PNG)
+![select metaboLITE](https://raw.githubusercontent.com/michalstolarczyk/metaboLITE/master/docs/docs_pics/selectMetaboliteWindows.PNG)
 
 * the application will start and all you need to do is click on the web preview, this will launch it in your web browser
 
-![launch metaboLITE](https://github.com/michalstolarczyk/metaboLITE/tree/master/docs/docs_pics/launchMetaboliteWindows.PNG)
+![launch metaboLITE](https://raw.githubusercontent.com/michalstolarczyk/metaboLITE/master/docs/docs_pics/launchMetaboliteWindows.PNG)
 
