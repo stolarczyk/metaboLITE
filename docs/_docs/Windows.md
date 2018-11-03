@@ -1,5 +1,5 @@
 ---
-title: Windows
+title: Windows 10 Pro/Enterprise/Education
 permalink: /docs/Windows/
 ---
 
