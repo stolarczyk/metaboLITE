@@ -7,9 +7,9 @@ permalink: /docs/Linux/
 
 The most reliable, safest and **easiest installation approach** is to use the [Docker](https://www.docker.com/what-docker) platform due to its intrisic characterisitics. In order to do it user needs to run the pre-built Docker image (provided in the official Docker [repository](https://hub.docker.com/r/mstolarczyk/metabolite/)).
 
-## Install the Docker CE (community edition) software on your machine
+## Install the *Docker CE (community edition)* software on your machine
 
-The installation instructions can be found on the [Docker website](https://docs.docker.com/install/):
+The installation instructions can be found on the [*Docker* website](https://docs.docker.com/install/):
 
 * [Debian](https://docs.docker.com/install/linux/docker-ce/debian/)
 * [Fedora](https://docs.docker.com/install/linux/docker-ce/fedora/)
@@ -18,12 +18,11 @@ The installation instructions can be found on the [Docker website](https://docs.
 
 ## Downloading and launching the application
 
-Generally, running the commands presented in **3.2** will download and launch the application for every operating system. However, in case of MacOS and Windows, there is an option to use a graphical interface to avoid working in terminal, for details see the respective pages.
+Generally, running the commands presented in **3.2** will download and launch the application for every operating system.
 
+### Command line *Docker* image management
 
-### Command line Docker image management
-
-Depending on your Docker installation, the superuser privilages may be required, which can be acquired with `sudo`.
+Depending on your *Docker* installation, the superuser privilages may be required, which can be acquired with `sudo`.
 
 Open the command window (terminal) and download the docker image from the repository with a following [command](https://docs.docker.com/engine/reference/commandline/pull):
 
