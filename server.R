@@ -486,11 +486,13 @@ shinyServer(function(input, output, session) {
     model1 = get_model_stats("toycon")
     model2 = get_model_stats("ecoli")
     data.frame(cbind(model1, model2))
-  }, selection = "single", rownames = T, colnames = c("iNRG", "Ecoli core"), options = list(dom = 't'))
+  }, selection = "single", rownames = T, colnames = c("iSIM", "Ecoli core"), options = list(dom = 't'))
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
-  observeEvent(input$update, {
+  observeEvent({input$update
+    input$pick_model}, {
+    showNotification(id = "graphInteravtive",ui = "The graph is interactive, play with it!",duration = 10,closeButton = TRUE,type = "default")
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
     if (model_name != "toycon") {

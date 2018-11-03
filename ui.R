@@ -13,7 +13,7 @@ library(htmlwidgets)
 
 shinyUI(
   navbarPage(
-    "metaboLITE", #chamnge the name
+    title ="metaboLITE", 
     theme = shinytheme("cosmo"),
     id = "tabs",
     fluid = T,
@@ -51,7 +51,7 @@ shinyUI(
           selectInput(
             inputId = "pick_model",
             label = NULL,
-            choices = list("iNRG" = "toycon", "Ecoli core metabolism" = "ecoli"),
+            choices = list("iSIM" = "toycon", "Ecoli core metabolism" = "ecoli"),
             selected = "toycon",
             width = "100%"
           )
