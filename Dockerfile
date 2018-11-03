@@ -6,7 +6,7 @@ MAINTAINER Michal Stolarczyk (mjs5kd@virginia.edu)
 RUN apt-get -y update
 RUN apt-get -y install apt-transport-https
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-RUN echo "deb https://mirrors.ebi.ac.uk/CRAN/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
+RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu xenial/" >> /etc/apt/sources.list
 
 # Update & upgrade sources
 RUN apt-get -y update
@@ -51,9 +51,9 @@ RUN make
 RUN make install
 
 #Install rsbml package and its dependencies
-RUN wget -O /tmp/rsbml.tar.gz 'https://www.bioconductor.org/packages/release/bioc/src/contrib/rsbml_2.38.0.tar.gz'
-RUN wget -O /tmp/BiocGenerics.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/BiocGenerics_0.26.0.tar.gz'
-RUN wget -O /tmp/graph.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/graph_1.58.0.tar.gz'
+RUN wget -O /tmp/rsbml.tar.gz 'https://www.bioconductor.org/packages/release/bioc/src/contrib/rsbml_2.40.0.tar.gz'
+RUN wget -O /tmp/BiocGenerics.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/BiocGenerics_0.28.0.tar.gz'
+RUN wget -O /tmp/graph.tar.gz 'https://bioconductor.org/packages/release/bioc/src/contrib/graph_1.60.0.tar.gz'
 WORKDIR /tmp
 RUN R CMD INSTALL BiocGenerics.tar.gz
 RUN R CMD INSTALL graph.tar.gz

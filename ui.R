@@ -13,13 +13,13 @@ library(htmlwidgets)
 
 shinyUI(
   navbarPage(
-    "iNRG Model", #chamnge the name
+    "metaboLITE", #chamnge the name
     theme = shinytheme("cosmo"),
     id = "tabs",
     fluid = T,
     collapsible = T,
     tabPanel(
-      "Visualize network",
+      "Home",
       value = "visualize",
       sidebarPanel(
         h3("Experiment setup"),
@@ -35,7 +35,7 @@ shinyUI(
             title = "Pick a model to run the experimets with",
             options = list(container = "body"),
             content = "There are two models available. First is a toy example which transparently shows the concepts of genome-scale metabolic modeling. The second one is a real-life example, great for investigation of such models behavior.",
-            trigger = "click",
+            trigger = "focus",
             placement = "right"
           )
         )),
@@ -61,6 +61,7 @@ shinyUI(
           actionLink("model_stats", "", icon = icon("info-circle"))
         )),
         tags$div(id = 'placeholder'),
+        br(),
         fluidRow(class = "myRowText", column(7, HTML(
           "<u><b>Select the biological objective:</b></u>"
         )), column(
@@ -71,11 +72,12 @@ shinyUI(
             options = list(container = "body"),
             title = "Select the biological objective",
             content = "The biological objective is the reaction that is relevant to the problem being studied. In the case of predicting growth, the objective is biomass production. Whereas in case of investigation energy metabolism - the ATP production.",
-            trigger = "click",
+            trigger = "focus",
             placement = "right"
           )
         )),
         tags$div(id = 'placeholder1'),
+        br(),
         fluidRow(class = "myRowText", column(
           7, HTML("<u><b>Run experiments:</b></u>")
         ), column(
@@ -83,7 +85,7 @@ shinyUI(
         )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "change_media",
                      block = T,
@@ -92,7 +94,7 @@ shinyUI(
                  )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "ko_rxn",
                      block = T,
@@ -101,11 +103,11 @@ shinyUI(
                  )),
         fluidRow(class = "myRowButton",
                  column(
-                   7,
+                   8,
                    bsButton(
                      inputId = "simulate_expr",
                      block = T,
-                     label = "Integrate transcriptomic data"
+                     label = "Simulate gene expression changes"
                    )
                  )),
         hr(),
@@ -121,15 +123,22 @@ shinyUI(
           tags$style(".fa-table {color:#919499}"),
           tags$style(HTML("hr {border-top: 2px solid #bcbcbc;}"))
         ),
-        radioButtons(
-          inputId = "weighting",
-          label = HTML("Display weights:"),
-          selected = "none",
-          choices = c("None" = "none",
-                      "Stoichiometry" = "stoichiometry"),
-          width = "50%"
-        ),
-        
+        fluidRow(column(
+          7,
+          checkboxInput(inputId="weighting",label = "Apply stoichiometry",value = FALSE,width = "100%")
+        ), column(
+          2,
+          offset = 0,
+          popify(
+            actionLink("stoichiometry_info", "", icon = icon("question-circle")),
+            title = "Stoichiometry definition",
+            options = list(container = "body"),
+            content = "Stoichiometry is the relationship between the quantities of metabolites taking part in a reaction.",
+            trigger = "focus",
+            placement = "right"
+          )
+          )),
+        br(),
         popify(
           bsButton(
             inputId = "update",

@@ -2,6 +2,7 @@
 
 
 
+
 # LOADING LIBRARIES -------------------------------------------------------
 library(igraph)
 library(rsbml)
@@ -39,15 +40,15 @@ fill_blank <- function(x, len) {
 
 add_dups_new_layout <- function(visdata) {
   #This function is used to duplicate the metabolites in order to acheve the textbooky look of the network
-  visdata$nodes[23,] = c("M_m01c1", "M_m01c1")#ADP
-  visdata$nodes[28,] = c("M_m01c2", "M_m01c2")#ADP
-  visdata$nodes[22,] = c("M_m02c1", "M_m02c1")#ATP
-  visdata$nodes[21,] = c("M_m06c1", "M_m06c1")#H2O
-  visdata$nodes[20,] = c("M_m09c1", "M_m09c1")#Pi
-  visdata$nodes[24,] = c("R_E41", "R_E41")#H2O exchange
-  visdata$nodes[25,] = c("M_m05c1", "M_m05c1")#H
-  visdata$nodes[26,] = c("M_m05m1", "M_m05m1")#H
-  visdata$nodes[27,] = c("M_m09c2", "M_m09c2")#Pi
+  visdata$nodes[23, ] = c("M_m01c1", "M_m01c1")#ADP
+  visdata$nodes[28, ] = c("M_m01c2", "M_m01c2")#ADP
+  visdata$nodes[22, ] = c("M_m02c1", "M_m02c1")#ATP
+  visdata$nodes[21, ] = c("M_m06c1", "M_m06c1")#H2O
+  visdata$nodes[20, ] = c("M_m09c1", "M_m09c1")#Pi
+  visdata$nodes[24, ] = c("R_E41", "R_E41")#H2O exchange
+  visdata$nodes[25, ] = c("M_m05c1", "M_m05c1")#H
+  visdata$nodes[26, ] = c("M_m05m1", "M_m05m1")#H
+  visdata$nodes[27, ] = c("M_m09c2", "M_m09c2")#Pi
   
   rownames(visdata$nodes) = visdata$nodes[, 1]
   
@@ -55,7 +56,7 @@ add_dups_new_layout <- function(visdata) {
   visdata$edges[30, 2] = "M_m09c2"
   visdata$edges[8, 1] = "M_m06c1"
   visdata$edges[28, 2] = "M_m06c1"
-  visdata$edges[31,] = c("M_m06c1", "R_E41", "1")
+  visdata$edges[31, ] = c("M_m06c1", "R_E41", "1")
   visdata$edges[16, 1] = "M_m02c1"
   visdata$edges[26, 2] = "M_m02c1"
   visdata$edges[12, 1] = "M_m01c1"
@@ -66,9 +67,9 @@ add_dups_new_layout <- function(visdata) {
 }
 
 exclude_trans_exchange <- function(visdata) {
-  visdata$nodes = visdata$nodes[-grep("port", visdata$nodes[, 2]),]
+  visdata$nodes = visdata$nodes[-grep("port", visdata$nodes[, 2]), ]
   visdata$nodes = visdata$nodes[-which(grepl("_e$", rownames(visdata$nodes), perl = T) ==
-                                         TRUE),]
+                                         TRUE), ]
   return(visdata)
 }
 
@@ -162,18 +163,18 @@ show_basic_network <-
     if (model_name == "toycon") {
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     }
     
-    if (weighting == "stoichiometry") {
+    if (weighting == TRUE) {
       #Necessary transformations for the table displaying purposes
       ndata = names(data@edgeData)
       edges_df = dplyr::mutate(visdata_ori$edges, name = paste(from, to, sep = "|"))
@@ -309,7 +310,7 @@ get_coefficients_DF <- function(model_name = "toycon") {
   color_reaction = "lightblue"
   color_metabolite = "lightsalmon"
   color_metabolite_mitochondria = "red"
-  color_metabolite_external = "indianred" 
+  color_metabolite_external = "indianred"
   color_reaction_objective = "lightgreen"
   names = rownames(visdata$nodes)
   net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -356,15 +357,15 @@ get_coefficients_DF <- function(model_name = "toycon") {
   if (model_name == "toycon") {
     visdata$nodes = cbind(visdata$nodes, coords)
     #Emphasize main reactions
-    visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
   }
   #Necessary transformations for the table displaying purposes
   ndata = names(data@edgeData)
@@ -384,7 +385,7 @@ get_coefficients_DF <- function(model_name = "toycon") {
     new_df = merge(new_df, df1, all = T)
   }
   selection = union(which(grepl("^R_", new_df$reaction)), which(grepl("\\|R_E", new_df$reaction)))
-  new_df = new_df[selection, ]
+  new_df = new_df[selection,]
   new_df$metabolite = sapply(new_df$reaction, function(x)
     strsplit(x, split = "\\|")[[1]][2])
   new_df$reaction = sapply(new_df$reaction, function(x)
@@ -394,9 +395,9 @@ get_coefficients_DF <- function(model_name = "toycon") {
   new_df[rotate, "reaction"] = new_df[rotate, "metabolite"]
   new_df[rotate, "metabolite"] = cache
   new_df$reaction = sapply(new_df$reaction, function(x)
-    names_dict[1, which(names_dict[2, ] == x)[1]])
+    names_dict[1, which(names_dict[2,] == x)[1]])
   new_df$metabolite = sapply(new_df$metabolite, function(x)
-    names_dict[1, which(names_dict[2, ] == x)[1]])
+    names_dict[1, which(names_dict[2,] == x)[1]])
   new_df = new_df[, c(3, 4, 2)]
   names(new_df) = c("Reaction", "Metabolite", "Coefficient")
   return(new_df)
@@ -452,6 +453,23 @@ get_model_stats <- function(model_name) {
   ))
 }
 
+get_reactionIDs_names <- function(model_name) {
+  working_dir = getwd()
+  path = paste("/data/", model_name, "_var.RData", sep = "")
+  if (.Platform$OS.type == "windows") {
+    path = gsub("\\\\", "/", path)
+  }
+  load(paste(working_dir, path, sep = "")) #formal class SBML object
+  choices_list = list()
+  names_choices = c()
+  for (i in seq_len(length(sbml_model@model@reactions))) {
+    choices_list[[i]] = sbml_model@model@reactions[[i]]@id
+    names_choices = append(names_choices, sbml_model@model@reactions[[i]]@name)
+  }
+  names(choices_list) = names_choices
+  return(choices_list)
+}
+
 
 # SERVER ------------------------------------------------------------------
 
@@ -481,7 +499,7 @@ shinyServer(function(input, output, session) {
       exclude = F
     }
     
-    if (weighting == "stoichiometry") {
+    if (weighting == TRUE) {
       output$fluxes = DT::renderDataTable({
         get_coefficients_DF(model_name = model_name)
       }, selection = "single", options = list(pageLength = 10), rownames = FALSE)
@@ -557,7 +575,7 @@ shinyServer(function(input, output, session) {
         visSelectNodes(id = rxn_id)
     })
     
-
+    
     updateNavbarPage(session = session,
                      inputId = "tabs",
                      selected = "visualize")
@@ -572,7 +590,7 @@ shinyServer(function(input, output, session) {
   
   # SHOW CHANGE MEDIA TAB ---------------------------------------------------
   observeEvent(input$change_media,
-               ignoreInit = T,
+               ignoreInit = F,
                {
                  removeTab(inputId = "tabs",
                            target = "change_media",
@@ -584,6 +602,9 @@ shinyServer(function(input, output, session) {
                    exclude = F
                  }
                  
+                 objective = isolate(input$select_objective)
+                 ori_objective = objective
+                 
                  output$fluxes_media = DT::renderDataTable({
                    # intentionally left empty - clears the populated table
                  })
@@ -591,6 +612,9 @@ shinyServer(function(input, output, session) {
                    # intentionally left empty - clears the populated table
                  })
                  output$text_flux_media = renderText({
+                   # intentionally left empty - clears the field
+                 })
+                 output$text_objective_media = renderText({
                    # intentionally left empty - clears the field
                  })
                  
@@ -619,7 +643,7 @@ shinyServer(function(input, output, session) {
                                       title = "Grow the organism in different media conditions",
                                       content = "Media changing can be easily simulated by manipulating the exchange reactions fluxes",
                                       placement = "right",
-                                      trigger = "click",
+                                      trigger = "focus",
                                       options = list(container = "body")
                                     )
                                   )),
@@ -694,9 +718,14 @@ shinyServer(function(input, output, session) {
                        h3("Results"),
                        br(),
                        br(),
+                       fluidRow(class = "myRowButton", column(
+                         5, HTML("<u><b>Biological objective: </b></u>")
+                       ), column(
+                         5, offset = 0, htmlOutput("text_objective_media")
+                       )),
                        fluidRow(
                          class = "myRowButton",
-                         column(5, HTML("<b>Objective value: </b>")),
+                         column(5, HTML("<u><b>Objective value: </b></u>")),
                          column(1, offset = 0, htmlOutput("text_flux_media")),
                          column(
                            1,
@@ -706,7 +735,7 @@ shinyServer(function(input, output, session) {
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
-                             trigger = "click",
+                             trigger = "focus",
                              options = list(container = "body")
                            )
                          )
@@ -749,6 +778,10 @@ shinyServer(function(input, output, session) {
                  } else{
                    exclude = F
                  }
+                 
+                 objective = isolate(input$select_objective)
+                 ori_objective = objective
+                 
                  output$fluxes_expr = DT::renderDataTable({
                    # intentionally left empty - clears the populated table
                  })
@@ -758,7 +791,9 @@ shinyServer(function(input, output, session) {
                  output$text_flux_expr = renderText({
                    # intentionally left empty - clears the field
                  })
-                 
+                 output$text_objective_expr = renderText({
+                   # intentionally left empty - clears the field
+                 })
                  path = paste("/data/", model_name, ".xml", sep = "")
                  if (.Platform$OS.type == "windows") {
                    path = gsub("\\\\", "/", path)
@@ -777,7 +812,7 @@ shinyServer(function(input, output, session) {
                    inputId = "tabs",
                    target = "help",
                    tabPanel(
-                     "Integrate transcriptomic data",
+                     "Simulate gene expression changes",
                      value = "simulate_expression_changes",
                      sidebarPanel(
                        h3("Experiment setup"),
@@ -795,7 +830,7 @@ shinyServer(function(input, output, session) {
                                     title = "Adjusts the gene expression level",
                                     content = "The expression level scale (0 - 1) corresponds to \"no expression\" and \"maximum overexpression\", respectively.",
                                     placement = "right",
-                                    trigger = "click",
+                                    trigger = "focus",
                                     options = list(container = "body")
                                   )
                                 )),
@@ -814,9 +849,14 @@ shinyServer(function(input, output, session) {
                        h3("Results"),
                        br(),
                        br(),
+                       fluidRow(class = "myRowButton", column(
+                         5, HTML("<u><b>Biological objective: </b></u>")
+                       ), column(
+                         5, offset = 0, htmlOutput("text_objective_expr")
+                       )),
                        fluidRow(
                          class = "myRowButton",
-                         column(5, HTML("<b>Objective value: </b>")),
+                         column(5, HTML("<u><b>Objective value: </b></u>")),
                          column(1, htmlOutput("text_flux_expr")),
                          column(
                            1,
@@ -826,7 +866,7 @@ shinyServer(function(input, output, session) {
                              title = "Objective value",
                              content = "It represents flux through the reaction that is a biological objective of the model.",
                              placement = "right",
-                             trigger = "click",
+                             trigger = "focus",
                              options = list(container = "body")
                            )
                          )
@@ -887,7 +927,7 @@ shinyServer(function(input, output, session) {
                    pattern = "^M\\S*e$",
                    x = visdata$nodes$id
                  ))] = "Metabolite external"
-                 visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+                 visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
                  
                  visdata$edges$width = 2
                  visdata$edges$length = 150
@@ -975,10 +1015,10 @@ shinyServer(function(input, output, session) {
   observeEvent(input$media1, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
-    ori_objective=objective
-    objective=strsplit(objective,split = "_")[[1]][2]
+    ori_objective = objective
+    objective = strsplit(objective, split = "_")[[1]][2]
     #Define the type of media and assigne to the python variable
     media_type = "media1"
     
@@ -1030,7 +1070,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -1089,9 +1129,15 @@ shinyServer(function(input, output, session) {
       if (any(which(fluxes_output[, 1] == names_dict[2, i])))
         fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
     }
-    #render the tex for UI
+    
+    #render the text for UI
     output$text_flux_media = renderText({
-      paste("<b>", as.character(flux), "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_media = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     toycon_graph = igraph.from.graphNEL(data)
@@ -1102,7 +1148,6 @@ shinyServer(function(input, output, session) {
     reactions_names = as.vector(unlist(net$val)[which(names(unlist(net$val)) ==
                                                         "vertex.names")][which(grepl("^R", unlist(net$val)[which(names(unlist(net$val)) ==
                                                                                                                    "vertex.names")]))])
-    
     
     if (model_name == "toycon") {
       output$fluxes_media = DT::renderDataTable({
@@ -1133,7 +1178,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     #Get the weights from the net object
     weights_edges = c()
@@ -1195,15 +1240,15 @@ shinyServer(function(input, output, session) {
     coords = read.csv(path)
     visdata$nodes = cbind(visdata$nodes, coords)
     #Empasise the main reactions
-    visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -1217,8 +1262,14 @@ shinyServer(function(input, output, session) {
           "Reaction",
           "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box","box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+        shape = c("dot", "dot", "dot", "box", "box"),
+        color = c(
+          "lightsalmon",
+          "red",
+          "indianred",
+          "lightblue",
+          "lightgreen"
+        ),
         title = "Informations"
       )
     
@@ -1296,9 +1347,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$media2, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
-    objective=strsplit(objective,split = "_")[[1]][2]
+    objective = strsplit(objective, split = "_")[[1]][2]
     media_type = "media2"
     python.assign("objective", objective)
     python.assign("media_type", media_type)
@@ -1344,7 +1395,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -1413,10 +1464,14 @@ shinyServer(function(input, output, session) {
       if (any(which(fluxes_output[, 1] == names_dict[2, i])))
         fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
     }
+    #render the text for UI
     output$text_flux_media = renderText({
-      paste("<b>",
-            as.character(flux),
-            "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_media = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     toycon_graph = igraph.from.graphNEL(data)
@@ -1442,7 +1497,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     
     weights_edges = c()
@@ -1503,15 +1558,15 @@ shinyServer(function(input, output, session) {
     }
     coords = read.csv(path)
     visdata$nodes = cbind(visdata$nodes, coords)
-    visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -1525,8 +1580,14 @@ shinyServer(function(input, output, session) {
           "Reaction",
           "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box","box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+        shape = c("dot", "dot", "dot", "box", "box"),
+        color = c(
+          "lightsalmon",
+          "red",
+          "indianred",
+          "lightblue",
+          "lightgreen"
+        ),
         title = "Informations"
       )
     
@@ -1605,9 +1666,9 @@ shinyServer(function(input, output, session) {
   observeEvent(input$media3, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
-    objective=strsplit(objective,split = "_")[[1]][2]
+    objective = strsplit(objective, split = "_")[[1]][2]
     media_type = "media3"
     python.assign("objective", objective)
     python.assign("media_type", media_type)
@@ -1654,7 +1715,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -1713,10 +1774,14 @@ shinyServer(function(input, output, session) {
       if (any(which(fluxes_output[, 1] == names_dict[2, i])))
         fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
     }
+    #render the text for UI
     output$text_flux_media = renderText({
-      paste("<b>",
-            as.character(flux),
-            "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_media = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     #render UI table to display the fluxes in the model with missing reaction
@@ -1756,7 +1821,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     
     
@@ -1781,8 +1846,8 @@ shinyServer(function(input, output, session) {
     color_reaction = "lightblue"
     color_metabolite = "lightsalmon"
     color_metabolite_mitochondria = "red"
-      color_metabolite_external = "indianred"
-      color_reaction_objective = "lightgreen"
+    color_metabolite_external = "indianred"
+    color_reaction_objective = "lightgreen"
     names = rownames(visdata$nodes)
     net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
     edges_names = names
@@ -1819,15 +1884,15 @@ shinyServer(function(input, output, session) {
     }
     coords = read.csv(path)
     visdata$nodes = cbind(visdata$nodes, coords)
-    visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -1840,8 +1905,14 @@ shinyServer(function(input, output, session) {
           "Reaction",
           "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box","box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+        shape = c("dot", "dot", "dot", "box", "box"),
+        color = c(
+          "lightsalmon",
+          "red",
+          "indianred",
+          "lightblue",
+          "lightgreen"
+        ),
         title = "Informations"
       )
     
@@ -1920,6 +1991,8 @@ shinyServer(function(input, output, session) {
       
     })
     model_name = isolate(input$pick_model)
+    objective = isolate(input$select_objective)
+    ori_objective = objective
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
     if (.Platform$OS.type == "windows") {
@@ -1950,7 +2023,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -2003,7 +2076,7 @@ shinyServer(function(input, output, session) {
       
     }
     names(choices_list) = sapply(choices_list, function(x)
-      names_dict[1, which(names_dict[2, ] == x)[1]])
+      names_dict[1, which(names_dict[2,] == x)[1]])
     
     # render the UI select component
     output$pick_rxn = renderUI(
@@ -2050,7 +2123,7 @@ shinyServer(function(input, output, session) {
         title = "Technical information",
         content = "This slider adjusts the upper and lower bound, which define the maximum and minimum allowable fluxes of the reactions.",
         placement = "right",
-        trigger = "click",
+        trigger = "focus",
         options = list(container = "body")
       )
     )
@@ -2066,14 +2139,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$apply_media, priority = 1, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
-      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
+      objective = paste(strsplit(objective, split = "_")[[1]][-1], collapse = "_")
     } else{
       exclude = F
-      objective = strsplit(objective,split = "_")[[1]][2]
+      objective = strsplit(objective, split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2145,7 +2218,7 @@ shinyServer(function(input, output, session) {
         pattern = "^M\\S*e$",
         x = visdata$nodes$id
       ))] = "Metabolite external"
-      visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+      visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
       
       visdata$edges$width = 2
       visdata$edges$length = 150
@@ -2155,7 +2228,7 @@ shinyServer(function(input, output, session) {
       color_reaction = "lightblue"
       color_metabolite = "lightsalmon"
       color_metabolite_mitochondria = "red"
-      color_metabolite_external = "indianred" 
+      color_metabolite_external = "indianred"
       color_reaction_objective = "lightgreen"
       names = rownames(visdata$nodes)
       net %v% "type" = ifelse(grepl("R", names), "Reaction", "Metabolite")
@@ -2208,10 +2281,14 @@ shinyServer(function(input, output, session) {
           fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
       }
       #Render UI text
+      #render the text for UI
       output$text_flux_media = renderText({
-        paste("<b>",
-              format(round(flux, digits = 2), nsmall = 2),
-              "</b>")
+        paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+      })
+      names_mapper = get_reactionIDs_names(model_name = model_name)
+      objective_name = names(which(names_mapper == ori_objective))
+      output$text_objective_media = renderText({
+        paste("<b>", as.character(objective_name), "</b>")
       })
       
       if (model_name == "toycon") {
@@ -2243,7 +2320,7 @@ shinyServer(function(input, output, session) {
       visdata_ori$nodes$group[which(grepl("R", visdata_ori$nodes$id))] = "Reaction"
       
       #Adding duplicate metabolites/reactions
-      if(model_name=="toycon"){
+      if (model_name == "toycon") {
         visdata = add_dups_new_layout(visdata)
       }
       
@@ -2255,7 +2332,7 @@ shinyServer(function(input, output, session) {
         pattern = "^M\\S*e$",
         x = visdata$nodes$id
       ))] = "Metabolite external"
-      visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+      visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
       
       
       #Get the weights from the net object
@@ -2309,10 +2386,10 @@ shinyServer(function(input, output, session) {
         }
       }
       #Make the names equal length (7 is the max length of matabolite name) for the displaying purposes. this way the sizes of the metabolite nodes are all equal
-     if(model_name=="toycon"){
+      if (model_name == "toycon") {
         edges_names = sapply(edges_names, function(x)
           fill_blank(x, 7))
-     }
+      }
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
       visdata$nodes$label = as.vector(edges_names)
       names_dict = rbind(edges_names, names) #Names and IDs dictionary
@@ -2325,15 +2402,15 @@ shinyServer(function(input, output, session) {
       if (model_name == "toycon") {
         visdata$nodes = cbind(visdata$nodes, coords)
       }
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
       shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
       shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -2347,9 +2424,15 @@ shinyServer(function(input, output, session) {
             "Reaction",
             "Biological objective"
           ),
-          shape = c("dot", "dot", "dot", "box","box")
+          shape = c("dot", "dot", "dot", "box", "box")
           ,
-          color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+          color = c(
+            "lightsalmon",
+            "red",
+            "indianred",
+            "lightblue",
+            "lightgreen"
+          ),
           title = "Informations"
         )
       
@@ -2452,6 +2535,8 @@ shinyServer(function(input, output, session) {
     } else{
       exclude = F
     }
+    objective = isolate(input$select_objective)
+    ori_objective = objective
     
     output$fluxes_ko = DT::renderDataTable({
       # intentionally left empty - clears the populated table
@@ -2460,6 +2545,9 @@ shinyServer(function(input, output, session) {
       # intentionally left empty - clears the populated table
     })
     output$text_flux_ko = renderText({
+      # intentionally left empty - clears the field
+    })
+    output$text_objective_ko = renderText({
       # intentionally left empty - clears the field
     })
     
@@ -2485,7 +2573,7 @@ shinyServer(function(input, output, session) {
                        title = "Knocksout the reaction picked above",
                        content = "The gene knockout results in the network deprived of the reaction that was catalyzed by the enzyme coded by this gene",
                        placement = "right",
-                       trigger = "click",
+                       trigger = "focus",
                        options = list(container = "body")
                      )
                    )),
@@ -2501,9 +2589,14 @@ shinyServer(function(input, output, session) {
           h3("Results"),
           br(),
           br(),
+          fluidRow(class = "myRowButton", column(
+            5, HTML("<u><b>Biological objective: </b></u>")
+          ), column(
+            5, offset = 0, htmlOutput("text_objective_ko")
+          )),
           fluidRow(
             class = "myRowButton",
-            column(5, HTML("<b>Objective value: </b>")),
+            column(5, HTML("<u><b>Objective value: </b></u>")),
             column(1, htmlOutput("text_flux_ko")),
             column(
               1,
@@ -2513,7 +2606,7 @@ shinyServer(function(input, output, session) {
                 title = "Objective value",
                 content = "It represents flux through the reaction that is a biological objective of the model.",
                 placement = "right",
-                trigger = "click",
+                trigger = "focus",
                 options = list(container = "body")
               )
             )
@@ -2574,7 +2667,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -2657,15 +2750,15 @@ shinyServer(function(input, output, session) {
   observeEvent(input$reset, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
     ori_objective = objective
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
-      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
+      objective = paste(strsplit(objective, split = "_")[[1]][-1], collapse = "_")
     } else{
       exclude = F
-      objective = strsplit(objective,split = "_")[[1]][2]
+      objective = strsplit(objective, split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -2765,10 +2858,14 @@ shinyServer(function(input, output, session) {
         fluxes_output[which(fluxes_output[, 1] == names_dict[2, i]), 1] = names_dict[1, i]
     }
     #Render UI text
+    #render the text for UI
     output$text_flux_ko = renderText({
-      paste("<b>",
-            format(round(flux, digits = 2), nsmall = 2),
-            "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_ko = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     if (model_name == "toycon") {
@@ -2809,7 +2906,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     #Get the weights from the net object
     weights_edges = c()
@@ -2876,15 +2973,15 @@ shinyServer(function(input, output, session) {
     if (model_name == "toycon") {
       visdata$nodes = cbind(visdata$nodes, coords)
     }
-    visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -2902,9 +2999,15 @@ shinyServer(function(input, output, session) {
           "Reaction",
           "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box","box")
+        shape = c("dot", "dot", "dot", "box", "box")
         ,
-        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+        color = c(
+          "lightsalmon",
+          "red",
+          "indianred",
+          "lightblue",
+          "lightgreen"
+        ),
         title = "Informations"
       )
     
@@ -2984,14 +3087,14 @@ shinyServer(function(input, output, session) {
   observeEvent(input$apply_ko, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
     
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
-      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
+      objective = paste(strsplit(objective, split = "_")[[1]][-1], collapse = "_")
     } else{
       exclude = F
-      objective = strsplit(objective,split = "_")[[1]][2]
+      objective = strsplit(objective, split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -3022,7 +3125,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -3079,15 +3182,15 @@ shinyServer(function(input, output, session) {
     if (model_name == "toycon") {
       visdata$nodes = cbind(visdata$nodes, coords)
       #Emphasize main reactions
-      visdata$nodes[which(grepl("^glycolysis$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^respiration$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glycolysis$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^respiration$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     }
     
     
@@ -3148,11 +3251,14 @@ shinyServer(function(input, output, session) {
       }, selection = "single", options = list(pageLength = 10), rownames = FALSE)
       
     }
-    #render text with objective value
+    #render the text for UI
     output$text_flux_ko = renderText({
-      paste("<b>",
-            format(round(flux, digits = 2), nsmall = 2),
-            "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_ko = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     working_dir = getwd()
@@ -3179,9 +3285,9 @@ shinyServer(function(input, output, session) {
       visdata = add_dups_new_layout(visdata)
       #delete the KOed reactions
       reaction = paste("R_", reaction_ID, sep = "")
-      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction),]
+      visdata$nodes = visdata$nodes[-which(visdata$nodes$id == reaction), ]
       visdata$edges = visdata$edges[-which(visdata$edges$from == reaction |
-                                             visdata$edges$to == reaction),]
+                                             visdata$edges$to == reaction), ]
     }
     visdata$nodes$group = rep("Metabolite", length(visdata$nodes$id))
     visdata$nodes$group[which(grepl("R", visdata$nodes$id))] = "Reaction"
@@ -3191,7 +3297,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$length = 150
     net = asNetwork(toycon_graph)
@@ -3243,7 +3349,7 @@ shinyServer(function(input, output, session) {
       #Read the saved coordinates for the graph dispalying purpose
       if (model_name == "toycon") {
         coords = read.csv(path)
-        coords = coords[-which(rownames(coords) == reaction),]
+        coords = coords[-which(rownames(coords) == reaction), ]
         visdata$nodes = cbind(visdata$nodes, coords)
         #Adjust the coorfinates of the network after the deaction KO
         for (i in seq(1, dim(fluxes)[1])) {
@@ -3278,15 +3384,15 @@ shinyServer(function(input, output, session) {
       dashed[which(round(as.numeric(visdata$edges$weight)) == 0)] = TRUE
       visdata$edges$dashes = dashed
       #Emphasize main reactions
-      visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
       #Emphasize main metabolites
-      visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-      visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+      visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
       
       shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
       shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -3304,8 +3410,14 @@ shinyServer(function(input, output, session) {
             "Reaction",
             "Biological objective"
           ),
-          shape = c("dot", "dot", "dot", "box","box"),
-          color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+          shape = c("dot", "dot", "dot", "box", "box"),
+          color = c(
+            "lightsalmon",
+            "red",
+            "indianred",
+            "lightblue",
+            "lightgreen"
+          ),
           title = "Informations"
         )
       
@@ -3406,14 +3518,16 @@ shinyServer(function(input, output, session) {
   observeEvent(input$apply_expr, {
     model_name = isolate(input$pick_model)
     objective = isolate(input$select_objective)
-    ori_objective=objective
+    ori_objective = objective
+    rxn_names_list = get_reactionIDs_names(model_name = model_name)
+    ori_objective_name = names(which(rxn_names_list == ori_objective))
     
     if (model_name != "toycon") {
       exclude = isolate(input$exclude)
-      objective=paste(strsplit(objective,split = "_")[[1]][-1],collapse = "_")
+      objective = paste(strsplit(objective, split = "_")[[1]][-1], collapse = "_")
     } else{
       exclude = F
-      objective = strsplit(objective,split = "_")[[1]][2]
+      objective = strsplit(objective, split = "_")[[1]][2]
     }
     working_dir = getwd()
     path = paste("/data/", model_name, ".xml", sep = "")
@@ -3445,7 +3559,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     visdata$edges$width = 2
     visdata$edges$length = 150
@@ -3546,10 +3660,14 @@ shinyServer(function(input, output, session) {
       }, selection = "single", options = list(pageLength = 10), rownames = FALSE)
     }
     
+    #render the text for UI
     output$text_flux_expr = renderText({
-      paste("<b>",
-            format(round(flux, digits = 2), nsmall = 2),
-            "</b>")
+      paste("<b>", format(round(flux, digits = 2), nsmall = 2), "</b>")
+    })
+    names_mapper = get_reactionIDs_names(model_name = model_name)
+    objective_name = names(which(names_mapper == ori_objective))
+    output$text_objective_expr = renderText({
+      paste("<b>", as.character(objective_name), "</b>")
     })
     
     toycon_graph = igraph.from.graphNEL(data)
@@ -3572,7 +3690,7 @@ shinyServer(function(input, output, session) {
       pattern = "^M\\S*e$",
       x = visdata$nodes$id
     ))] = "Metabolite external"
-    visdata$nodes$group[which(visdata$nodes$id==ori_objective)] = "Biological objective"
+    visdata$nodes$group[which(visdata$nodes$id == ori_objective)] = "Biological objective"
     
     weights_edges = c()
     for (i in seq(1, length(net$mel))) {
@@ -3637,15 +3755,15 @@ shinyServer(function(input, output, session) {
       coords = read.csv(path)
       visdata$nodes = cbind(visdata$nodes, coords)
     }
-    visdata$nodes[which(grepl("glycolysis", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("respiration", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("synthase", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("demand", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("glycolysis", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("respiration", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("synthase", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("demand", names_dict[1, ])), "font"] = "20px arial"
     #Emphasize main metabolites
-    visdata$nodes[which(grepl("^lactate$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("^glucose$", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ATP", names_dict[1,])), "font"] = "20px arial"
-    visdata$nodes[which(grepl("ADP", names_dict[1,])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^lactate$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("^glucose$", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ATP", names_dict[1, ])), "font"] = "20px arial"
+    visdata$nodes[which(grepl("ADP", names_dict[1, ])), "font"] = "20px arial"
     
     shape_metabolites = ifelse(model_name == "toycon", "circle", "dot")
     shape_reactions = ifelse(model_name == "toycon", "box", "square")
@@ -3663,8 +3781,14 @@ shinyServer(function(input, output, session) {
           "Reaction",
           "Biological objective"
         ),
-        shape = c("dot", "dot", "dot", "box","box"),
-        color = c("lightsalmon", "red", "indianred", "lightblue","lightgreen"),
+        shape = c("dot", "dot", "dot", "box", "box"),
+        color = c(
+          "lightsalmon",
+          "red",
+          "indianred",
+          "lightblue",
+          "lightgreen"
+        ),
         title = "Informations"
       )
     
@@ -3748,7 +3872,7 @@ shinyServer(function(input, output, session) {
   
   # MODEL CHANGE ------------------------------------------------------------
   
-  observeEvent(input$pick_model,ignoreInit = F, {
+  observeEvent(input$pick_model, ignoreInit = F, {
     removeTab(inputId = "tabs",
               target = "ko_reactions",
               session = getDefaultReactiveDomain())
@@ -3773,24 +3897,24 @@ shinyServer(function(input, output, session) {
     } else{
       removeUI(selector = "#exclude")
     }
-    model_name=input$pick_model
+    model_name = input$pick_model
     working_dir = getwd()
     path = paste("/data/", model_name, "_var.RData", sep = "")
     if (.Platform$OS.type == "windows") {
       path = gsub("\\\\", "/", path)
     }
     load(paste(working_dir, path, sep = "")) #formal class SBML object
-    choices_list=list()
+    choices_list = list()
     names_choices = c()
-    for(i in seq_len(length(sbml_model@model@reactions))){
+    for (i in seq_len(length(sbml_model@model@reactions))) {
       choices_list[[i]] = sbml_model@model@reactions[[i]]@id
-      names_choices = append(names_choices,sbml_model@model@reactions[[i]]@name)
+      names_choices = append(names_choices, sbml_model@model@reactions[[i]]@name)
     }
     names(choices_list) = names_choices
-    if(model_name == "toycon"){
+    if (model_name == "toycon") {
       ori_objective = "R_R4"
-    }else{
-      ori_objective="R_BIOMASS_Ecoli_core_w_GAM"
+    } else{
+      ori_objective = "R_BIOMASS_Ecoli_core_w_GAM"
     }
     
     removeUI(selector = "#select_objective")
@@ -3807,7 +3931,7 @@ shinyServer(function(input, output, session) {
              ))
   })
   
-  observeEvent(input$select_objective,ignoreInit = T, {
+  observeEvent(input$select_objective, ignoreInit = T, {
     removeTab(inputId = "tabs",
               target = "ko_reactions",
               session = getDefaultReactiveDomain())

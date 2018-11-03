@@ -1,0 +1,57 @@
+# Site settings
+title: Web Application
+email: mjd5kd@virginia.edu
+description: >
+  This web based application that decouples learning to program and learning about 
+  genome-scale metabolic modeling
+lang: en-US
+
+baseurl: "/metaboLITE" # the subpath of your site, e.g. /blog/
+url: https://michalstolarczyk.github.io/metaboLITE # the base hostname & protocol for your site
+git_address: https://github.com/michalstolarczyk/metaboLITE
+git_edit_address: https://github.com/michalstolarczyk/metaboLITE/blob/master
+
+# theme options from https://bootswatch.com/
+# comment out this to use default Bootstrap
+bootwatch: simplex
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+gems:
+  - jekyll-feed
+  - jekyll-redirect-from
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - .idea/
+  - .gitignore
+  - README.md
+timezone: Europe/Berlin
+defaults:
+- scope:
+    path: _posts
+    type: posts
+  values:
+    layout: post
+    sectionid: blog
+
+- scope:
+    path: _docs
+    type: docs
+  values:
+    layout: docs
+    sectionid: docs
+    seo:
+      type: "WebPage"
+
+collections:
+  docs:
+    permalink: /:collection/:path/
+    output: true
+  posts:
+    permalink: /blog/:year/:month/:day/:title/
+    output: true

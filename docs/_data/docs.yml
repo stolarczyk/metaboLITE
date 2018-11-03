@@ -1,0 +1,11 @@
+- title: Introduction
+  docs:
+  - home
+
+
+- title: Installation OS 
+  docs:
+  - macOS
+  - Windows
+  - Windows_other
+  - Linux
