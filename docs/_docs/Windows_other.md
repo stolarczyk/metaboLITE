@@ -38,7 +38,7 @@ Find the `Docker Quickstart Terminal` (that you've just downloaded) program and 
 
 1. It can take couple minutes to setup for the first time
 
-![run Kitematic](https://raw.githubusercontent.com/michalstolarczyk/metaboLITE/master/docs/docs_pics/runKitenaticWindows.PNG)
+![run Kitematic](https://raw.githubusercontent.com/michalstolarczyk/metaboLITE/master/docs/docs_pics/runKitematicWindows.PNG)
 
 2. Click *skip for now* in the right lower corner if you do not wish to create the account
 
