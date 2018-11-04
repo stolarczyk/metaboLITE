@@ -490,8 +490,7 @@ shinyServer(function(input, output, session) {
   
   # VISUALIZATION UPDATE/LAUNCH APP -----------------------------------------
   
-  observeEvent({input$update
-    input$pick_model}, {
+  observeEvent(input$update, {
     showNotification(id = "graphInteravtive",ui = "The graph is interactive, play with it!",duration = 10,closeButton = TRUE,type = "default")
     model_name = isolate(input$pick_model)
     weighting = isolate(input$weighting)
