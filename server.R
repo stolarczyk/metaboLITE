@@ -444,7 +444,7 @@ get_model_stats <- function(model_name) {
   num_genes = length(toycon@allGenes)
   return(t(
     data.frame(
-      Name = model_name,
+      # Name = model_name,
       Reactions = num_reactions,
       Metabolites = num_metabolites,
       Genes = num_genes,
