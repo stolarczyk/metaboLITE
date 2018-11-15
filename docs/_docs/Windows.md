@@ -1,7 +1,9 @@
 ---
-title: Windows 10 Pro/Enterprise/Education
+title: Windows 10 
 permalink: /docs/Windows/
 ---
+
+**The installation instructions presented here will work for Windows 10 Pro/Enterprise/Education. Instructions for other versions (i.e. 8) and/or versions (i.e. Home) are available [here](https://michalstolarczyk.github.io/metaboLITE/docs/Windows_other/)**
 
 # Prerequisites
 

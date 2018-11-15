@@ -1,5 +1,5 @@
 ---
-title: Install metaboLITE
+title: Installation Overview
 permalink: /docs/home/
 redirect_from: /docs/index.html
 ---
