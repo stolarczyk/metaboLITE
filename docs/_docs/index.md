@@ -14,4 +14,4 @@ In short, to use *metaboLITE* all you need to do is:
 
 **And you're ready to go... learn!**
 
-See the system-specific installation instructions in the **Installation OS** section for more details
+See the system-specific installation instructions in the **Installation Directions** section for more details
