@@ -6,10 +6,10 @@ description: >
   genome-scale metabolic modeling
 lang: en-US
 
-baseurl: "/metaboLITE/docs" # the subpath of your site, e.g. /blog/
+baseurl: "/metaboLITE" # the subpath of your site, e.g. /blog/
 url: https://michalstolarczyk.github.io/metaboLITE # the base hostname & protocol for your site
 git_address: https://github.com/michalstolarczyk/metaboLITE
-git_edit_address: https://github.com/michalstolarczyk/metaboLITE/blob/master
+git_edit_address: https://github.com/michalstolarczyk/metaboLITE/blob/master/_docs
 
 # theme options from https://bootswatch.com/
 # comment out this to use default Bootstrap
