@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <sbml xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2" level="3" sboTerm="SBO:0000624" version="1" xmlns="http://www.sbml.org/sbml/level3/version1/core" fbc:required="false">
-  <model fbc:strict="true" id="ToyCon">
+  <model fbc:strict="true" id="iSIM">
     <listOfUnitDefinitions>
       <unitDefinition id="mmol_per_gDW_per_hr">
         <listOfUnits>
@@ -24,8 +24,8 @@
       <parameter constant="true" id="R_E1_lower_bound" sboTerm="SBO:0000625" units="mmol_per_gDW_per_hr" value="-1"/>
     </listOfParameters>
     <listOfCompartments>
-      <compartment id="c" name="cytoplasm" spatialDimensions="3" constant="false"/>
-      <compartment id="m" name="mitochondria" spatialDimensions="3" constant="false"/>
+      <compartment constant="true" id="c" name=""/>
+      <compartment constant="true" id="m" name=""/>
     </listOfCompartments>
     <listOfSpecies>
       <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m04c" name="glucose" compartment="c"/>
@@ -36,8 +36,8 @@
       <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m01c" name="ADP" compartment="c"/>
       <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m09c" name="Pi" compartment="c"/>
       <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m02c" name="ATP" compartment="c"/>
-      <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m05c" name="H" compartment="c"/>
       <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m05m" name="H" compartment="m"/>
+      <species boundaryCondition="false" constant="false" hasOnlySubstanceUnits="false" id="M_m05c" name="H" compartment="c"/>
     </listOfSpecies>
     <fbc:listOfGeneProducts>
       <fbc:geneProduct fbc:id="G_HK" fbc:label="HK" fbc:name="HK"/>
