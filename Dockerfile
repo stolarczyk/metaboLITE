@@ -80,13 +80,13 @@ RUN Rscript -e "install.packages('sybil')"
 RUN pip install python-libsbml cobra
 
 #Clone the R shinyapp git repository
-RUN git clone https://github.com/michalstolarczyk/shinyapp.git
+RUN git clone https://github.com/michalstolarczyk/metaboLITE.git
 
 #Expose the port that the app will be listening on
 EXPOSE 8080
 
 #Run the app
-CMD ["R","-e","shiny::runApp(appDir = '/tmp/shinyapp', port = 8080,launch.browser = F ,host = '0.0.0.0', quiet = FALSE, display.mode = 'auto',test.mode = FALSE)"]
+CMD ["R","-e","shiny::runApp(appDir = '/tmp/metaboLITE', port = 8080,launch.browser = F ,host = '0.0.0.0', quiet = FALSE, display.mode = 'auto',test.mode = FALSE)"]
 
 
 
