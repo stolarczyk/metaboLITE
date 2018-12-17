@@ -30,7 +30,7 @@ The `Docker.dmg` file will be downloaded to the directory you choose.
 
 ## Run *Kitematic* - the graphical interface for *Docker*
 
-***NOTE:** As of Nov, 14 2018 the latest Kitematic version (0.17.5) has a [bug](https://github.com/docker/kitematic/issues/4278). Use older versions instead, e.g. v0.17.3, which can be downloaded [here](https://github.com/docker/kitematic/releases/download/v0.17.3/Kitematic-0.17.3-Mac.zip).*
+***Make sure you are using the latest [Kitematic (version 0.17.6)](https://github.com/docker/kitematic/releases/download/v0.17.6/Kitematic-0.17.6-Mac.zip) as the previous on had a [bug](https://github.com/docker/kitematic/issues/4278)***
 
 Click on the *Docker* icon in the navigation bar and click *Kitematic* to launch it.
 
