@@ -26,7 +26,7 @@ for rxn in reactions_associated:
     model.reactions.get_by_id(ID_ori).bounds = (lb, ub)
 
 # Perform FBA
-flux = model.optimize().f
+flux = model.optimize().objective_value
 # Save the results
 fluxes = model.optimize().fluxes.round(2)
 fluxes = fluxes.to_dict()

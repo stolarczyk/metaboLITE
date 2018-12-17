@@ -16,7 +16,7 @@ except KeyError:
 #Change objective
 toycon.objective = objective
 #Run the FBA
-flux = toycon.optimize().f
+flux = toycon.optimize().objective_value
 #Save the results
 fluxes = toycon.optimize().fluxes.round(2)
 fluxes = fluxes.to_dict()

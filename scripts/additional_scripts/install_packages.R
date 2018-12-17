@@ -1,4 +1,4 @@
-#This script is intended to help the user to automatically install the packages that are required by the ToyCon shiny app
+#This script is intended to help the user to automatically install the packages that are required by the metaboLITE shiny app
 
 # Function declaration ----------------------------------------------------
 
@@ -30,4 +30,4 @@ install.packages.auto <- function(x) {
 required_packages = c("igraph","shiny","intergraph","ggplot2","visNetwork","xtable","dplyr","sna","shinyBS","shinythemes")
 install.packages.auto(x = required_packages)
 
-warning("The rPython package may require attention during installation under systems with multiple Python versions installed. Please see the README file in the project repository at https://github.com/michaelllo1993/shinyapp")
+warning("The rPython package may require attention during installation under systems with multiple Python versions installed. Please see the README file in the project repository at https://github.com/michalstolarczyk/metabolite")
