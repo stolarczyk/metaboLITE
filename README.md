@@ -18,5 +18,5 @@ Michal Stolarczyk <mjs5kd@virginia.edu>
 
 ## Installation
 
-Detailed installation structions can be found on the [project website](https://michalstolarczyk.github.io/metaboLITE/)
+Detailed installation structions can be found on the [project website](https://stolarczyk.github.io/metaboLITE/)
 
